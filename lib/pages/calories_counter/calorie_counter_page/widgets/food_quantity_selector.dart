@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/helper.dart';
+import '../../helper/progress_visuals_helper.dart';
 
 class FoodQuantitySelector extends StatefulWidget {
   final double initialValue;
