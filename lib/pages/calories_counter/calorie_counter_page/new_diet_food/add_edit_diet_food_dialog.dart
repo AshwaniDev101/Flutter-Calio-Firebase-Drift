@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/helper.dart';
 import '../../../../models/diet_food.dart';
@@ -176,7 +177,7 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 id: food?.id ?? generateReadableTimestamp(),
                 name: name,
                 count: 0.0,
-                time: DateTime.now(),
+                time: Timestamp.fromDate(DateTime.now()),
                 foodStats: FoodStats(
                   proteins: double.tryParse(proteins) ?? 0.0,
                   carbohydrates: double.tryParse(carbohydrates) ?? 0.0,

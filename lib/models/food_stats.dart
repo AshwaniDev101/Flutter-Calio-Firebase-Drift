@@ -15,16 +15,16 @@ class FoodStats {
     required this.calories,
   });
 
-  // A const constructor for an empty object is more idiomatic.
-  const FoodStats.empty() : 
-    proteins = 0.0,
-    carbohydrates = 0.0,
-    fats = 0.0,
-    vitamins = 0.0,
-    minerals = 0.0,
-    calories = 0.0;
+  // A const constructor for an empty object
+  const FoodStats.empty()
+      : proteins = 0.0,
+        carbohydrates = 0.0,
+        fats = 0.0,
+        vitamins = 0.0,
+        minerals = 0.0,
+        calories = 0.0;
 
-
+  /// Sum two FoodStats
   FoodStats sum(FoodStats other) {
     return FoodStats(
       proteins: proteins + other.proteins,
@@ -36,6 +36,7 @@ class FoodStats {
     );
   }
 
+  /// Subtract another FoodStats from this
   FoodStats subtract(FoodStats other) {
     return FoodStats(
       proteins: proteins - other.proteins,
@@ -47,25 +48,22 @@ class FoodStats {
     );
   }
 
+  /// Convert to map for Firestore, omitting fields with 0 value
+  Map<String, dynamic> toMap() => {
+    if (proteins != 0) 'proteins': proteins,
+    if (carbohydrates != 0) 'carbohydrates': carbohydrates,
+    if (fats != 0) 'fats': fats,
+    if (vitamins != 0) 'vitamins': vitamins,
+    if (minerals != 0) 'minerals': minerals,
+    if (calories != 0) 'calories': calories,
+  };
 
-  Map<String, dynamic> toMap() {
-    return {
-      'proteins': proteins,
-      'carbohydrates': carbohydrates,
-      'fats': fats,
-      'vitamins': vitamins,
-      'minerals': minerals,
-      'calories': calories,
-    };
-  }
-
-  /// A factory constructor that can safely parse both int and double values from Firestore.
+  /// Factory constructor to create FoodStats from Firestore map
   factory FoodStats.fromMap(Map<String, dynamic> map) {
-    // Helper to safely convert a num (int or double) to a double.
     double toDouble(dynamic value) {
       if (value is double) return value;
       if (value is int) return value.toDouble();
-      return 0.0; // Default value if null or wrong type
+      return 0.0; // default if null or wrong type
     }
 
     return FoodStats(

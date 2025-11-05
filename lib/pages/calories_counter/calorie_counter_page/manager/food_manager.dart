@@ -22,25 +22,31 @@ class FoodManager {
   /// available food also contains its consumed count.
   Stream<List<DietFood>> watchMergedFoodList(DateTime dateTime) {
     return Rx.combineLatest2<List<DietFood>, List<DietFood>, List<DietFood>>(
-      _watchAvailableFood(),  // Stream of all available foods
-      _watchConsumedFood(dateTime),   // Stream of consumed foods
+      _watchAvailableFood(),
+      _watchConsumedFood(dateTime),
           (availableList, consumedList) {
-
-        // Create a quick lookup map of consumed food counts by ID
+        // Map consumed food by ID for quick lookup
         final consumedMap = {
-          for (final food in consumedList) food.id: food.count,
+          for (final food in consumedList) food.id: food,
         };
 
-        // Merge the two lists:
-        // For each available food, check if it exists in consumedMap
-        // If yes, use its consumed count; otherwise, set count to 0
-        return availableList.map((food) {
-          final consumedCount = consumedMap[food.id] ?? 0;
-          return food.copyWith(count: consumedCount);
+        // Merge available list with consumed count & time
+        final mergedList = availableList.map((food) {
+          final consumedFood = consumedMap[food.id];
+          return food.copyWith(
+            count: consumedFood?.count ?? 0,
+            time: consumedFood?.time ?? food.time,
+          );
         }).toList();
+
+        // Sort by timestamp descending (most recent first)
+        mergedList.sort((a, b) => b.time.compareTo(a.time));
+
+        return mergedList;
       },
     );
   }
+
 
 
   Stream<List<DietFood>> _watchAvailableFood() {

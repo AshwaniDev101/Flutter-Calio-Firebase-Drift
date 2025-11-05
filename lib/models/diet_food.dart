@@ -1,10 +1,10 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'food_stats.dart';
 
 class DietFood {
   final String id;
   final String name;
-  final DateTime time;
+  final Timestamp time;
   final FoodStats foodStats;
   final double count;
 
@@ -13,54 +13,57 @@ class DietFood {
     required this.name,
     required this.time,
     required this.foodStats,
-    this.count = 0.0, // available food default count = 0.0
+    this.count = 0.0, // default count for available food
   });
 
-  /// For Available Food: usually no count and no time or default time
+  /// Creates a DietFood from an Available Food map
   factory DietFood.fromAvailableMap(Map<String, dynamic> map) {
     return DietFood(
       id: map['id'] ?? '',
-      name: map['name'] as String,
-      time: DateTime.tryParse(map['time'] ?? '') ?? DateTime.now(),
-      foodStats: FoodStats.fromMap(map['foodStats']),
-      count: 0.0, // no count for available food
+      name: map['name'] ?? '',
+      time: map['time'] as Timestamp,
+      foodStats: FoodStats.fromMap(map['foodStats'] ?? {}),
+      count: 0.0,
     );
   }
 
+  /// Converts DietFood to map for storing available food
   Map<String, dynamic> toAvailableMap() {
     return {
       'id': id,
       'name': name,
-      'time': time.toIso8601String(),
+      'time': time, // store as Timestamp
       'foodStats': foodStats.toMap(),
       // no count field for available food
     };
   }
 
-  /// For Consumed Food: includes count and time is relevant
+  /// Creates a DietFood from a Consumed Food map
   factory DietFood.fromConsumedMap(Map<String, dynamic> map) {
     return DietFood(
       id: map['id'] ?? '',
-      name: '', // placeholder, should be resolved externally
-      time: DateTime.parse(map['time']),
-      foodStats: FoodStats.empty(), // placeholder, resolve using ID
-      // Safely parse the count, handling both int and double from Firestore.
+      name: map['name'] ?? '',
+      time: map['time'] as Timestamp,
+      foodStats: FoodStats.empty(),
       count: (map['count'] as num?)?.toDouble() ?? 1.0,
     );
   }
 
+  /// Converts DietFood to map for storing consumed food
   Map<String, dynamic> toConsumedMap() {
     return {
       'id': id,
-      'time': time.toIso8601String(),
+      'name': name,
+      'time': time,
       'count': count,
     };
   }
 
+  /// Creates a copy of DietFood with optional overrides
   DietFood copyWith({
     String? id,
     String? name,
-    DateTime? time,
+    Timestamp? time,
     FoodStats? foodStats,
     double? count,
   }) {

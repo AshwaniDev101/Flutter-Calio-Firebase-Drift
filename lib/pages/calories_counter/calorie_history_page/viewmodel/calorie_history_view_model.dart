@@ -1,6 +1,7 @@
 
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '../../../../core/app_settings.dart';
 import '../../../../database/repository/food_history_repository.dart';
@@ -68,7 +69,7 @@ class CalorieHistoryViewModel extends ChangeNotifier
       DietFood(
         id: '-1',
         name: 'Test 0',
-        time: DateTime.now(),
+        time: Timestamp.fromDate(DateTime.now()),
         foodStats: FoodStats(proteins: 0, carbohydrates: 0, fats: 0, vitamins: 0, minerals: 0, calories: 1),
       ),
       DateTime(2025, 10, 25),
