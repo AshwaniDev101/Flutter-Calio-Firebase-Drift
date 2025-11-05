@@ -1,16 +1,17 @@
-# calio
+# Calio – Calorie Tracker App
 
-Track calories, meals, and progress easily. Stay fit, eat smart, live better.
+Calio is a **cross-platform calorie tracking app** built with **Flutter**, supporting **Android, iOS, and Web**. It helps users monitor their daily calorie intake, track food history, and visualize progress over time with heatmaps and statistics.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **MVVM architecture** using Riverpod for clean, maintainable code
+- **Firebase Authentication** for one-click login
+- **Firebase backend** for cloud storage and device sync
+- **Drift integration** for offline storage
+- **Cross-platform support** for mobile and web
+- **Add, edit, and delete foods** with full CRUD support
+- **Food history page** to monitor trends
+- **Heatmaps** to visualize progress
+- **Search and filter** foods easily
