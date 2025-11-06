@@ -254,7 +254,9 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
           ),
           child: IconButton(
             icon: Icon(Icons.add_circle, color: Colors.amber.shade700, size: 22),
-            onPressed: () {},
+            onPressed: () {
+              DietFoodDialog.add(context, (DietFood food) => vm.addFood(food));
+            },
             splashRadius: 20,
           ),
         )
