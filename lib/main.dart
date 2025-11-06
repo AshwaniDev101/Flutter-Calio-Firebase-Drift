@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      // home: CalorieCounterPage(pageDateTime: DateTime.now())
-      home: DemoPaintWidget()
+      home: CalorieCounterPage(pageDateTime: DateTime.now())
+      // home: DemoPaintWidget()
     );
   }
 }

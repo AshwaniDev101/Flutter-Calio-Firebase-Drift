@@ -84,7 +84,7 @@ class ScrollWithTopCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: CalorieSemicircle(
-                currentCalories: 1600,
+                currentCalories: 1700,
                 atLeastCalories: 1600,
                 atMostCalories: 2500,
                 size: 260,
