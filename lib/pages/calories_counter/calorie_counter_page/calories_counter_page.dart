@@ -252,12 +252,16 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
               ),
             ],
           ),
-          child: IconButton(
-            icon: Icon(Icons.add_circle, color: Colors.amber.shade700, size: 22),
-            onPressed: () {
-              DietFoodDialog.add(context, (DietFood food) => vm.addFood(food));
-            },
-            splashRadius: 20,
+          child: Container(
+            width: 40,
+            height: 40,
+            child: IconButton(
+              icon: Icon(Icons.add_circle, color: Colors.amber.shade700, size: 22),
+              onPressed: () {
+                DietFoodDialog.add(context, (DietFood food) => vm.addFood(food));
+              },
+              splashRadius: 20,
+            ),
           ),
         )
 
@@ -338,80 +342,69 @@ class _FoodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+      elevation: 2,
+      color: Colors.white,
       shadowColor: barColor.withOpacity(0.3),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [barColor.withValues(alpha: 0.9),Colors.white, Colors.white],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        child: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 70,
+              decoration: BoxDecoration(
+                color: barColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(14),
+                  bottomLeft: Radius.circular(14),
+                ),
+              ),
             ),
-          ),
-          child: Row(
-            children: [
 
-
-
-              Container(
-                width: 6,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: barColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(14),
-                    bottomLeft: Radius.circular(14),
-                  ),
-                ),
-              ),
-
-              Icon(Icons.apple,color: Colors.white,),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        food.name,
-                        style: AppTextStyle.textStyleCardTitle.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey[800],
+            // Icon(Icons.apple,color: Colors.white,),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      food.name,
+                      style: AppTextStyle.textStyleCardTitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey[800],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          '${formatNumber(food.foodStats.calories)} kcal',
+                          style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[700]),
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
+                        if (food.count > 1)
                           Text(
-                            '${formatNumber(food.foodStats.calories)} kcal',
-                            style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[700]),
+                            ' (total: ${formatNumber(food.foodStats.calories * food.count)})',
+                            style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[600]),
                           ),
-                          if (food.count > 1)
-                            Text(
-                              ' (total: ${formatNumber(food.foodStats.calories * food.count)})',
-                              style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[600]),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              FoodQuantitySelector(
-                initialValue: food.count,
-                onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, food),
-              ),
-              const SizedBox(width: 6),
-              editDeleteOptionMenu,
-              const SizedBox(width: 6),
-            ],
-          ),
+            ),
+            FoodQuantitySelector(
+              initialValue: food.count,
+              onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, food),
+            ),
+            const SizedBox(width: 6),
+            editDeleteOptionMenu,
+            const SizedBox(width: 6),
+          ],
         ),
       ),
     );
