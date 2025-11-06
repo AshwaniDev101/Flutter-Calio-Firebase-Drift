@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class CalorieSemicircle extends StatelessWidget {
-  final int currentCalories;
-  final int atLeastCalories;
-  final int atMostCalories;
+  final double currentCalories;
+  final double atLeastCalories;
+  final double atMostCalories;
   final double greenPercent; // portion of semicircle reserved for "green" (0..1)
   final double yellowPercent; // portion up to "yellow" (0..1)
   final double strokeWidth;
@@ -67,10 +67,12 @@ class CalorieSemicircle extends StatelessWidget {
           return Stack(
             alignment: Alignment.topCenter,
             children: [
+              // Semicircle
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
+                // height: size / 2 + strokeWidth,
                 height: size / 2 + strokeWidth / 2,
                 child: CustomPaint(
                   painter: _SemiCirclePainter(
@@ -90,7 +92,7 @@ class CalorieSemicircle extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: size / 8,
+                top: size / 8+50,
                 left: 0,
                 right: 0,
                 child: Column(
@@ -106,9 +108,9 @@ class CalorieSemicircle extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: size / 2 + 8,
-                left: 8,
-                right: 8,
+                top: size / 2 + 40,
+                left: 14,
+                right: 14,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -131,7 +133,7 @@ class _SemiCirclePainter extends CustomPainter {
   final Color bgColor, greenColor, yellowColor, redColor;
   final double greenPercent, yellowPercent;
   final double atLeastFrac, atMostFrac;
-  final int atLeastValue, atMostValue;
+  final double atLeastValue, atMostValue;
 
   _SemiCirclePainter({
     required this.animFrac,
@@ -150,7 +152,9 @@ class _SemiCirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas c, Size s) {
-    final center = Offset(s.width / 2, s.height);
+    final center = Offset(s.width / 2, s.height+50);
+
+    // final center = Offset(s.width / 2, s.height - strokeWidth / 2);
     final r = s.width / 2;
     final rect = Rect.fromCircle(center: center, radius: r);
     const start = pi;
@@ -224,7 +228,7 @@ class _SemiCirclePainter extends CustomPainter {
       final ph = 8.0, pv = 4.0;
       final rect = Rect.fromLTWH(pos.dx - tp.width / 2 - ph, pos.dy - tp.height / 2 - pv, tp.width + ph * 2, tp.height + pv * 2);
       final rrect = RRect.fromRectAndRadius(rect, Radius.circular(12));
-      c.drawRRect(rrect, Paint()..color = Colors.white.withOpacity(0.96));
+      c.drawRRect(rrect, Paint()..color = Colors.white.withValues(alpha: 0.96));
       c.drawRRect(rrect, Paint()..color = Colors.grey.shade300..style = PaintingStyle.stroke..strokeWidth = 0.7);
       tp.paint(c, Offset(rect.left + ph, rect.top + pv));
     }
