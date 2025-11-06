@@ -1,8 +1,12 @@
+import 'dart:math';
+
+import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar.dart';
+import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
+import 'package:calio/widget/new_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:calio/pages/calories_counter/calorie_counter_page/viewmodel/calorie_counter_view_model.dart';
-import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_progress_bar_dashboard.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/food_quantity_selector.dart';
 
 import '../../../models/diet_food.dart';
@@ -76,7 +80,19 @@ class ScrollWithTopCard extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 40,horizontal: 10),
-            child: CalorieBar(currentCalories: 2500,atLeastCalories: 1600,atMostCalories: 2500,),
+            // child: CalorieBar(currentCalories: 4000,atLeastCalories: 1600,atMostCalories: 2500,),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: CalorieSemicircle(
+                currentCalories: 1600,
+                atLeastCalories: 1600,
+                atMostCalories: 2500,
+                size: 260,
+                strokeWidth: 20,
+                // pulseDuration: Duration(seconds: 10),
+              )
+            )
+
           ),
         ),
         // SliverToBoxAdapter(
@@ -118,447 +134,258 @@ class ScrollWithTopCard extends StatelessWidget {
 
 
 
+
 // class CalorieBar extends StatelessWidget {
 //   final int currentCalories;
-//   final int atLeastCalories; // 1600 kcal
-//   final int atMostCalories;  // 2500 kcal
+//   final int atLeastCalories; // green threshold
+//   final int atMostCalories; // yellow threshold
+//   final double greenPercent; // portion of bar reserved for "green"
+//   final double yellowPercent; // portion of bar reserved for "yellow"
+//   final double height;
+//   final bool showPercent;
+//   final Color bgColor;
+//   final Color greenColor;
+//   final Color yellowColor;
+//   final Color redColor;
 //
 //   const CalorieBar({
 //     super.key,
 //     required this.currentCalories,
 //     required this.atLeastCalories,
 //     required this.atMostCalories,
-//   });
+//     this.greenPercent = 0.6,
+//     this.yellowPercent = 0.8,
+//     this.height = 24.0,
+//     this.showPercent = true,
+//     this.bgColor = const Color(0xFFF0F0F0),
+//     this.greenColor = const Color(0xFF8CE99A),
+//     this.yellowColor = const Color(0xFFFFE082),
+//     this.redColor = const Color(0xFFFF8A80),
+//   })  : assert(greenPercent > 0 && greenPercent < yellowPercent && yellowPercent < 1.0),
+//         assert(atLeastCalories > 0 && atMostCalories > atLeastCalories);
+//
+//   double _computeFraction() {
+//     final cur = currentCalories.toDouble();
+//     final atLeast = atLeastCalories.toDouble(); // green threshold
+//     final atMost = atMostCalories.toDouble();   // yellow threshold
+//     final g = greenPercent;                    // 60%
+//     final y = yellowPercent;                   // 80%
+//
+//     if (cur <= atLeast) return (cur / atLeast) * g;
+//     if (cur <= atMost) {
+//       final t = (cur - atLeast) / (atMost - atLeast);
+//       return g + t * (y - g);
+//     }
+//
+//     // Beyond atMost, extend proportionally to some maxCalories
+//     final maxCalories = atMost * 2; // for example, adjust as needed
+//     final t = ((cur - atMost) / (maxCalories - atMost)).clamp(0.0, 1.0);
+//     return y + t * (1.0 - y);
+//   }
+//
+//
+//   double displayedPercent() {
+//     final cur = currentCalories.toDouble();
+//     final atLeast = atLeastCalories.toDouble();
+//     final atMost = atMostCalories.toDouble();
+//
+//     if (cur <= atMost) {
+//       // proportional to atMostCalories as 100%
+//       return (cur / atMost) * 100;
+//     }
+//     // beyond atMost, can scale beyond 100%
+//     return (cur / atMost) * 100;
+//   }
+//
 //
 //   @override
 //   Widget build(BuildContext context) {
 //     return LayoutBuilder(builder: (context, constraints) {
 //       final totalWidth = constraints.maxWidth;
-//       final barHeight = 24.0;
+//       final fraction = _computeFraction().clamp(0.0, 1.0);
 //
-//       // Segment thresholds
-//       final greenPercent = 0.6; // 60%
-//       final yellowPercent = 0.8; // 80%
+//       // animate change in fraction smoothly when value changes
+//       return TweenAnimationBuilder<double>(
+//         tween: Tween(begin: 0.0, end: fraction),
+//         duration: const Duration(milliseconds: 420),
+//         curve: Curves.easeOutCubic,
+//         builder: (context, animatedFraction, _) {
+//           final filledWidth = animatedFraction * totalWidth;
+//           final greenW = totalWidth * greenPercent;
+//           final yellowW = totalWidth * (yellowPercent - greenPercent);
+//           final redW = totalWidth * (1.0 - yellowPercent);
 //
-//       // Compute filled width based on currentCalories
-//       double filledWidth;
-//       if (currentCalories <= atLeastCalories) {
-//         filledWidth = totalWidth * (currentCalories / atLeastCalories * greenPercent);
-//       } else if (currentCalories <= atMostCalories) {
-//         filledWidth = totalWidth *
-//             (greenPercent +
-//                 (currentCalories - atLeastCalories) /
-//                     (atMostCalories - atLeastCalories) *
-//                     (yellowPercent - greenPercent));
-//       } else {
-//         // beyond atMostCalories
-//         filledWidth = totalWidth *
-//             (yellowPercent +
-//                 (currentCalories - atMostCalories) /
-//                     atMostCalories *
-//                     (1.0 - yellowPercent));
-//         if (filledWidth > totalWidth) filledWidth = totalWidth;
-//       }
+//           // fixed label width for simple clamping
+//           const labelW = 72.0;
+//           final labelLeft = (filledWidth - labelW / 2).clamp(0.0, totalWidth - labelW);
 //
-//       // Segment widths
-//       final greenWidth = totalWidth * greenPercent;
-//       final yellowWidth = totalWidth * (yellowPercent - greenPercent);
-//       final redWidth = totalWidth * (1.0 - yellowPercent);
+//           // percent string
+//           // final percentText = (animatedFraction * 100).toStringAsFixed(0) + '%';
+//           final percentText = '${displayedPercent().toStringAsFixed(0)}%';
 //
-//       // Floating label position
-//       final labelPosition = (filledWidth - 24 / 2).clamp(0.0, totalWidth - 32);
-//
-//       return Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           Stack(
-//             alignment: Alignment.centerLeft,
-//             clipBehavior: Clip.none,
+//           return Column(
+//             mainAxisSize: MainAxisSize.min,
 //             children: [
-//               // Bar background
-//               Container(
-//                 height: barHeight,
-//                 decoration: BoxDecoration(
-//                   color: Colors.grey.shade200,
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
+//               Stack(
+//                 clipBehavior: Clip.none,
+//                 children: [
+//                   // background
+//                   Container(
+//                     height: height,
+//                     decoration: BoxDecoration(
+//                       color: bgColor,
+//                       borderRadius: BorderRadius.circular(height / 2),
+//                       border: Border.all(color: Colors.grey.shade300),
+//                     ),
+//                   ),
+//
+//                   // vertical markers
+//                   Positioned(
+//                     left: greenW - 1,
+//                     top: 0,
+//                     bottom: 0,
+//                     child: Container(width: 2, color: Colors.grey.shade400),
+//                   ),
+//                   Positioned(
+//                     left: greenW + yellowW - 1,
+//                     top: 0,
+//                     bottom: 0,
+//                     child: Container(width: 2, color: Colors.grey.shade400),
+//                   ),
+//
+//                   // filled segments (clamped per segment)
+//                   // green segment
+//                   if (filledWidth > 0)
+//                     Positioned(
+//                       left: 0,
+//                       top: 0,
+//                       bottom: 0,
+//                       child: Container(
+//                         width: filledWidth.clamp(0.0, greenW),
+//                         decoration: BoxDecoration(
+//                           color: greenColor,
+//                           borderRadius: BorderRadius.horizontal(left: Radius.circular(height / 2)),
+//                         ),
+//                       ),
+//                     ),
+//
+//                   // yellow segment
+//                   if (filledWidth > greenW)
+//                     Positioned(
+//                       left: greenW,
+//                       top: 0,
+//                       bottom: 0,
+//                       child: Container(
+//                         width: (filledWidth - greenW).clamp(0.0, yellowW),
+//                         color: yellowColor,
+//                       ),
+//                     ),
+//
+//                   // red segment
+//                   if (filledWidth > greenW + yellowW)
+//                     Positioned(
+//                       left: greenW + yellowW,
+//                       top: 0,
+//                       bottom: 0,
+//                       child: Container(
+//                         width: (filledWidth - greenW - yellowW).clamp(0.0, redW),
+//                         decoration: BoxDecoration(
+//                           color: redColor,                     // move color here
+//                           borderRadius: BorderRadius.horizontal(right: Radius.circular(height / 2)),
+//                         ),
+//                       ),
+//                     ),
+//
+//
+//                   // floating label above bar
+//                   Positioned(
+//                     left: labelLeft,
+//                     top: -30,
+//                     child: Tooltip(
+//                       message: '$currentCalories kcal',
+//                       child: Container(
+//                         width: labelW,
+//                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+//                         decoration: BoxDecoration(
+//                           color: Colors.white,
+//                           borderRadius: BorderRadius.circular(6),
+//                           boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+//                         ),
+//                         child: Column(
+//                           mainAxisSize: MainAxisSize.min,
+//                           children: [
+//                             Text(
+//                               '$currentCalories kcal',
+//                               textAlign: TextAlign.center,
+//                               style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+//                             ),
+//                             const SizedBox(height: 2),
+//                             Container(
+//                               height: 4,
+//                               width: double.infinity,
+//                               decoration: BoxDecoration(
+//                                 color: Colors.grey.shade100,
+//                                 borderRadius: BorderRadius.circular(2),
+//                               ),
+//                               child: FractionallySizedBox(
+//                                 alignment: Alignment.centerLeft,
+//                                 widthFactor: (animatedFraction).clamp(0.0, 1.0),
+//                                 child: Container(color: Colors.grey.shade300),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//
+//               const SizedBox(height: 6),
+//
+//               // bottom row: thresholds and optional percent
+//               SizedBox(
+//                 height: 18,
+//                 width: totalWidth,
 //                 child: Stack(
 //                   children: [
-//                     // Vertical markers
+//                     // atLeast label (centered approximately on marker)
 //                     Positioned(
-//                         left: greenWidth - 1,
-//                         top: 0,
-//                         bottom: 0,
-//                         child: Container(width: 2, color: Colors.grey.shade400)),
+//                       left: (greenW - 40).clamp(0.0, totalWidth - 80),
+//                       child: Text(
+//                         '$atLeastCalories kcal',
+//                         style: TextStyle(fontSize: 10, color: Colors.grey[700]),
+//                       ),
+//                     ),
+//
+//                     // atMost label
 //                     Positioned(
-//                         left: greenWidth + yellowWidth - 1,
-//                         top: 0,
-//                         bottom: 0,
-//                         child: Container(width: 2, color: Colors.grey.shade400)),
-//                     // Segments
-//                     Positioned(
-//                         left: 0,
-//                         top: 0,
-//                         bottom: 0,
-//                         child: Container(
-//                           width: filledWidth.clamp(0.0, greenWidth),
-//                           color: Colors.greenAccent.shade200,
-//                         )),
-//                     if (filledWidth > greenWidth)
+//                       left: (greenW + yellowW - 40).clamp(0.0, totalWidth - 80),
+//                       child: Text(
+//                         '$atMostCalories kcal',
+//                         style: TextStyle(fontSize: 10, color: Colors.grey[700]),
+//                       ),
+//                     ),
+//
+//                     if (showPercent)
 //                       Positioned(
-//                           left: greenWidth,
-//                           top: 0,
-//                           bottom: 0,
-//                           child: Container(
-//                             width: (filledWidth - greenWidth).clamp(0.0, yellowWidth),
-//                             color: Colors.yellowAccent.shade200,
-//                           )),
-//                     if (filledWidth > greenWidth + yellowWidth)
-//                       Positioned(
-//                           left: greenWidth + yellowWidth,
-//                           top: 0,
-//                           bottom: 0,
-//                           child: Container(
-//                             width: (filledWidth - greenWidth - yellowWidth)
-//                                 .clamp(0.0, redWidth),
-//                             color: Colors.redAccent.shade200,
-//                           )),
+//                         right: 0,
+//                         top: 0,
+//                         child: Text(
+//                           percentText,
+//                           style: TextStyle(fontSize: 10, color: Colors.grey[800], fontWeight: FontWeight.w600),
+//                         ),
+//                       ),
 //                   ],
 //                 ),
 //               ),
-//
-//
-//               // Center(
-//               //   child: Container(
-//               //     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-//               //     decoration: BoxDecoration(
-//               //       color: Colors.white,
-//               //       borderRadius: BorderRadius.circular(4),
-//               //       boxShadow: [
-//               //         BoxShadow(
-//               //           color: Colors.black26,
-//               //           blurRadius: 2,
-//               //           offset: Offset(0, 1),
-//               //         )
-//               //       ],
-//               //     ),
-//               //     child: Text(
-//               //       "$currentCalories kcal",
-//               //       style: const TextStyle(fontSize: 8),
-//               //     ),
-//               //   ),
-//               // ),
-//               // Floating label
-//               Positioned(
-//                 left: labelPosition-40,
-//                 // top: 2, // above the bar
-//                 child: Center(
-//                   child: Container(
-//                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-//                     decoration: BoxDecoration(
-//                       color: Colors.white,
-//                       borderRadius: BorderRadius.circular(4),
-//                       boxShadow: [
-//                         BoxShadow(
-//                           color: Colors.black26,
-//                           blurRadius: 2,
-//                           offset: Offset(0, 1),
-//                         )
-//                       ],
-//                     ),
-//                     child: Text(
-//                       "$currentCalories kcal",
-//                       style: const TextStyle(fontSize: 8,),
-//                     ),
-//                   ),
-//                 ),
-//               ),
 //             ],
-//           ),
-//
-//           const SizedBox(height: 4),
-//
-//           // Labels under markers
-//           SizedBox(
-//             height: 16,
-//             width: totalWidth,
-//             child: Stack(
-//               children: [
-//                 Positioned(
-//                   left: greenWidth - 16,
-//                   child: Text(
-//                     "$atLeastCalories kcal",
-//                     style: TextStyle(fontSize: 8, color: Colors.grey[700]),
-//                   ),
-//                 ),
-//                 Positioned(
-//                   left: greenWidth + yellowWidth - 16,
-//                   child: Text(
-//                     "$atMostCalories kcal",
-//                     style: TextStyle(fontSize: 8, color: Colors.grey[700]),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
+//           );
+//         },
 //       );
 //     });
 //   }
 // }
-
-
-class CalorieBar extends StatelessWidget {
-  final int currentCalories;
-  final int atLeastCalories; // green threshold
-  final int atMostCalories; // yellow threshold
-  final double greenPercent; // portion of bar reserved for "green"
-  final double yellowPercent; // portion of bar reserved for "yellow"
-  final double height;
-  final bool showPercent;
-  final Color bgColor;
-  final Color greenColor;
-  final Color yellowColor;
-  final Color redColor;
-
-  const CalorieBar({
-    super.key,
-    required this.currentCalories,
-    required this.atLeastCalories,
-    required this.atMostCalories,
-    this.greenPercent = 0.6,
-    this.yellowPercent = 0.8,
-    this.height = 24.0,
-    this.showPercent = true,
-    this.bgColor = const Color(0xFFF0F0F0),
-    this.greenColor = const Color(0xFF8CE99A),
-    this.yellowColor = const Color(0xFFFFE082),
-    this.redColor = const Color(0xFFFF8A80),
-  })  : assert(greenPercent > 0 && greenPercent < yellowPercent && yellowPercent < 1.0),
-        assert(atLeastCalories > 0 && atMostCalories > atLeastCalories);
-
-  double _computeFraction() {
-    final cur = currentCalories.toDouble();
-    final atLeast = atLeastCalories.toDouble(); // green threshold
-    final atMost = atMostCalories.toDouble();   // yellow threshold
-    final g = greenPercent;                    // 60%
-    final y = yellowPercent;                   // 80%
-
-    if (cur <= atLeast) return (cur / atLeast) * g;
-    if (cur <= atMost) {
-      final t = (cur - atLeast) / (atMost - atLeast);
-      return g + t * (y - g);
-    }
-
-    // Beyond atMost, extend proportionally to some maxCalories
-    final maxCalories = atMost * 2; // for example, adjust as needed
-    final t = ((cur - atMost) / (maxCalories - atMost)).clamp(0.0, 1.0);
-    return y + t * (1.0 - y);
-  }
-
-
-  double displayedPercent() {
-    final cur = currentCalories.toDouble();
-    final atLeast = atLeastCalories.toDouble();
-    final atMost = atMostCalories.toDouble();
-
-    if (cur <= atMost) {
-      // proportional to atMostCalories as 100%
-      return (cur / atMost) * 100;
-    }
-    // beyond atMost, can scale beyond 100%
-    return (cur / atMost) * 100;
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final totalWidth = constraints.maxWidth;
-      final fraction = _computeFraction().clamp(0.0, 1.0);
-
-      // animate change in fraction smoothly when value changes
-      return TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: fraction),
-        duration: const Duration(milliseconds: 420),
-        curve: Curves.easeOutCubic,
-        builder: (context, animatedFraction, _) {
-          final filledWidth = animatedFraction * totalWidth;
-          final greenW = totalWidth * greenPercent;
-          final yellowW = totalWidth * (yellowPercent - greenPercent);
-          final redW = totalWidth * (1.0 - yellowPercent);
-
-          // fixed label width for simple clamping
-          const labelW = 72.0;
-          final labelLeft = (filledWidth - labelW / 2).clamp(0.0, totalWidth - labelW);
-
-          // percent string
-          // final percentText = (animatedFraction * 100).toStringAsFixed(0) + '%';
-          final percentText = '${displayedPercent().toStringAsFixed(0)}%';
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // background
-                  Container(
-                    height: height,
-                    decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(height / 2),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                  ),
-
-                  // vertical markers
-                  Positioned(
-                    left: greenW - 1,
-                    top: 0,
-                    bottom: 0,
-                    child: Container(width: 2, color: Colors.grey.shade400),
-                  ),
-                  Positioned(
-                    left: greenW + yellowW - 1,
-                    top: 0,
-                    bottom: 0,
-                    child: Container(width: 2, color: Colors.grey.shade400),
-                  ),
-
-                  // filled segments (clamped per segment)
-                  // green segment
-                  if (filledWidth > 0)
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: filledWidth.clamp(0.0, greenW),
-                        decoration: BoxDecoration(
-                          color: greenColor,
-                          borderRadius: BorderRadius.horizontal(left: Radius.circular(height / 2)),
-                        ),
-                      ),
-                    ),
-
-                  // yellow segment
-                  if (filledWidth > greenW)
-                    Positioned(
-                      left: greenW,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: (filledWidth - greenW).clamp(0.0, yellowW),
-                        color: yellowColor,
-                      ),
-                    ),
-
-                  // red segment
-                  if (filledWidth > greenW + yellowW)
-                    Positioned(
-                      left: greenW + yellowW,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: (filledWidth - greenW - yellowW).clamp(0.0, redW),
-                        decoration: BoxDecoration(
-                          color: redColor,                     // move color here
-                          borderRadius: BorderRadius.horizontal(right: Radius.circular(height / 2)),
-                        ),
-                      ),
-                    ),
-
-
-                  // floating label above bar
-                  Positioned(
-                    left: labelLeft,
-                    top: -30,
-                    child: Tooltip(
-                      message: '$currentCalories kcal',
-                      child: Container(
-                        width: labelW,
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '$currentCalories kcal',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 2),
-                            Container(
-                              height: 4,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: FractionallySizedBox(
-                                alignment: Alignment.centerLeft,
-                                widthFactor: (animatedFraction).clamp(0.0, 1.0),
-                                child: Container(color: Colors.grey.shade300),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 6),
-
-              // bottom row: thresholds and optional percent
-              SizedBox(
-                height: 18,
-                width: totalWidth,
-                child: Stack(
-                  children: [
-                    // atLeast label (centered approximately on marker)
-                    Positioned(
-                      left: (greenW - 40).clamp(0.0, totalWidth - 80),
-                      child: Text(
-                        '$atLeastCalories kcal',
-                        style: TextStyle(fontSize: 10, color: Colors.grey[700]),
-                      ),
-                    ),
-
-                    // atMost label
-                    Positioned(
-                      left: (greenW + yellowW - 40).clamp(0.0, totalWidth - 80),
-                      child: Text(
-                        '$atMostCalories kcal',
-                        style: TextStyle(fontSize: 10, color: Colors.grey[700]),
-                      ),
-                    ),
-
-                    if (showPercent)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Text(
-                          percentText,
-                          style: TextStyle(fontSize: 10, color: Colors.grey[800], fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    });
-  }
-}
 
 
 
@@ -582,10 +409,6 @@ class _SearchBar extends StatefulWidget {
   @override
   State<_SearchBar> createState() => _SearchBarState();
 }
-
-
-
-
 
 
 class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
@@ -619,35 +442,62 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final vm = context.read<CalorieCounterViewModel>();
 
-    return Container(
-      // height: 48,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      child: TextField(
-        focusNode: _focusNode,
-        onChanged: (value) => vm.updateSearchQuery = value,
-        style: const TextStyle(fontSize: 12, height: 1.2),
-        showCursor: false,
-        textAlignVertical: TextAlignVertical.center,
-        decoration: InputDecoration(
-          hintText: 'Search foods...',
-          hintStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
-          isDense: true,
-          prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600], size: 14),
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 38,
-            minHeight: 38,
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 0),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide(color: Colors.grey, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(18),
-            borderSide: BorderSide(color: Colors.amber.shade400, width: 1.2),
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            // height: 48,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            child: TextField(
+              focusNode: _focusNode,
+              onChanged: (value) => vm.updateSearchQuery = value,
+              style: const TextStyle(fontSize: 12, height: 1.2),
+              showCursor: false,
+              textAlignVertical: TextAlignVertical.center,
+              decoration: InputDecoration(
+                hintText: 'Search foods...',
+                hintStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
+                isDense: true,
+                prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600], size: 14),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 38,
+                  minHeight: 38,
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(color: Colors.amber.shade400, width: 1.2),
+                ),
+              ),
+            ),
           ),
         ),
-      ),
+        Container(
+          margin: const EdgeInsets.only(left: 6),
+          decoration: BoxDecoration(
+            color: Colors.amber.shade100,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 3,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(Icons.add_circle, color: Colors.amber.shade700, size: 22),
+            onPressed: () {},
+            splashRadius: 20,
+          ),
+        )
+
+        // NewButton(label: , onPressed: onPressed)
+      ],
     );
   }
 }
@@ -723,60 +573,180 @@ class _FoodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.zero,
-      color: Colors.white,
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+      elevation: 3,
+      shadowColor: barColor.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Row(
-          children: [
-            Container(width: 8, height: 64, color: barColor),
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [barColor.withValues(alpha: 0.9),Colors.white, Colors.white],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Row(
+            children: [
 
-            // main content
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      food.name,
-                      style: AppTextStyle.textStyleCardTitle,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text('${formatNumber(food.foodStats.calories)} kcal', style: AppTextStyle.textStyleCardSubTitle),
-                        if (food.count > 1)
-                          Text(' (total:${formatNumber(food.foodStats.calories * food.count)})', style: AppTextStyle.textStyleCardSubTitle),
-                      ],
-                    ),
-                  ],
+
+
+              Container(
+                width: 6,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: barColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(14),
+                    bottomLeft: Radius.circular(14),
+                  ),
                 ),
               ),
-            ),
 
-
-
-            FoodQuantitySelector(
-              initialValue: food.count,
-              onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, food),
-            ),
-
-            const SizedBox(width: 8),
-            // actions
-            editDeleteOptionMenu,
-
-            const SizedBox(width: 4),
-
-
-            Container(width: 8, height: 64, color: barColor),
-          ],
+              Icon(Icons.apple,color: Colors.white,),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        food.name,
+                        style: AppTextStyle.textStyleCardTitle.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey[800],
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            '${formatNumber(food.foodStats.calories)} kcal',
+                            style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[700]),
+                          ),
+                          if (food.count > 1)
+                            Text(
+                              ' (total: ${formatNumber(food.foodStats.calories * food.count)})',
+                              style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[600]),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              FoodQuantitySelector(
+                initialValue: food.count,
+                onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, food),
+              ),
+              const SizedBox(width: 6),
+              editDeleteOptionMenu,
+              const SizedBox(width: 6),
+            ],
+          ),
         ),
       ),
     );
+
+  }
+}
+
+
+class _SemiCirclePainter extends CustomPainter {
+  final double animatedFraction; // 0..1 how much of semicircle filled
+  final double strokeWidth;
+  final Color bgColor;
+  final Color greenColor;
+  final Color yellowColor;
+  final Color redColor;
+  final double greenPercent;
+  final double yellowPercent;
+
+  _SemiCirclePainter({
+    required this.animatedFraction,
+    required this.strokeWidth,
+    required this.bgColor,
+    required this.greenColor,
+    required this.yellowColor,
+    required this.redColor,
+    required this.greenPercent,
+    required this.yellowPercent,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Semicircle occupies the full width and half the height.
+    final center = Offset(size.width / 2, size.height);
+    final radius = size.width / 2;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final startAngle = pi; // leftmost point
+    final fullSweep = pi;  // 180 degrees
+
+    // Draw background arc (full semicircle)
+    final bgPaint = Paint()
+      ..color = bgColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(rect, startAngle, fullSweep, false, bgPaint);
+
+    // Determine sweep for current progress
+    final progressSweep = (fullSweep * animatedFraction).clamp(0.0, fullSweep);
+
+    // Choose one color for the entire filled sweep based on thresholds
+    final progressColor = (animatedFraction <= greenPercent)
+        ? greenColor
+        : (animatedFraction <= yellowPercent ? yellowColor : redColor);
+
+    final progressPaint = Paint()
+      ..color = progressColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+    // Use round cap for nicer ends. Use Butt if you want exact flush edges.
+      ..strokeCap = StrokeCap.round;
+
+    // Draw the single-color progress arc
+    if (progressSweep > 0) {
+      canvas.drawArc(rect, startAngle, progressSweep, false, progressPaint);
+    }
+
+    // draw thin separator ticks at thresholds (subtle)
+    final tickPaint = Paint()..color = Colors.grey.shade400..strokeWidth = 2;
+
+    // compute sweeps for thresholds (where ticks live)
+    final gSweep = fullSweep * greenPercent;
+    final ySweep = fullSweep * yellowPercent;
+
+    void drawTickAtSweep(double sweepOffset) {
+      final angle = startAngle + sweepOffset;
+      final inner = Offset(
+        center.dx + (radius - strokeWidth / 2) * cos(angle),
+        center.dy + (radius - strokeWidth / 2) * sin(angle),
+      );
+      final outer = Offset(
+        center.dx + (radius + 6) * cos(angle),
+        center.dy + (radius + 6) * sin(angle),
+      );
+      canvas.drawLine(inner, outer, tickPaint);
+    }
+
+    drawTickAtSweep(gSweep.clamp(0.0, fullSweep));
+    drawTickAtSweep(ySweep.clamp(0.0, fullSweep));
+  }
+
+  @override
+  bool shouldRepaint(covariant _SemiCirclePainter old) {
+    return old.animatedFraction != animatedFraction ||
+        old.greenPercent != greenPercent ||
+        old.yellowPercent != yellowPercent ||
+        old.greenColor != greenColor ||
+        old.yellowColor != yellowColor ||
+        old.redColor != redColor ||
+        old.bgColor != bgColor ||
+        old.strokeWidth != strokeWidth;
   }
 }

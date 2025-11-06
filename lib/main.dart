@@ -1,4 +1,5 @@
 import 'package:calio/pages/calories_counter/calorie_counter_page/calories_counter_page.dart';
+import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/my_painter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: CalorieCounterPage(pageDateTime: DateTime.now())
+      // home: CalorieCounterPage(pageDateTime: DateTime.now())
+      home: DemoPaintWidget()
     );
   }
 }
