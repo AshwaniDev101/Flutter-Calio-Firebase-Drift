@@ -59,7 +59,7 @@ class _FoodQuantitySelectorState extends State<FoodQuantitySelector> {
 
   double _clamp(double v) => v.isNaN ? widget.min : v.clamp(widget.min, widget.max);
 
-  String _format(double v) => formatNumber(v);
+  String _format(double v) => trimTrailingZero(v);
 
   void _setValue(double v, {bool notify = true}) {
     final next = _clamp(v);

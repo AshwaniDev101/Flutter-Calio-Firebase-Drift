@@ -131,7 +131,7 @@ class _CalorieProgressBarDashboardState extends State<CalorieProgressBarDashboar
                               children: [
                                 Text(
 
-                                  formatNumber(caloriesCount),
+                                  trimTrailingZero(caloriesCount),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

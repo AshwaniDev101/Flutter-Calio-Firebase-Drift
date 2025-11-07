@@ -2,6 +2,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+import '../../helper/progress_visuals_helper.dart';
+
 class CalorieSemicircle extends StatelessWidget {
   final double currentCalories;
   final double atLeastCalories;
@@ -233,8 +235,8 @@ class _SemiCirclePainter extends CustomPainter {
       tp.paint(c, Offset(rect.left + ph, rect.top + pv));
     }
 
-    pill(atLeastFrac, '$atLeastValue kcal');
-    pill(atMostFrac, '$atMostValue kcal');
+    pill(atLeastFrac, '${trimTrailingZero(atLeastValue)} kcal');
+    pill(atMostFrac, '${trimTrailingZero(atMostValue)} kcal');
   }
 
   @override

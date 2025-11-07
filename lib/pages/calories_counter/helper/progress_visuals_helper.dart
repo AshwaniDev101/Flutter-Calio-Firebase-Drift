@@ -48,7 +48,7 @@ ProgressVisuals getProgressVisuals(FoodStats foodStats) {
 /// Formats a double for display.
 /// If the number is a whole number (e.g., 1.0), it returns an integer string ('1').
 /// Otherwise, it returns the standard double string ('1.5').
-String formatNumber(double value) {
+String trimTrailingZero(double value) {
   if (value == value.truncate()) {
     return value.toInt().toString();
   }

@@ -116,7 +116,7 @@ class _DayCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              '${formatNumber(foodStats.calories)} kcal',
+                              '${trimTrailingZero(foodStats.calories)} kcal',
 
                               style: TextStyle(
                                 fontSize: 14,
@@ -244,7 +244,7 @@ class _DayCard extends StatelessWidget {
           CircleAvatar(radius: 2.5, backgroundColor: color),
           const SizedBox(width: 2),
           Text(
-            '$label: ${formatNumber(value)}',
+            '$label: ${trimTrailingZero(value)}',
             style: TextStyle(fontSize: 10, color: Colors.grey.shade800),
           ),
         ],

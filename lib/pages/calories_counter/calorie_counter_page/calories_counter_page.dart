@@ -1,14 +1,10 @@
 import 'dart:math';
 
-import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
-import 'package:calio/widget/new_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:calio/pages/calories_counter/calorie_counter_page/viewmodel/calorie_counter_view_model.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/food_quantity_selector.dart';
-
 import '../../../models/diet_food.dart';
 import '../../../models/food_stats.dart';
 import '../../../theme/app_colors.dart';
@@ -18,12 +14,10 @@ import '../calorie_history_page/viewmodel/calorie_history_view_model.dart';
 import '../helper/progress_visuals_helper.dart';
 import 'new_diet_food/add_edit_diet_food_dialog.dart';
 
-
 class CalorieCounterPage extends StatelessWidget {
   final DateTime pageDateTime;
 
-  CalorieCounterPage({Key? key, required this.pageDateTime})
-      : super(key: key ?? ValueKey(pageDateTime));
+  CalorieCounterPage({Key? key, required this.pageDateTime}) : super(key: key ?? ValueKey(pageDateTime));
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +33,6 @@ class _CalorieCounterPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: _buildAppBar(context),
@@ -50,51 +41,83 @@ class _CalorieCounterPageBody extends StatelessWidget {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-
     final vm = context.watch<CalorieCounterViewModel>();
 
     return AppBar(
       backgroundColor: AppColors.appbar,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
-      title: Text('Today', style: AppTextStyle.appBarTextStyle),
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Today', style: AppTextStyle.appBarTextStyle),
+          Text(' 08-10-2025', style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12,fontWeight: FontWeight.normal)),
+        ],
+      ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search_rounded, color: Colors.blueGrey),
-          onPressed: () {},
-        ),
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert_rounded, color: Colors.blueGrey),
-          onSelected: (value) {
-
-            switch (value) {
-              case 'History':
+        Row(
+          children: [
+            InkWell(
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        ChangeNotifierProvider(
-                          create: (_) => CalorieHistoryViewModel(pageDateTime: vm.pageDateTime,),
-
-                          child: CalorieHistoryPage(),
-                        ),
+                    builder: (_) => ChangeNotifierProvider(
+                      create: (_) => CalorieHistoryViewModel(pageDateTime: vm.pageDateTime),
+                      child: CalorieHistoryPage(),
+                    ),
                   ),
                 );
-                break;
-              case 'Settings':
-
-                break;
-            }
-
-          },
-          itemBuilder: (_) => const [
-            PopupMenuItem(value: 'History', child: Text('History')),
-            PopupMenuItem(value: 'Settings', child: Text('Settings')),
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_month_rounded, color: AppColors.appbarContent, size: 22),
+                    SizedBox(width: 6),
+                    Text(
+                      'History',
+                      style: TextStyle(fontSize: 14, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(width: 10,)
           ],
         ),
+
+        // PopupMenuButton<String>(
+        //   icon: const Icon(Icons.more_vert_rounded, color: Colors.blueGrey),
+        //   onSelected: (value) {
+        //     switch (value) {
+        //       case 'History':
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //             builder:
+        //                 (_) => ChangeNotifierProvider(
+        //                   create: (_) => CalorieHistoryViewModel(pageDateTime: vm.pageDateTime),
+        //
+        //                   child: CalorieHistoryPage(),
+        //                 ),
+        //           ),
+        //         );
+        //         break;
+        //       case 'Settings':
+        //         break;
+        //     }
+        //   },
+        //   itemBuilder:
+        //       (_) => const [
+        //         PopupMenuItem(value: 'History', child: Text('History')),
+        //         PopupMenuItem(value: 'Settings', child: Text('Settings')),
+        //       ],
+        // ),
       ],
     );
-
   }
 }
 
@@ -107,13 +130,10 @@ class ScrollWithTopCard extends StatelessWidget {
 
     return CustomScrollView(
       slivers: [
-
         SliverToBoxAdapter(
           child: StreamBuilder(
-
             stream: vm.watchConsumedFoodStats,
-            builder: (context, snapshot){
-
+            builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -122,7 +142,7 @@ class ScrollWithTopCard extends StatelessWidget {
               final caloriesCount = foodStats.calories;
 
               return Padding(
-                padding: const EdgeInsets.only(top: 5,left: 50,right: 50),
+                padding: const EdgeInsets.only(top: 5, left: 50, right: 50),
                 child: CalorieSemicircle(
                   currentCalories: caloriesCount,
                   atLeastCalories: 1600,
@@ -133,10 +153,8 @@ class ScrollWithTopCard extends StatelessWidget {
                 ),
               );
             },
-
           ),
         ),
-
 
         // SliverToBoxAdapter(
         //   child: CalorieProgressBarDashboard(
@@ -148,23 +166,14 @@ class ScrollWithTopCard extends StatelessWidget {
         // ),
 
         // search bar
-        const SliverPadding(
-          padding: EdgeInsets.all(12),
-          sliver: SliverToBoxAdapter(child: _SearchBar()),
-        ),
-
+        const SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: _SearchBar())),
 
         // food list
-        _FoodListSliver(viewModel: vm,),
+        _FoodListSliver(viewModel: vm),
       ],
     );
   }
 }
-
-
-
-
-
 
 class _SearchBar extends StatefulWidget {
   const _SearchBar({Key? key}) : super(key: key);
@@ -172,7 +181,6 @@ class _SearchBar extends StatefulWidget {
   @override
   State<_SearchBar> createState() => _SearchBarState();
 }
-
 
 class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
   final FocusNode _focusNode = FocusNode();
@@ -222,10 +230,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
                 hintStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
                 isDense: true,
                 prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600], size: 14),
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 38,
-                  minHeight: 38,
-                ),
+                prefixIconConstraints: const BoxConstraints(minWidth: 38, minHeight: 38),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
@@ -244,13 +249,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
           decoration: BoxDecoration(
             color: Colors.amber.shade100,
             borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 3,
-                offset: const Offset(0, 1),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 3, offset: const Offset(0, 1))],
           ),
           child: Container(
             width: 40,
@@ -263,16 +262,13 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
               splashRadius: 20,
             ),
           ),
-        )
+        ),
 
         // NewButton(label: , onPressed: onPressed)
       ],
     );
   }
 }
-
-
-
 
 class _FoodListSliver extends StatelessWidget {
   final CalorieCounterViewModel viewModel;
@@ -288,37 +284,29 @@ class _FoodListSliver extends StatelessWidget {
 
         if (foods.isEmpty) {
           return const SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text('No foods added yet.'),
-              ),
-            ),
+            child: Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No foods added yet.'))),
           );
         }
 
         return SliverList(
-          delegate: SliverChildBuilderDelegate(
-                (context, index) {
-              final food = foods[index];
-              final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final food = foods[index];
+            final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: _FoodCard(
-                  key: ValueKey(food.id),
-                  food: food,
-                  barColor: barColor,
-                  onQuantityChange: viewModel.onQuantityChange,
-                  editDeleteOptionMenu: EditDeleteOptionMenu(
-                    onEdit: () => DietFoodDialog.edit(context, food, (DietFood f) => viewModel.editFood(f)),
-                    onDelete: () => viewModel.deleteFood(food),
-                  ),
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: _FoodCard(
+                key: ValueKey(food.id),
+                food: food,
+                barColor: barColor,
+                onQuantityChange: viewModel.onQuantityChange,
+                editDeleteOptionMenu: EditDeleteOptionMenu(
+                  onEdit: () => DietFoodDialog.edit(context, food, (DietFood f) => viewModel.editFood(f)),
+                  onDelete: () => viewModel.deleteFood(food),
                 ),
-              );
-            },
-            childCount: foods.length,
-          ),
+              ),
+            );
+          }, childCount: foods.length),
         );
       },
     );
@@ -356,10 +344,7 @@ class _FoodCard extends StatelessWidget {
               height: 70,
               decoration: BoxDecoration(
                 color: barColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(14),
-                  bottomLeft: Radius.circular(14),
-                ),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), bottomLeft: Radius.circular(14)),
               ),
             ),
 
@@ -383,12 +368,12 @@ class _FoodCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '${formatNumber(food.foodStats.calories)} kcal',
+                          '${trimTrailingZero(food.foodStats.calories)} kcal',
                           style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[700]),
                         ),
                         if (food.count > 1)
                           Text(
-                            ' (total: ${formatNumber(food.foodStats.calories * food.count)})',
+                            ' (total: ${trimTrailingZero(food.foodStats.calories * food.count)})',
                             style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[600]),
                           ),
                       ],
@@ -408,10 +393,8 @@ class _FoodCard extends StatelessWidget {
         ),
       ),
     );
-
   }
 }
-
 
 class _SemiCirclePainter extends CustomPainter {
   final double animatedFraction; // 0..1 how much of semicircle filled
@@ -442,30 +425,31 @@ class _SemiCirclePainter extends CustomPainter {
     final rect = Rect.fromCircle(center: center, radius: radius);
 
     final startAngle = pi; // leftmost point
-    final fullSweep = pi;  // 180 degrees
+    final fullSweep = pi; // 180 degrees
 
     // Draw background arc (full semicircle)
-    final bgPaint = Paint()
-      ..color = bgColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+    final bgPaint =
+        Paint()
+          ..color = bgColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round;
     canvas.drawArc(rect, startAngle, fullSweep, false, bgPaint);
 
     // Determine sweep for current progress
     final progressSweep = (fullSweep * animatedFraction).clamp(0.0, fullSweep);
 
     // Choose one color for the entire filled sweep based on thresholds
-    final progressColor = (animatedFraction <= greenPercent)
-        ? greenColor
-        : (animatedFraction <= yellowPercent ? yellowColor : redColor);
+    final progressColor =
+        (animatedFraction <= greenPercent) ? greenColor : (animatedFraction <= yellowPercent ? yellowColor : redColor);
 
-    final progressPaint = Paint()
-      ..color = progressColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-    // Use round cap for nicer ends. Use Butt if you want exact flush edges.
-      ..strokeCap = StrokeCap.round;
+    final progressPaint =
+        Paint()
+          ..color = progressColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          // Use round cap for nicer ends. Use Butt if you want exact flush edges.
+          ..strokeCap = StrokeCap.round;
 
     // Draw the single-color progress arc
     if (progressSweep > 0) {
@@ -473,7 +457,10 @@ class _SemiCirclePainter extends CustomPainter {
     }
 
     // draw thin separator ticks at thresholds (subtle)
-    final tickPaint = Paint()..color = Colors.grey.shade400..strokeWidth = 2;
+    final tickPaint =
+        Paint()
+          ..color = Colors.grey.shade400
+          ..strokeWidth = 2;
 
     // compute sweeps for thresholds (where ticks live)
     final gSweep = fullSweep * greenPercent;
@@ -485,10 +472,7 @@ class _SemiCirclePainter extends CustomPainter {
         center.dx + (radius - strokeWidth / 2) * cos(angle),
         center.dy + (radius - strokeWidth / 2) * sin(angle),
       );
-      final outer = Offset(
-        center.dx + (radius + 6) * cos(angle),
-        center.dy + (radius + 6) * sin(angle),
-      );
+      final outer = Offset(center.dx + (radius + 6) * cos(angle), center.dy + (radius + 6) * sin(angle));
       canvas.drawLine(inner, outer, tickPaint);
     }
 

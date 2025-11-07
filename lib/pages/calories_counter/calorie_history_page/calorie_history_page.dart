@@ -36,7 +36,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
             vm.excessCalories > 0 ? "Kcal Gained : " : "Kcal Lost : (${vm.monthStatsMap.length} Days) : ",
             style: TextStyle(fontSize: 12),
           ),
-          Text("${formatNumber(vm.excessCalories)} Kcal",
+          Text("${trimTrailingZero(vm.excessCalories)} Kcal",
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.bold, color: vm.excessCalories > 0 ? Colors.red : Colors.green)),
           SizedBox(
