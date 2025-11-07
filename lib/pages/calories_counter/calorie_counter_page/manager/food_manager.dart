@@ -41,7 +41,8 @@ class FoodManager {
         }).toList();
 
         // Sort by timestamp descending (most recent first)
-        mergedList.sort((a, b) => b.time.compareTo(a.time));
+        // mergedList.sort((a, b) => b.time.compareTo(a.time));
+        mergedList.sort((a, b) => a.name.compareTo(b.name));
 
         return mergedList;
       },
