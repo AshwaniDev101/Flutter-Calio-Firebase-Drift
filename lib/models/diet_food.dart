@@ -17,7 +17,7 @@ class DietFood {
   });
 
   /// Creates a DietFood from an Available Food map
-  factory DietFood.fromAvailableMap(Map<String, dynamic> map) {
+  factory DietFood.fromMap(Map<String, dynamic> map) {
     return DietFood(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
@@ -28,7 +28,7 @@ class DietFood {
   }
 
   /// Converts DietFood to map for storing available food
-  Map<String, dynamic> toAvailableMap() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
@@ -75,4 +75,21 @@ class DietFood {
       count: count ?? this.count,
     );
   }
+
+
+
+
+  factory DietFood.fromJson(Map<String, dynamic> json) {
+    final date = DateTime.parse(json['time']);
+    final timestamp = Timestamp.fromDate(date);
+
+    return DietFood(
+      id: date.toIso8601String(), // use timestamp string as unique id
+      name: json['name'] ?? '',
+      time: timestamp,
+      foodStats: FoodStats.fromMap(json['foodStats'] ?? {}),
+      count: 0.0,
+    );
+  }
+
 }

@@ -16,7 +16,7 @@ class CalorieHistoryViewModel extends ChangeNotifier
   CalorieHistoryViewModel({required this.pageDateTime});
 
 
-  Map<int, FoodStats> monthStatsMap = {};
+  Map<String, FoodStats> monthStatsMap = {};
   double excessCalories = 0;
 
 
@@ -52,7 +52,7 @@ class CalorieHistoryViewModel extends ChangeNotifier
 
   }
 
- double _calculateNetExcess(Map<int, FoodStats> monthStats) {
+ double _calculateNetExcess(Map<String, FoodStats> monthStats) {
     double total = 0; // start from zero
 
     for (var food in monthStats.values) {

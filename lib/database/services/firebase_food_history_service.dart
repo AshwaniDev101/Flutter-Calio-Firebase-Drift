@@ -24,8 +24,8 @@ class FirebaseFoodHistoryService {
         .doc(_userId)
         .collection('history')
         .doc('${date.year}')
-        .collection('${date.month}')
-        .doc('${date.day}');
+        .collection('data')
+        .doc('${date.day}-${date.month}');
 
     return ref.snapshots().map((snapshot) {
       if (snapshot.exists) {
@@ -53,8 +53,10 @@ class FirebaseFoodHistoryService {
         .doc(_userId)
         .collection('history')
         .doc('${dateTime.year}')
-        .collection('${dateTime.month}')
-        .doc('${dateTime.day}');
+        .collection('data')
+        .doc('${dateTime.day}-${dateTime.month}');
+        // .collection('${dateTime.month}')
+        // .doc('${dateTime.day}');
 
 
     final consumedFoodDocRef = dayDocRef.collection('food_consumed_list').doc(food.id);
@@ -106,7 +108,7 @@ class FirebaseFoodHistoryService {
 
 
   /// Retrieves all stored [FoodStats] documents for a specific [year] and [month].
-  Future<Map<int, FoodStats>> getFoodStatsForMonth({
+  Future<Map<String, FoodStats>> getFoodStatsForMonth({
     required int year,
     required int month,
   }) async {
@@ -115,86 +117,87 @@ class FirebaseFoodHistoryService {
         .doc(_userId)
         .collection('history')
         .doc(year.toString())
-        .collection(month.toString());
+        .collection('data');
+        // .doc('${cardDateTime.day}-${cardDateTime.month}');
+        // .collection(month.toString());
+
 
     final snapshot = await monthRef.get();
-    final Map<int, FoodStats> statsMap = {};
+
+    final Map<String, FoodStats> statsMap = {};
 
     for (final doc in snapshot.docs) {
       final data = doc.data();
-      final day = int.tryParse(doc.id);
 
-      if (day != null && data['foodStats'] != null) {
-        try {
-          statsMap[day] = FoodStats.fromMap(data['foodStats']);
-        } catch (e) {
-          debugPrint('Invalid foodStats data for day $day: $e');
-        }
-      }
+      statsMap[doc.id] = FoodStats.fromMap(data['foodStats']);
     }
 
-    final reversedMap = Map.fromEntries(
-      statsMap.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
-    );
 
-    return reversedMap;
+    // final reversedMap = Map.fromEntries(
+    //     statsMap.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
+    //   );
+
+    return statsMap;
   }
 
-  /// Retrieves the complete set of [FoodStats] for an entire [year].
-  Future<Map<int, Map<int, FoodStats>>> getFoodStatsForYear({
-    required int year,
-  }) async {
-    final yearRef = _db
-        .collection(_root)
-        .doc(_userId)
-        .collection('history')
-        .doc(year.toString());
-
-    final Map<int, Map<int, FoodStats>> yearlyStats = {};
-
-    final monthFutures = List.generate(12, (index) async {
-      final month = index + 1;
-      final monthRef = yearRef.collection(month.toString());
-      final snapshot = await monthRef.get();
-
-      final Map<int, FoodStats> monthMap = {};
-
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-        final day = int.tryParse(doc.id);
-
-        if (day != null && data['foodStats'] != null) {
-          try {
-            monthMap[day] = FoodStats.fromMap(data['foodStats']);
-          } catch (_) {}
-        }
-      }
-
-      if (monthMap.isNotEmpty) yearlyStats[month] = monthMap;
-    });
-
-    await Future.wait(monthFutures);
-    return yearlyStats;
-  }
+  // /// Retrieves the complete set of [FoodStats] for an entire [year].
+  // Future<Map<int, Map<int, FoodStats>>> getFoodStatsForYear({
+  //   required int year,
+  // }) async {
+  //   final yearRef = _db
+  //       .collection(_root)
+  //       .doc(_userId)
+  //       .collection('history')
+  //       .doc(year.toString());
+  //
+  //   final Map<int, Map<int, FoodStats>> yearlyStats = {};
+  //
+  //   final monthFutures = List.generate(12, (index) async {
+  //     final month = index + 1;
+  //     final monthRef = yearRef.collection(month.toString());
+  //     final snapshot = await monthRef.get();
+  //
+  //     final Map<int, FoodStats> monthMap = {};
+  //
+  //     for (final doc in snapshot.docs) {
+  //       final data = doc.data();
+  //       final day = int.tryParse(doc.id);
+  //
+  //       if (day != null && data['foodStats'] != null) {
+  //         try {
+  //           monthMap[day] = FoodStats.fromMap(data['foodStats']);
+  //         } catch (_) {}
+  //       }
+  //     }
+  //
+  //     if (monthMap.isNotEmpty) yearlyStats[month] = monthMap;
+  //   });
+  //
+  //   await Future.wait(monthFutures);
+  //   return yearlyStats;
+  // }
 
   /// Updates or creates the [FoodStats] record for a specific day.
-  Future<void> updateFoodStats({
-    required DateTime cardDateTime,
-    required FoodStats foodStats,
-  }) async {
-    var ref = _db
-        .collection(_root)
-        .doc(_userId)
-        .collection('history')
-        .doc(cardDateTime.year.toString())
-        .collection(cardDateTime.month.toString())
-        .doc(cardDateTime.day.toString());
-
-    await ref.set(
-      {'foodStats': foodStats.toMap()},
-      SetOptions(merge: true),
-    );
-  }
+  // Future<void> updateFoodStats({
+  //   required DateTime cardDateTime,
+  //   required FoodStats foodStats,
+  // }) async {
+  //   var ref = _db
+  //       .collection(_root)
+  //       .doc(_userId)
+  //       .collection('history')
+  //       .doc(cardDateTime.year.toString())
+  //       .collection('data')
+  //       .doc('${cardDateTime.day}-${cardDateTime.month}');
+  //
+  //       // .collection(cardDateTime.month.toString())
+  //       // .doc(cardDateTime.day.toString());
+  //
+  //   await ref.set(
+  //     {'foodStats': foodStats.toMap()},
+  //     SetOptions(merge: true),
+  //   );
+  // }
 
   /// Permanently deletes the [FoodStats] document and its subcollections for a given date.
   Future<void> deleteFoodStats({required DateTime cardDateTime}) async {
@@ -203,8 +206,10 @@ class FirebaseFoodHistoryService {
         .doc(_userId)
         .collection('history')
         .doc(cardDateTime.year.toString())
-        .collection(cardDateTime.month.toString())
-        .doc(cardDateTime.day.toString());
+        .collection('data')
+        .doc('${cardDateTime.day}-${cardDateTime.month}');
+        // .collection(cardDateTime.month.toString())
+        // .doc(cardDateTime.day.toString());
 
     final subColRef = docRef.collection('food_consumed_list');
     const int batchSize = 20;

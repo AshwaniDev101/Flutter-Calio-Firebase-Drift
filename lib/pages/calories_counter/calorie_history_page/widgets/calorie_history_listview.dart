@@ -9,7 +9,7 @@ import '../../helper/progress_visuals_helper.dart';
 import '../../widget/caution_label_widget.dart';
 
 class CalorieHistoryListview extends StatelessWidget {
-  final Map<int, FoodStats> monthStats;
+  final Map<String, FoodStats> monthStats;
   final DateTime pageDateTime;
 
   final void Function(DateTime) onEdit;
@@ -27,12 +27,18 @@ class CalorieHistoryListview extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 6),
       itemBuilder: (context, index) {
         final dayKeys = monthStats.keys.toList()..sort((a, b) => b.compareTo(a));
-        final day = dayKeys[index];
-        var cardDateTime = DateTime(pageDateTime.year, pageDateTime.month, day);
+        final dayMonthString = dayKeys[index];
+
+        final day = int.parse(dayMonthString.toString().split('-')[0]);
+        final month =  int.parse(dayMonthString.toString().split('-')[1]);
+
+
+        print(" ==========  ${day} ${month} =========");
+        var cardDateTime = DateTime(pageDateTime.year, month, day);
         return _DayCard(
             dateTime: cardDateTime,
             // dateTime: widget.pageDateTime,
-            foodStats: monthStats[day]!,
+            foodStats: monthStats[dayMonthString]!,
             editDeleteOptionMenu: EditDeleteOptionMenu(
               onDelete: () => onDelete(cardDateTime),
               onEdit: () => onEdit(cardDateTime),

@@ -22,7 +22,7 @@ class FirebaseGlobalDietFoodService {
         .map((snapshot) => snapshot.docs.map((doc) {
       final data = doc.data();
       data['id'] = doc.id;
-      return DietFood.fromAvailableMap(data);
+      return DietFood.fromMap(data);
     }).toList());
   }
 
@@ -58,7 +58,7 @@ class FirebaseGlobalDietFoodService {
         .doc(userId)
         .collection('food_list')
         .doc(food.id);
-    final map = food.toAvailableMap()..remove('id');
+    final map = food.toMap()..remove('id');
     return ref.set(map);
   }
 
@@ -83,7 +83,7 @@ class FirebaseGlobalDietFoodService {
         .doc(userId)
         .collection('food_list')
         .doc(id);
-    final map = food.toAvailableMap()..remove('id');
+    final map = food.toMap()..remove('id');
     return ref.update(map);
   }
 

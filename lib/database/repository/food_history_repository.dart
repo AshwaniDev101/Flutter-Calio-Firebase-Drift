@@ -18,7 +18,7 @@ class FoodHistoryRepository {
   }
 
   /// Get food stats for a specific month
-  Future<Map<int, FoodStats>> getMonthStats({
+  Future<Map<String, FoodStats>> getMonthStats({
     required int year,
     required int month,
   }) {
@@ -27,9 +27,9 @@ class FoodHistoryRepository {
 
   /// Get food stats for a full year
   /// Returns a map of { month : { day : FoodStats } }
-  Future<Map<int, Map<int, FoodStats>>> getYearStats({required int year}) {
-    return _service.getFoodStatsForYear(year: year);
-  }
+  // Future<Map<int, Map<int, FoodStats>>> getYearStats({required int year}) {
+  //   return _service.getFoodStatsForYear(year: year);
+  // }
 
   /// Change the consumed count of a specific food on a given date
   Future<void> changeConsumedCount(double count, DietFood food, DateTime date) {
