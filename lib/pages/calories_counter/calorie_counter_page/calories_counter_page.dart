@@ -174,7 +174,6 @@ class ScrollWithTopCard extends StatelessWidget {
     );
   }
 }
-
 class _SearchBar extends StatefulWidget {
   const _SearchBar({Key? key}) : super(key: key);
 
@@ -202,7 +201,6 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
   @override
   void didChangeMetrics() {
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
-    // Only unfocus when keyboard was open before and is now closed
     if (_prevBottomInset > 0 && bottomInset == 0 && _focusNode.hasFocus) {
       _focusNode.unfocus();
     }
@@ -217,58 +215,96 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
       children: [
         Expanded(
           child: Container(
-            // height: 48,
+            height: 38, // keep it thin
             margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              color: Colors.white, // clean background
+              borderRadius: BorderRadius.circular(18), // rounded pill shape
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05), // subtle shadow
+                  blurRadius: 3,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+              border: Border.all(color: Colors.grey.shade300, width: 1), // subtle border like "New" button
+            ),
             child: TextField(
               focusNode: _focusNode,
               onChanged: (value) => vm.updateSearchQuery = value,
               style: const TextStyle(fontSize: 12, height: 1.2),
-              showCursor: false,
               textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
                 hintText: 'Search foods...',
                 hintStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
                 isDense: true,
-                prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600], size: 14),
-                prefixIconConstraints: const BoxConstraints(minWidth: 38, minHeight: 38),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600], size: 16),
+                prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.grey, width: 1),
+                  borderSide: BorderSide.none,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(color: Colors.amber.shade400, width: 1.2),
-                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
             ),
           ),
         ),
-        Container(
-          margin: const EdgeInsets.only(left: 6),
-          decoration: BoxDecoration(
-            color: Colors.amber.shade100,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 3, offset: const Offset(0, 1))],
-          ),
-          child: Container(
-            width: 40,
-            height: 40,
-            child: IconButton(
-              icon: Icon(Icons.add_circle, color: Colors.amber.shade700, size: 22),
-              onPressed: () {
+
+        const SizedBox(width: 6),
+
+        Row(
+          children: [
+            InkWell(
+              onTap: () {
                 DietFoodDialog.add(context, (DietFood food) => vm.addFood(food));
               },
-              splashRadius: 20,
+              borderRadius: BorderRadius.circular(18),
+              child: Container(
+                height: 38, // same as search bar
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white, // clean modern look
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.grey.shade300, width: 1), // subtle border
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, color: AppColors.appbarContent, size: 16),
+                    const SizedBox(width: 6),
+                    Text(
+                      'New',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.appbarContent,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+
+
+            SizedBox(width: 10,)
+          ],
         ),
 
-        // NewButton(label: , onPressed: onPressed)
       ],
     );
   }
 }
+
+
 
 class _FoodListSliver extends StatelessWidget {
   final CalorieCounterViewModel viewModel;
@@ -396,99 +432,3 @@ class _FoodCard extends StatelessWidget {
   }
 }
 
-class _SemiCirclePainter extends CustomPainter {
-  final double animatedFraction; // 0..1 how much of semicircle filled
-  final double strokeWidth;
-  final Color bgColor;
-  final Color greenColor;
-  final Color yellowColor;
-  final Color redColor;
-  final double greenPercent;
-  final double yellowPercent;
-
-  _SemiCirclePainter({
-    required this.animatedFraction,
-    required this.strokeWidth,
-    required this.bgColor,
-    required this.greenColor,
-    required this.yellowColor,
-    required this.redColor,
-    required this.greenPercent,
-    required this.yellowPercent,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Semicircle occupies the full width and half the height.
-    final center = Offset(size.width / 2, size.height);
-    final radius = size.width / 2;
-    final rect = Rect.fromCircle(center: center, radius: radius);
-
-    final startAngle = pi; // leftmost point
-    final fullSweep = pi; // 180 degrees
-
-    // Draw background arc (full semicircle)
-    final bgPaint =
-        Paint()
-          ..color = bgColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = strokeWidth
-          ..strokeCap = StrokeCap.round;
-    canvas.drawArc(rect, startAngle, fullSweep, false, bgPaint);
-
-    // Determine sweep for current progress
-    final progressSweep = (fullSweep * animatedFraction).clamp(0.0, fullSweep);
-
-    // Choose one color for the entire filled sweep based on thresholds
-    final progressColor =
-        (animatedFraction <= greenPercent) ? greenColor : (animatedFraction <= yellowPercent ? yellowColor : redColor);
-
-    final progressPaint =
-        Paint()
-          ..color = progressColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = strokeWidth
-          // Use round cap for nicer ends. Use Butt if you want exact flush edges.
-          ..strokeCap = StrokeCap.round;
-
-    // Draw the single-color progress arc
-    if (progressSweep > 0) {
-      canvas.drawArc(rect, startAngle, progressSweep, false, progressPaint);
-    }
-
-    // draw thin separator ticks at thresholds (subtle)
-    final tickPaint =
-        Paint()
-          ..color = Colors.grey.shade400
-          ..strokeWidth = 2;
-
-    // compute sweeps for thresholds (where ticks live)
-    final gSweep = fullSweep * greenPercent;
-    final ySweep = fullSweep * yellowPercent;
-
-    void drawTickAtSweep(double sweepOffset) {
-      final angle = startAngle + sweepOffset;
-      final inner = Offset(
-        center.dx + (radius - strokeWidth / 2) * cos(angle),
-        center.dy + (radius - strokeWidth / 2) * sin(angle),
-      );
-      final outer = Offset(center.dx + (radius + 6) * cos(angle), center.dy + (radius + 6) * sin(angle));
-      canvas.drawLine(inner, outer, tickPaint);
-    }
-
-    drawTickAtSweep(gSweep.clamp(0.0, fullSweep));
-    drawTickAtSweep(ySweep.clamp(0.0, fullSweep));
-  }
-
-  @override
-  bool shouldRepaint(covariant _SemiCirclePainter old) {
-    return old.animatedFraction != animatedFraction ||
-        old.greenPercent != greenPercent ||
-        old.yellowPercent != yellowPercent ||
-        old.greenColor != greenColor ||
-        old.yellowColor != yellowColor ||
-        old.redColor != redColor ||
-        old.bgColor != bgColor ||
-        old.strokeWidth != strokeWidth;
-  }
-}
