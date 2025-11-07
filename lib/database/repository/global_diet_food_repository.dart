@@ -17,11 +17,6 @@ class GlobalDietFoodRepository {
     return _service.watchGlobalFoodList();
   }
 
-  /// Watches for changes in the list of consumed food items for a specific date.
-  /// Returns a stream of [DietFood] lists.
-  Stream<List<DietFood>> watchConsumedFood(DateTime date) {
-    return _service.watchConsumedFood(date);
-  }
 
   /// Adds a new food item to the list of available food.
   Future<void> addAvailable(DietFood food) {

@@ -14,6 +14,7 @@ class FoodManager {
 
 
   final _dietFoodRepository = GlobalDietFoodRepository.instance;
+  final _foodHistoryRepository = FoodHistoryRepository.instance;
 
 
 
@@ -55,7 +56,7 @@ class FoodManager {
   }
   Stream<List<DietFood>> _watchConsumedFood(DateTime dateTime) {
 
-    return _dietFoodRepository.watchConsumedFood(dateTime);
+    return _foodHistoryRepository.watchConsumedFood(dateTime);
   }
 
 

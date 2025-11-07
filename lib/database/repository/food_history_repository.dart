@@ -1,4 +1,6 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../database/services/firebase_food_history_service.dart';
 import '../../models/diet_food.dart';
 import '../../models/food_stats.dart';
@@ -9,8 +11,12 @@ class FoodHistoryRepository {
   final _service = FirebaseFoodHistoryService.instance;
 
   FoodHistoryRepository._internal();
-
   static final instance = FoodHistoryRepository._internal();
+
+  // final FirebaseFirestore _db = FirebaseFirestore.instance;
+  // final String _root = 'users';
+  // final String _userId = 'user1';
+
 
   /// Stream of consumed food stats for a specific date
   Stream<FoodStats?> watchConsumedFoodStats(DateTime date) {
@@ -24,6 +30,15 @@ class FoodHistoryRepository {
   }) {
     return _service.getFoodStatsForMonth(year: year, month: month);
   }
+
+  /// Watches for changes in the list of consumed food items for a specific date.
+  /// Returns a stream of [DietFood] lists.
+  Stream<List<DietFood>> watchConsumedFood(DateTime date) {
+    return _service.watchConsumedFood(date);
+  }
+
+
+
 
   /// Get food stats for a full year
   /// Returns a map of { month : { day : FoodStats } }

@@ -38,6 +38,38 @@ class FirebaseFoodHistoryService {
     });
   }
 
+
+  /// Watch consumed food list for specific date
+  Stream<List<DietFood>> watchConsumedFood(DateTime date) {
+    return _db
+        .collection(_root)
+        .doc(_userId)
+        .collection('history')
+        .doc('${date.year}')
+
+        .collection('data')
+        .doc('${date.day}-${date.month}')
+
+    // .collection('${date.month}')
+    // .doc('${date.day}')
+        .collection('food_consumed_list')
+    // .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) {
+      final data = doc.data();
+      data['id'] = doc.id;
+
+      return DietFood.fromConsumedMap(data);
+    }).toList());
+  }
+
+
+
+
+
+
+
   /// Atomically changes the consumed count for a food item and updates the
   /// daily total statistics within a Firestore transaction.
   ///

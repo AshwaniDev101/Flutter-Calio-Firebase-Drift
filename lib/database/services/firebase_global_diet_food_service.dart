@@ -26,26 +26,7 @@ class FirebaseGlobalDietFoodService {
     }).toList());
   }
 
-  /// Watch consumed food list for specific date
-  Stream<List<DietFood>> watchConsumedFood(DateTime date) {
-    return _db
-        .collection('users')
-        .doc(userId)
-        .collection('history')
-        .doc('${date.year}')
-        .collection('${date.month}')
-        .doc('${date.day}')
-        .collection('food_consumed_list')
-        // .orderBy('timestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) {
-      final data = doc.data();
-      data['id'] = doc.id;
 
-      return DietFood.fromConsumedMap(data);
-    }).toList());
-  }
 
 
 
