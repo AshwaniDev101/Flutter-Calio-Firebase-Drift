@@ -34,7 +34,7 @@ class CalorieCounterViewModel extends ChangeNotifier {
   // ===== CRUD OPERATIONS =====
 
   /// Adds a new [DietFood] item to the database
-  /// and shows a confirmation snackbar.
+  /// and shows a confirmation snack bar.
   void addFood(DietFood food) {
     FoodManager.instance.addToAvailableFood(food);
   }

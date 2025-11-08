@@ -3,7 +3,6 @@ import 'package:calio/pages/calories_counter/calorie_history_page/viewmodel/calo
 import 'package:calio/pages/calories_counter/calorie_history_page/widgets/calorie_history_listview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/helper.dart';
 import '../../../theme/app_colors.dart';
 import '../calorie_counter_page/calories_counter_page.dart';
 import '../helper/progress_visuals_helper.dart';

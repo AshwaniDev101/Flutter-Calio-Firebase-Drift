@@ -52,7 +52,7 @@ class CalorieBar extends StatelessWidget {
 
   double displayedPercent() {
     final cur = currentCalories.toDouble();
-    final atLeast = atLeastCalories.toDouble();
+    // final atLeast = atLeastCalories.toDouble();
     final atMost = atMostCalories.toDouble();
 
     if (cur <= atMost) {

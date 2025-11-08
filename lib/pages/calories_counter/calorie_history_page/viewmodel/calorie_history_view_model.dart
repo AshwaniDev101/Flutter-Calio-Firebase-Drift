@@ -80,7 +80,8 @@ class CalorieHistoryViewModel extends ChangeNotifier
   void onDelete(DateTime cardDateTime) async
   {
     await FoodHistoryRepository.instance.deleteFoodStats(date: cardDateTime);
-    monthStatsMap.remove(cardDateTime.day);
+    // monthStatsMap.remove(cardDateTime.day.toString());
+    monthStatsMap.remove('${cardDateTime.day.toString()}-${cardDateTime.month.toString()}');
     notifyListeners();
   }
 

@@ -1,5 +1,4 @@
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../database/services/firebase_food_history_service.dart';
 import '../../models/diet_food.dart';

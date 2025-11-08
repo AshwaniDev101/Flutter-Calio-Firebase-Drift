@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +174,7 @@ class ScrollWithTopCard extends StatelessWidget {
   }
 }
 class _SearchBar extends StatefulWidget {
-  const _SearchBar({Key? key}) : super(key: key);
+  const _SearchBar();
 
   @override
   State<_SearchBar> createState() => _SearchBarState();
@@ -200,7 +199,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
 
   @override
   void didChangeMetrics() {
-    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     if (_prevBottomInset > 0 && bottomInset == 0 && _focusNode.hasFocus) {
       _focusNode.unfocus();
     }
@@ -222,7 +221,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
               borderRadius: BorderRadius.circular(18), // rounded pill shape
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05), // subtle shadow
+                  color: Colors.black.withValues(alpha: 0.05), // subtle shadow
                   blurRadius: 3,
                   offset: const Offset(0, 1),
                 ),
@@ -269,7 +268,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 3,
                       offset: const Offset(0, 1),
                     ),
@@ -369,7 +368,7 @@ class _FoodCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
       elevation: 2,
       color: Colors.white,
-      shadowColor: barColor.withOpacity(0.3),
+      shadowColor: barColor.withValues(alpha: 0.3),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),

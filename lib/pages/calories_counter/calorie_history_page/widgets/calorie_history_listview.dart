@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/app_settings.dart';
-import '../../../../core/helper.dart';
 import '../../../../models/food_stats.dart';
 import '../../../../widget/edit_delete_option_menu.dart';
 import '../../helper/progress_visuals_helper.dart';
@@ -32,8 +31,6 @@ class CalorieHistoryListview extends StatelessWidget {
         final day = int.parse(dayMonthString.toString().split('-')[0]);
         final month =  int.parse(dayMonthString.toString().split('-')[1]);
 
-
-        print(" ==========  ${day} ${month} =========");
         var cardDateTime = DateTime(pageDateTime.year, month, day);
         return _DayCard(
             dateTime: cardDateTime,
