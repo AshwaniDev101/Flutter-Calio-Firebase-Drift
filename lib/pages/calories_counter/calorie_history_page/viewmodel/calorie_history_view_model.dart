@@ -1,6 +1,3 @@
-
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '../../../../core/app_settings.dart';
@@ -8,31 +5,23 @@ import '../../../../database/repository/food_history_repository.dart';
 import '../../../../models/diet_food.dart';
 import '../../../../models/food_stats.dart';
 
-class CalorieHistoryViewModel extends ChangeNotifier
-{
-
+class CalorieHistoryViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
 
   CalorieHistoryViewModel({required this.pageDateTime});
 
-
   Map<String, FoodStats> monthStatsMap = {};
   double excessCalories = 0;
-
 
   Future<void> loadMonthStats() async {
     await _loadMonthStats();
   }
-
-
 
   Future<void> _loadMonthStats() async {
     monthStatsMap = await FoodHistoryRepository.instance.getMonthStats(
       year: pageDateTime.year,
       month: pageDateTime.month,
     );
-
-
 
     // final data = await FoodHistoryRepository.instance.getYearStats(year: pageDateTime.year);
     // final Map<int, FoodStats> flattened = {};
@@ -49,14 +38,12 @@ class CalorieHistoryViewModel extends ChangeNotifier
     excessCalories = _calculateNetExcess(monthStatsMap);
 
     notifyListeners();
-
   }
 
- double _calculateNetExcess(Map<String, FoodStats> monthStats) {
+  double _calculateNetExcess(Map<String, FoodStats> monthStats) {
     double total = 0; // start from zero
 
     for (var food in monthStats.values) {
-
       total += food.calories - AppSettings.atMaxCalories;
       // print("Total ${total} => ${AppSettings.atMaxCalories} - ${food.calories} = ${food.calories - AppSettings.atMaxCalories}");
     }
@@ -77,13 +64,10 @@ class CalorieHistoryViewModel extends ChangeNotifier
     await loadMonthStats();
   }
 
-  void onDelete(DateTime cardDateTime) async
-  {
+  void onDelete(DateTime cardDateTime) async {
     await FoodHistoryRepository.instance.deleteFoodStats(date: cardDateTime);
     // monthStatsMap.remove(cardDateTime.day.toString());
     monthStatsMap.remove('${cardDateTime.day.toString()}-${cardDateTime.month.toString()}');
     notifyListeners();
   }
-
-
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'food_stats.dart';
 
 class DietFood {
+  final int version;
   final String id;
   final String name;
   final Timestamp time;
@@ -9,16 +10,18 @@ class DietFood {
   final double count;
 
   DietFood({
+    this.version = 0,
     required this.id,
     required this.name,
     required this.time,
     required this.foodStats,
-    this.count = 0.0, // default count for available food
+    this.count = 0.0,
   });
 
   /// Creates a DietFood from an Available Food map
   factory DietFood.fromMap(Map<String, dynamic> map) {
     return DietFood(
+      version: map['version'] ?? 0,
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       time: map['time'] as Timestamp,
@@ -30,6 +33,7 @@ class DietFood {
   /// Converts DietFood to map for storing available food
   Map<String, dynamic> toMap() {
     return {
+      'version': version,
       'id': id,
       'name': name,
       'time': time, // store as Timestamp
@@ -41,6 +45,7 @@ class DietFood {
   /// Creates a DietFood from a Consumed Food map
   factory DietFood.fromConsumedMap(Map<String, dynamic> map) {
     return DietFood(
+      version: map['version'] ?? 0,
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       time: map['time'] as Timestamp,
@@ -52,6 +57,7 @@ class DietFood {
   /// Converts DietFood to map for storing consumed food
   Map<String, dynamic> toConsumedMap() {
     return {
+      'version': version,
       'id': id,
       'name': name,
       'time': time,
@@ -61,6 +67,7 @@ class DietFood {
 
   /// Creates a copy of DietFood with optional overrides
   DietFood copyWith({
+    int? version,
     String? id,
     String? name,
     Timestamp? time,
@@ -68,6 +75,7 @@ class DietFood {
     double? count,
   }) {
     return DietFood(
+      version: version ?? this.version,
       id: id ?? this.id,
       name: name ?? this.name,
       time: time ?? this.time,
@@ -84,6 +92,7 @@ class DietFood {
     final timestamp = Timestamp.fromDate(date);
 
     return DietFood(
+      version: json['version'] ?? 0,
       id: date.toIso8601String(), // use timestamp string as unique id
       name: json['name'] ?? '',
       time: timestamp,

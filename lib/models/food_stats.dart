@@ -1,4 +1,5 @@
 class FoodStats {
+  final int version;
   final double proteins;
   final double carbohydrates;
   final double fats;
@@ -6,7 +7,8 @@ class FoodStats {
   final double minerals;
   final double calories;
 
-  FoodStats({
+  const FoodStats({
+    this.version = 0,
     required this.proteins,
     required this.carbohydrates,
     required this.fats,
@@ -17,7 +19,8 @@ class FoodStats {
 
   // A const constructor for an empty object
   const FoodStats.empty()
-      : proteins = 0.0,
+      : version = 0,
+        proteins = 0.0,
         carbohydrates = 0.0,
         fats = 0.0,
         vitamins = 0.0,
@@ -27,6 +30,7 @@ class FoodStats {
   /// Sum two FoodStats
   FoodStats sum(FoodStats other) {
     return FoodStats(
+      version: version,
       proteins: proteins + other.proteins,
       carbohydrates: carbohydrates + other.carbohydrates,
       fats: fats + other.fats,
@@ -39,6 +43,7 @@ class FoodStats {
   /// Subtract another FoodStats from this
   FoodStats subtract(FoodStats other) {
     return FoodStats(
+      version: version,
       proteins: proteins - other.proteins,
       carbohydrates: carbohydrates - other.carbohydrates,
       fats: fats - other.fats,
@@ -50,13 +55,14 @@ class FoodStats {
 
   /// Convert to map for Firestore, omitting fields with 0 value
   Map<String, dynamic> toMap() => {
-    if (proteins != 0) 'proteins': proteins,
-    if (carbohydrates != 0) 'carbohydrates': carbohydrates,
-    if (fats != 0) 'fats': fats,
-    if (vitamins != 0) 'vitamins': vitamins,
-    if (minerals != 0) 'minerals': minerals,
-    if (calories != 0) 'calories': calories,
-  };
+        'version': version,
+        if (proteins != 0) 'proteins': proteins,
+        if (carbohydrates != 0) 'carbohydrates': carbohydrates,
+        if (fats != 0) 'fats': fats,
+        if (vitamins != 0) 'vitamins': vitamins,
+        if (minerals != 0) 'minerals': minerals,
+        if (calories != 0) 'calories': calories,
+      };
 
   /// Factory constructor to create FoodStats from Firestore map
   factory FoodStats.fromMap(Map<String, dynamic> map) {
@@ -67,6 +73,7 @@ class FoodStats {
     }
 
     return FoodStats(
+      version: map['version'] ?? 0,
       proteins: toDouble(map['proteins']),
       carbohydrates: toDouble(map['carbohydrates']),
       fats: toDouble(map['fats']),

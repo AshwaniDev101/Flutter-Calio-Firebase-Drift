@@ -12,10 +12,8 @@ class FoodManager {
   static final FoodManager _instance = FoodManager._internal();
   static FoodManager get instance => _instance;
 
-
   final _dietFoodRepository = GlobalDietFoodRepository.instance;
   final _foodHistoryRepository = FoodHistoryRepository.instance;
-
 
 
   /// Watches both available foods and consumed foods,
