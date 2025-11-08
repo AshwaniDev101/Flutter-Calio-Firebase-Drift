@@ -1,5 +1,5 @@
 
-import 'package:calio/pages/calories_counter/calorie_history_page/viewmodel/calorie_history_view_model.dart';
+import 'package:calio/pages/calories_counter/calorie_history_page/viewmodel/calorie_food_stats_history_view_model.dart';
 import 'package:calio/pages/calories_counter/calorie_history_page/widgets/calorie_history_listview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +21,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CalorieHistoryViewModel>().loadMonthStats();
+      context.read<CalorieFoodStatsHistoryViewModel>().loadMonthStats();
     });
   }
 
@@ -48,7 +48,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<CalorieHistoryViewModel>();
+    final vm = context.watch<CalorieFoodStatsHistoryViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -68,7 +68,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
                 if (value == 'settings') {
                   print('Settings selected');
                 } else if (value == 'add') {
-                  vm.runTest();
+                  // vm.runTest();
                   // Run test
                 } else if (value == 'test2') {
                   print('Test 2 selected');

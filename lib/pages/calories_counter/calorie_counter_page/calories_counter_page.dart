@@ -1,4 +1,5 @@
 
+import 'package:calio/models/consumed_diet_food.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,7 @@ import '../../../models/food_stats.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widget/edit_delete_option_menu.dart';
 import '../calorie_history_page/calorie_history_page.dart';
-import '../calorie_history_page/viewmodel/calorie_history_view_model.dart';
+import '../calorie_history_page/viewmodel/calorie_food_stats_history_view_model.dart';
 import '../helper/progress_visuals_helper.dart';
 import 'new_diet_food/add_edit_diet_food_dialog.dart';
 
@@ -63,7 +64,7 @@ class _CalorieCounterPageBody extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChangeNotifierProvider(
-                      create: (_) => CalorieHistoryViewModel(pageDateTime: vm.pageDateTime),
+                      create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: vm.pageDateTime),
                       child: CalorieHistoryPage(),
                     ),
                   ),
@@ -351,7 +352,7 @@ class _FoodListSliver extends StatelessWidget {
 class _FoodCard extends StatelessWidget {
   final DietFood food;
   final Color barColor;
-  final Function(double oldValue, double newValue, DietFood dietFood) onQuantityChange;
+  final Function(double oldValue, double newValue, ConsumedDietFood consumedFood) onQuantityChange;
   final EditDeleteOptionMenu editDeleteOptionMenu;
 
   const _FoodCard({
@@ -419,7 +420,7 @@ class _FoodCard extends StatelessWidget {
             ),
             FoodQuantitySelector(
               initialValue: food.count,
-              onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, food),
+              onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
             ),
             const SizedBox(width: 6),
             editDeleteOptionMenu,

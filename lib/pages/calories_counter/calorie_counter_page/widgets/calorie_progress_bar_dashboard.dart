@@ -5,7 +5,7 @@ import '../../../../core/helper.dart';
 import '../../../../models/food_stats.dart';
 import '../../../../widget/new_button.dart';
 import '../../calorie_history_page/calorie_history_page.dart';
-import '../../calorie_history_page/viewmodel/calorie_history_view_model.dart';
+import '../../calorie_history_page/viewmodel/calorie_food_stats_history_view_model.dart';
 import '../../helper/progress_visuals_helper.dart';
 import '../../widget/caution_label_widget.dart';
 
@@ -165,7 +165,7 @@ class _CalorieProgressBarDashboardState extends State<CalorieProgressBarDashboar
                                   MaterialPageRoute(
                                     builder: (_) =>
                                         ChangeNotifierProvider(
-                                          create: (_) => CalorieHistoryViewModel(pageDateTime: widget.currentDateTime,),
+                                          create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: widget.currentDateTime,),
 
                                           child: CalorieHistoryPage(),
                                         ),

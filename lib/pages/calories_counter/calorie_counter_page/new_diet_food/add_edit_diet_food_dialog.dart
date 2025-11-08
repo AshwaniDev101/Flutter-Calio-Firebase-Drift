@@ -177,7 +177,7 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 id: food?.id ?? generateReadableTimestamp(),
                 name: name,
                 count: 0.0,
-                time: Timestamp.fromDate(DateTime.now()),
+                timestamp: Timestamp.fromDate(DateTime.now()),
                 foodStats: FoodStats(
                   proteins: double.tryParse(proteins) ?? 0.0,
                   carbohydrates: double.tryParse(carbohydrates) ?? 0.0,

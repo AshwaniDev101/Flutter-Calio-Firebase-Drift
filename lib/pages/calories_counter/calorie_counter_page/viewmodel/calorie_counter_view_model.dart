@@ -1,3 +1,4 @@
+import 'package:calio/models/consumed_diet_food.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../models/diet_food.dart';
@@ -15,7 +16,7 @@ class CalorieCounterViewModel extends ChangeNotifier {
   Stream<List<DietFood>> get watchMergedFoodList => FoodManager.instance.watchMergedFoodList(pageDateTime);
 
 
-  void onQuantityChange(double oldValue, double newValue, DietFood food) {
+  void onQuantityChange(double oldValue, double newValue, ConsumedDietFood food) {
     FoodManager.instance.changeConsumedCount(newValue - oldValue, food, pageDateTime);
   }
 

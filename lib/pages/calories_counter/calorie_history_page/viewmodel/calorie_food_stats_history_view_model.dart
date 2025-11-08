@@ -1,14 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '../../../../core/app_settings.dart';
-import '../../../../database/repository/food_history_repository.dart';
-import '../../../../models/diet_food.dart';
+import '../../../../database/repository/food_stats_history_repository.dart';
 import '../../../../models/food_stats.dart';
 
-class CalorieHistoryViewModel extends ChangeNotifier {
+class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
 
-  CalorieHistoryViewModel({required this.pageDateTime});
+  CalorieFoodStatsHistoryViewModel({required this.pageDateTime});
+
+
+  final FoodStatsHistoryRepository _repository = FoodStatsHistoryRepository.instance;
 
   Map<String, FoodStats> monthStatsMap = {};
   double excessCalories = 0;
@@ -18,7 +19,7 @@ class CalorieHistoryViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadMonthStats() async {
-    monthStatsMap = await FoodHistoryRepository.instance.getMonthStats(
+    monthStatsMap = await _repository.getMonthStats(
       year: pageDateTime.year,
       month: pageDateTime.month,
     );
@@ -50,22 +51,22 @@ class CalorieHistoryViewModel extends ChangeNotifier {
     return total;
   }
 
-  Future<void> runTest() async {
-    await FoodHistoryRepository.instance.changeConsumedCount(
-      0,
-      DietFood(
-        id: '-1',
-        name: 'Test 0',
-        time: Timestamp.fromDate(DateTime.now()),
-        foodStats: FoodStats(proteins: 0, carbohydrates: 0, fats: 0, vitamins: 0, minerals: 0, calories: 1),
-      ),
-      DateTime(2025, 10, 25),
-    );
-    await loadMonthStats();
-  }
+  // Future<void> runTest() async {
+  //   await FoodHistoryRepository.instance.changeConsumedCount(
+  //     0,
+  //     DietFood(
+  //       id: '-1',
+  //       name: 'Test 0',
+  //       timestamp: Timestamp.fromDate(DateTime.now()),
+  //       foodStats: FoodStats(proteins: 0, carbohydrates: 0, fats: 0, vitamins: 0, minerals: 0, calories: 1),
+  //     ),
+  //     DateTime(2025, 10, 25),
+  //   );
+  //   await loadMonthStats();
+  // }
 
   void onDelete(DateTime cardDateTime) async {
-    await FoodHistoryRepository.instance.deleteFoodStats(date: cardDateTime);
+    await _repository.deleteFoodStats(date: cardDateTime);
     // monthStatsMap.remove(cardDateTime.day.toString());
     monthStatsMap.remove('${cardDateTime.day.toString()}-${cardDateTime.month.toString()}');
     notifyListeners();

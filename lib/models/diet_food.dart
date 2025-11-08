@@ -5,7 +5,7 @@ class DietFood {
   final int version;
   final String id;
   final String name;
-  final Timestamp time;
+  final Timestamp timestamp;
   final FoodStats foodStats;
   final double count;
 
@@ -13,7 +13,7 @@ class DietFood {
     this.version = 0,
     required this.id,
     required this.name,
-    required this.time,
+    required this.timestamp,
     required this.foodStats,
     this.count = 0.0,
   });
@@ -24,7 +24,7 @@ class DietFood {
       version: map['version'] ?? 0,
       id: map['id'] ?? '',
       name: map['name'] ?? '',
-      time: map['time'] as Timestamp,
+      timestamp: map['timestamp'] as Timestamp,
       foodStats: FoodStats.fromMap(map['foodStats'] ?? {}),
       count: 0.0,
     );
@@ -36,41 +36,20 @@ class DietFood {
       'version': version,
       'id': id,
       'name': name,
-      'time': time, // store as Timestamp
+      'timestamp': timestamp, // store as Timestamp
       'foodStats': foodStats.toMap(),
       // no count field for available food
     };
   }
 
-  /// Creates a DietFood from a Consumed Food map
-  factory DietFood.fromConsumedMap(Map<String, dynamic> map) {
-    return DietFood(
-      version: map['version'] ?? 0,
-      id: map['id'] ?? '',
-      name: map['name'] ?? '',
-      time: map['time'] as Timestamp,
-      foodStats: FoodStats.empty(),
-      count: (map['count'] as num?)?.toDouble() ?? 1.0,
-    );
-  }
 
-  /// Converts DietFood to map for storing consumed food
-  Map<String, dynamic> toConsumedMap() {
-    return {
-      'version': version,
-      'id': id,
-      'name': name,
-      'time': time,
-      'count': count,
-    };
-  }
 
   /// Creates a copy of DietFood with optional overrides
   DietFood copyWith({
     int? version,
     String? id,
     String? name,
-    Timestamp? time,
+    Timestamp? timestamp,
     FoodStats? foodStats,
     double? count,
   }) {
@@ -78,7 +57,7 @@ class DietFood {
       version: version ?? this.version,
       id: id ?? this.id,
       name: name ?? this.name,
-      time: time ?? this.time,
+      timestamp: timestamp ?? this.timestamp,
       foodStats: foodStats ?? this.foodStats,
       count: count ?? this.count,
     );
@@ -88,14 +67,14 @@ class DietFood {
 
 
   factory DietFood.fromJson(Map<String, dynamic> json) {
-    final date = DateTime.parse(json['time']);
+    final date = DateTime.parse(json['timestamp']);
     final timestamp = Timestamp.fromDate(date);
 
     return DietFood(
       version: json['version'] ?? 0,
       id: date.toIso8601String(), // use timestamp string as unique id
       name: json['name'] ?? '',
-      time: timestamp,
+      timestamp: timestamp,
       foodStats: FoodStats.fromMap(json['foodStats'] ?? {}),
       count: 0.0,
     );

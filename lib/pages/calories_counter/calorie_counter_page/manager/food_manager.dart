@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:calio/models/consumed_diet_food.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../../database/repository/food_history_repository.dart';
+import '../../../../database/repository/consumed_diet_food_repository.dart';
+import '../../../../database/repository/food_stats_history_repository.dart';
 import '../../../../database/repository/global_diet_food_repository.dart';
 import '../../../../models/diet_food.dart';
 import '../../../../models/food_stats.dart';
@@ -13,14 +15,15 @@ class FoodManager {
   static FoodManager get instance => _instance;
 
   final _dietFoodRepository = GlobalDietFoodRepository.instance;
-  final _foodHistoryRepository = FoodHistoryRepository.instance;
+  final _foodStatsHistoryRepository = FoodStatsHistoryRepository.instance;
+  final _consumedDietFoodRepository = ConsumedDietFoodRepository.instance;
 
 
   /// Watches both available foods and consumed foods,
   /// and merges them into a single stream where each
   /// available food also contains its consumed count.
   Stream<List<DietFood>> watchMergedFoodList(DateTime dateTime) {
-    return Rx.combineLatest2<List<DietFood>, List<DietFood>, List<DietFood>>(
+    return Rx.combineLatest2<List<DietFood>, List<ConsumedDietFood>, List<DietFood>>(
       _watchAvailableFood(),
       _watchConsumedFood(dateTime),
           (availableList, consumedList) {
@@ -34,7 +37,7 @@ class FoodManager {
           final consumedFood = consumedMap[food.id];
           return food.copyWith(
             count: consumedFood?.count ?? 0,
-            time: consumedFood?.time ?? food.time,
+            timestamp: consumedFood?.timestamp ?? food.timestamp,
           );
         }).toList();
 
@@ -53,15 +56,15 @@ class FoodManager {
 
     return _dietFoodRepository.watchAvailableFood();
   }
-  Stream<List<DietFood>> _watchConsumedFood(DateTime dateTime) {
+  Stream<List<ConsumedDietFood>> _watchConsumedFood(DateTime dateTime) {
 
-    return _foodHistoryRepository.watchConsumedFood(dateTime);
+    return _consumedDietFoodRepository.watchConsumedFood(dateTime);
   }
 
 
   Stream<FoodStats?> watchConsumedFoodStats(DateTime dateTime) {
 
-    return FoodHistoryRepository.instance.watchConsumedFoodStats(dateTime);
+    return _foodStatsHistoryRepository.watchFoodStats(dateTime);
   }
 
 
@@ -70,8 +73,8 @@ class FoodManager {
     _dietFoodRepository.addAvailable(food);
   }
 
-  void changeConsumedCount(double count, DietFood food, DateTime dateTime) {
-    FoodHistoryRepository.instance.changeConsumedCount(count,food, dateTime);
+  void changeConsumedCount(double count, ConsumedDietFood food, DateTime dateTime) {
+    _consumedDietFoodRepository.changeConsumedCount(count,food, dateTime);
 
   }
 
