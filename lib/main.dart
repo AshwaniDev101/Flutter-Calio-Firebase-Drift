@@ -1,4 +1,5 @@
 import 'package:calio/pages/calories_counter/calorie_counter_page/calories_counter_page.dart';
+import 'package:calio/pages/experimental/import_exporter_page.dart';
 
 
 import 'package:firebase_core/firebase_core.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       home: CalorieCounterPage(pageDateTime: DateTime.now())
       // home: ImportExporterPage()
-      // home: DemoPaintWidget()
+
     );
   }
 }

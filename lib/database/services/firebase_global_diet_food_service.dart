@@ -20,7 +20,12 @@ class FirebaseGlobalDietFoodService {
         // .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) {
+
+
       final data = doc.data();
+
+      print("watchGlobalFoodList ========= ${data.entries}");
+
       data['id'] = doc.id;
       return DietFood.fromMap(data);
     }).toList());

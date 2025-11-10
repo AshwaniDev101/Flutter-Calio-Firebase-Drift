@@ -13,23 +13,23 @@ class GlobalDietFoodRepository {
 
   /// Watches for changes in the list of available food items.
   /// Returns a stream of [DietFood] lists.
-  Stream<List<DietFood>> watchAvailableFood() {
+  Stream<List<DietFood>> watchGlobalFoodList() {
     return _service.watchGlobalFoodList();
   }
 
 
   /// Adds a new food item to the list of available food.
-  Future<void> addAvailable(DietFood food) {
+  Future<void> addToGlobalFoodList(DietFood food) {
     return _service.addGlobalFoodList(food);
   }
 
   /// Updates an existing food item in the list of available food.
-  Future<void> updateAvailable(String id, DietFood food) {
+  Future<void> updateToGlobalFoodList(String id, DietFood food) {
     return _service.updateInGlobalFoodListItem(id, food);
   }
 
   /// Deletes a food item from the list of available food.
-  Future<void> deleteAvailable(String id) {
+  Future<void> deleteToGlobalFoodList(String id) {
     return _service.deleteFromGlobalFoodList(id);
   }
 }
