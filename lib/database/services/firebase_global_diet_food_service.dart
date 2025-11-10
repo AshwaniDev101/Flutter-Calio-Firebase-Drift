@@ -24,7 +24,6 @@ class FirebaseGlobalDietFoodService {
 
       final data = doc.data();
 
-      print("watchGlobalFoodList ========= ${data.entries}");
 
       data['id'] = doc.id;
       return DietFood.fromMap(data);

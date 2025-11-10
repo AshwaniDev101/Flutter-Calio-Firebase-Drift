@@ -11,13 +11,8 @@ class FirebaseConsumedDietFoodService {
   final String _root = 'users';
   final String _userId = 'user1';
 
-  /// Watch consumed food list for a specific date, with debug logs
+  /// Watch consumed food list for a specific date
   Stream<List<ConsumedDietFood>> watchConsumedFood(DateTime date) {
-    print('watchConsumedFood() started for ${date.day}-${date.month}-${date.year}');
-
-    final path = '$_root/$_userId/history/${date.year}/data/${date.day}-${date.month}/food_consumed_list';
-    print('Firestore path: $path');
-
     return _db
         .collection(_root)
         .doc(_userId)
@@ -26,38 +21,22 @@ class FirebaseConsumedDietFoodService {
         .collection('data')
         .doc('${date.day}-${date.month}')
         .collection('food_consumed_list')
-        // .orderBy('timestamp', descending: true)
         .snapshots()
-        .handleError((error) {
-          print('🔥 Firestore snapshot error: $error');
+        .handleError((error, stackTrace) {
+          // Errors are intentionally ignored to not crash the stream.
         })
         .map((snapshot) {
-          print('📡 Firestore emitted snapshot with ${snapshot.docs.length} docs');
-
           final List<ConsumedDietFood> list = [];
-
           for (final doc in snapshot.docs) {
-            print('--- Raw doc: ${doc.id}, data: ${doc.data()}');
-
             try {
               final data = Map<String, dynamic>.from(doc.data());
               data['id'] = doc.id;
-
               final consumed = ConsumedDietFood.fromMap(data);
               list.add(consumed);
-
-              print(
-                '✅ Parsed ConsumedDietFood: id=${consumed.id}, '
-                'name=${consumed.id}, count=${consumed.count}, '
-                'timestamp=${consumed.timestamp}',
-              );
             } catch (e, st) {
-              print('❌ Error parsing doc ${doc.id}: $e');
-              print(st);
+              // Ignore documents that fail to parse.
             }
           }
-
-          print('📦 Total parsed ConsumedDietFood items: ${list.length}');
           return list;
         });
   }
@@ -76,8 +55,6 @@ class FirebaseConsumedDietFoodService {
         .doc('${dateTime.year}')
         .collection('data')
         .doc('${dateTime.day}-${dateTime.month}');
-    // .collection('${dateTime.month}')
-    // .doc('${dateTime.day}');
 
     final consumedFoodDocRef = dayDocRef.collection('food_consumed_list').doc(food.id);
 
@@ -92,8 +69,6 @@ class FirebaseConsumedDietFoodService {
         currentStats = FoodStats.empty();
       }
 
-      // print("=== FoodStats currentStats: ${currentStats.toMap().toString()}");
-
       // 2. Calculate the change in stats based on the food's stats per serving and the count delta
       final statsDelta = FoodStats(
         calories: food.foodStats.calories * count,
@@ -105,62 +80,33 @@ class FirebaseConsumedDietFoodService {
       );
       final FoodStats newTotalStats = currentStats.sum(statsDelta);
 
-      // print("=== newTotalStats: ${newTotalStats.toMap().toString()}");
-
       // 3. Update the individual consumed food item's count
       final consumedFoodSnapshot = await transaction.get(consumedFoodDocRef);
       final foodMap = food.toMap()..remove('id');
 
-      // print("=== foodMap: ${foodMap.toString()}");
-
       if (consumedFoodSnapshot.exists) {
         final double existingCount = consumedFoodSnapshot.data()?['count'] ?? 0;
-
-        // print("=== existingCount: ${existingCount}");
-
         final newCount = existingCount + count;
-
-        // print("=== newCount: ${newCount}");
 
         if (newCount > 0) {
           transaction.update(consumedFoodDocRef, {...foodMap, 'count': newCount});
-
-          // print("===  transaction.update: ${foodMap.toString()},count newCount: ${newCount}");
         } else {
           // If count drops to 0 or below, remove the item from the consumed list
-
           transaction.delete(consumedFoodDocRef);
-          // print("===   transaction.delete: ${consumedFoodDocRef.toString()}");
         }
-      }
-      // if (consumedFoodSnapshot.exists) {
-      //   final existingCount = consumedFoodSnapshot.data()?['count'] ?? 0;
-      //   final newCount = existingCount + count;
-      //   transaction.update(consumedFoodDocRef, {
-      //     ...foodMap,
-      //     'count': newCount.clamp(0, double.infinity),
-      //   });
-      // }
-      else if (count > 0) {
+      } else if (count > 0) {
         // If the item wasn't in the list and we're adding it, create it
         transaction.set(consumedFoodDocRef, {...foodMap, 'count': count});
-
-        // print("===   if (count > 0)  transaction.set  :  ${foodMap.toString()},count: ${count}");
       }
 
       // 4. Update the daily total stats document with the new aggregate
-      transaction.set(dayDocRef, {
-        // 'foodStats': newTotalStats.toMap()
-        'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
-        'timestamp': Timestamp.now(),
-      }, SetOptions(merge: true));
-
-      // print("=== transaction.set  :  ${{'foodStats': newTotalStats.toMap()}.toString()}, SetOptions(merge: true)");
-
-      // transaction.set(dayDocRef, {
-      //   'foodStats': newTotalStats.toMap(),
-      //   'timestamp': Timestamp.now(),
-      // }, SetOptions(merge: true));
+      transaction.set(
+          dayDocRef,
+          {
+            'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
+            'timestamp': Timestamp.now(),
+          },
+          SetOptions(merge: true));
     });
   }
 }
