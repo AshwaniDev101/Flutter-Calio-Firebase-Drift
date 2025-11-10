@@ -152,6 +152,7 @@ class FirebaseConsumedDietFoodService {
       transaction.set(dayDocRef, {
         // 'foodStats': newTotalStats.toMap()
         'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
+        'timestamp': Timestamp.now(),
       }, SetOptions(merge: true));
 
       // print("=== transaction.set  :  ${{'foodStats': newTotalStats.toMap()}.toString()}, SetOptions(merge: true)");
