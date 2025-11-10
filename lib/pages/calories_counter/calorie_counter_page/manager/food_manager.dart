@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:calio/core/utils/logger.dart';
 import 'package:calio/models/consumed_diet_food.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -27,16 +26,39 @@ class FoodManager {
     return Rx.combineLatest2<List<DietFood>, List<ConsumedDietFood>, List<DietFood>>(
       _watchGlobalDietFood(),
       _watchConsumedFood(dateTime),
-      (globalDietFoodList, consumedDietFoodList) {
-        final consumedDietFoodMap = {for (final food in consumedDietFoodList) food.id: food};
+          (globalDietFoodList, consumedDietFoodList) {
+        print("---- 🔄 Merging Global and Consumed Lists ----");
+        print("Global List Count: ${globalDietFoodList.length}");
+        print("Consumed List Count: ${consumedDietFoodList.length}");
 
-        final mergedList =
-            globalDietFoodList.map((gFood) {
-              final consumed = consumedDietFoodMap[gFood.id];
-              return gFood.copyWith(count: consumed?.count ?? 0, timestamp: consumed?.timestamp ?? gFood.timestamp);
-            }).toList();
+        final consumedDietFoodMap = {
+          for (final food in consumedDietFoodList) food.id: food
+        };
 
-        // Sort by name alphabetically
+        final mergedList = globalDietFoodList.map((gFood) {
+          final consumed = consumedDietFoodMap[gFood.id];
+          if (consumed == null) {
+            // print("⚠️ No consumed entry found for ID: ${gFood.id}");
+            return gFood;
+          }
+
+          final gc = gFood.foodStats.calories;
+          final cc = consumed.foodStats.calories;
+
+          print("✅ [${gFood.name}] Global: $gc | Consumed: $cc");
+          if (gc != cc) {
+            print("❗ Mismatch Detected for ${gFood.name} (ID: ${gFood.id})");
+
+            fixMissMatch(gFood,consumed,dateTime);
+          }
+
+          return gFood.copyWith(
+            count: consumed.count,
+            timestamp: consumed.timestamp,
+          );
+        }).toList();
+
+        print("---- ✅ Merge Complete | Total: ${mergedList.length} ----");
         mergedList.sort((a, b) => a.name.compareTo(b.name));
 
         return mergedList;
@@ -74,4 +96,20 @@ class FoodManager {
   void updateAvailableFood(DietFood food) {
     _dietFoodRepository.updateToGlobalFoodList(food.id, food);
   }
+
+  void fixMissMatch(DietFood globalFoodItem, ConsumedDietFood consumedFoodItem, DateTime dateTime)
+  {
+    // first fix the value in the consumed foodStats
+    final oldConsumedFoodItem = consumedFoodItem;
+    final newConsumedFoodItem = ConsumedDietFood.fromDietFood(globalFoodItem);
+
+    _consumedDietFoodRepository.updateConsumedFood(newConsumedFoodItem, oldConsumedFoodItem, dateTime);
+
+
+    // fix the total foodstats
+
+
+
+  }
+
 }

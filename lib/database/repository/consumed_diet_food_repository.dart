@@ -1,5 +1,6 @@
 import 'package:calio/models/consumed_diet_food.dart';
 
+import '../../models/diet_food.dart';
 import '../services/firebase_consumed_diet_food_service.dart';
 
 class ConsumedDietFoodRepository {
@@ -25,4 +26,10 @@ class ConsumedDietFoodRepository {
   Future<void> changeConsumedCount(double count, ConsumedDietFood food, DateTime date) {
     return _service.changeConsumedFoodCount(count, food, date);
   }
+
+  /// Change the consumed count of a specific food on a given date
+  Future<void> updateConsumedFood(ConsumedDietFood newConsumedFoodItem, ConsumedDietFood oldConsumedFoodItem, DateTime dateTime) {
+    return _service.updateConsumedFood(newConsumedFoodItem,oldConsumedFoodItem, dateTime);
+  }
+
 }
