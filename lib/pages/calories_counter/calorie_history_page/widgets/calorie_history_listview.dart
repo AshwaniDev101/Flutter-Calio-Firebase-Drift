@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/app_settings.dart';
 import '../../../../models/food_stats.dart';
+import '../../../../models/foodstats_entry.dart';
 import '../../../../widget/edit_delete_option_menu.dart';
 import '../../helper/progress_visuals_helper.dart';
 import '../../widget/caution_label_widget.dart';
 
 class CalorieHistoryListview extends StatelessWidget {
-  final Map<String, FoodStats> monthStats;
+  final List<FoodStatsEntry> monthStats;
   final DateTime pageDateTime;
 
   final void Function(DateTime) onEdit;
@@ -19,30 +20,35 @@ class CalorieHistoryListview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Sort entries by ID (descending by date)
+    final sortedStats = List<FoodStatsEntry>.from(monthStats);
+      // ..sort((a, b) => b.id.compareTo(a.id));
+
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: monthStats.length,
+      itemCount: sortedStats.length,
       separatorBuilder: (_, __) => const SizedBox(height: 6),
       itemBuilder: (context, index) {
-        final dayKeys = monthStats.keys.toList()..sort((a, b) => b.compareTo(a));
-        final dayMonthString = dayKeys[index];
+        final entry = sortedStats[index];
+        final parts = entry.id.split('-');
+        final day = int.parse(parts[0]);
+        final month = int.parse(parts[1]);
 
-        final day = int.parse(dayMonthString.toString().split('-')[0]);
-        final month =  int.parse(dayMonthString.toString().split('-')[1]);
+        final cardDateTime = DateTime(pageDateTime.year, month, day);
 
-        var cardDateTime = DateTime(pageDateTime.year, month, day);
         return _DayCard(
-            dateTime: cardDateTime,
-            // dateTime: widget.pageDateTime,
-            foodStats: monthStats[dayMonthString]!,
-            editDeleteOptionMenu: EditDeleteOptionMenu(
-              onDelete: () => onDelete(cardDateTime),
-              onEdit: () => onEdit(cardDateTime),
-            ));
+          dateTime: cardDateTime,
+          foodStats: entry.stats,
+          editDeleteOptionMenu: EditDeleteOptionMenu(
+            onDelete: () => onDelete(cardDateTime),
+            onEdit: () => onEdit(cardDateTime),
+          ),
+        );
       },
     );
   }
+
 }
 
 class _DayCard extends StatelessWidget {

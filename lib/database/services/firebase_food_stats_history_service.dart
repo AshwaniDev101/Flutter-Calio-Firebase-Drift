@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/diet_food.dart';
 import '../../models/food_stats.dart';
+import '../../models/foodstats_entry.dart';
 
 /// A dedicated Firebase service responsible for managing the user's
 /// calorie history data.
@@ -17,6 +18,7 @@ class FirebaseFoodStatsHistoryService {
   ///
   /// This method is pure and has no side-effects. It returns a stream
   /// that provides the latest [FoodStats] from Firestore or null if none exists.
+
   Stream<FoodStats?> watchFoodStatus(DateTime date) {
     final ref = _db
         .collection(_root)
@@ -38,27 +40,53 @@ class FirebaseFoodStatsHistoryService {
   }
 
   /// Retrieves all stored [FoodStats] documents for a specific [year] and [month].
-  Future<Map<String, FoodStats>> getFoodStatsForMonth({required int year, required int month}) async {
-    final monthRef = _db.collection(_root).doc(_userId).collection('history').doc(year.toString()).collection('data');
-    // .doc('${cardDateTime.day}-${cardDateTime.month}');
-    // .collection(month.toString());
+  Future<List<FoodStatsEntry>> getFoodStatsForMonth({
+    required int year,
+    required int month,
+  }) async {
+    final ref = _db
+        .collection(_root)
+        .doc(_userId)
+        .collection('history')
+        .doc('$year')
+        .collection('data')
+        .orderBy('timestamp', descending: true);
 
-    final snapshot = await monthRef.get();
+    final snapshot = await ref.get();
 
-    final Map<String, FoodStats> statsMap = {};
-
-    for (final doc in snapshot.docs) {
+    return snapshot.docs.map((doc) {
       final data = doc.data();
-
-      statsMap[doc.id] = FoodStats.fromMap(data['foodStats']);
-    }
-
-    // final reversedMap = Map.fromEntries(
-    //     statsMap.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
-    //   );
-
-    return statsMap;
+      final stats = FoodStats.fromMap(Map<String, dynamic>.from(data['foodStats']));
+      return FoodStatsEntry(doc.id, stats);
+    }).toList();
   }
+
+  // Future<Map<String, FoodStats>> getFoodStatsForMonth({required int year, required int month}) async {
+  //   final monthRef = _db.collection(_root)
+  //       .doc(_userId)
+  //       .collection('history')
+  //       .doc(year.toString())
+  //       .collection('data')
+  //       .orderBy('timestamp', descending: true);
+  //   // .doc('${cardDateTime.day}-${cardDateTime.month}');
+  //   // .collection(month.toString());
+  //
+  //   final snapshot = await monthRef.get();
+  //
+  //   final Map<String, FoodStats> statsMap = {};
+  //
+  //   for (final doc in snapshot.docs) {
+  //     final data = doc.data();
+  //
+  //     statsMap[doc.id] = FoodStats.fromMap(data['foodStats']);
+  //   }
+  //
+  //   // final reversedMap = Map.fromEntries(
+  //   //     statsMap.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
+  //   //   );
+  //
+  //   return statsMap;
+  // }
 
   /// Permanently deletes the [FoodStats] document and its subcollections for a given date.
   Future<void> deleteFoodStats({required DateTime cardDateTime}) async {

@@ -2,6 +2,7 @@
 
 import '../../models/diet_food.dart';
 import '../../models/food_stats.dart';
+import '../../models/foodstats_entry.dart';
 import '../services/firebase_food_stats_history_service.dart';
 
 /// Repository for calorie data
@@ -23,7 +24,7 @@ class FoodStatsHistoryRepository {
   }
 
   /// Get food stats for a specific month
-  Future<Map<String, FoodStats>> getMonthStats({
+  Future<List<FoodStatsEntry>> getMonthStats({
     required int year,
     required int month,
   }) {

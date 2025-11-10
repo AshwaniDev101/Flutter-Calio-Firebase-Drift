@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import '../../../../core/app_settings.dart';
 import '../../../../database/repository/food_stats_history_repository.dart';
 import '../../../../models/food_stats.dart';
+import '../../../../models/foodstats_entry.dart';
 
 class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
@@ -11,7 +12,7 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
 
   final FoodStatsHistoryRepository _repository = FoodStatsHistoryRepository.instance;
 
-  Map<String, FoodStats> monthStatsMap = {};
+  List<FoodStatsEntry> monthStatsMap = [];
   double excessCalories = 0;
 
   Future<void> loadMonthStats() async {
@@ -41,15 +42,16 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  double _calculateNetExcess(Map<String, FoodStats> monthStats) {
-    double total = 0; // start from zero
+  double _calculateNetExcess(List<FoodStatsEntry> monthStats) {
+    double total = 0;
 
-    for (var food in monthStats.values) {
-      total += food.calories - AppSettings.atMaxCalories;
-      // print("Total ${total} => ${AppSettings.atMaxCalories} - ${food.calories} = ${food.calories - AppSettings.atMaxCalories}");
+    for (var entry in monthStats) {
+      total += entry.stats.calories - AppSettings.atMaxCalories;
     }
+
     return total;
   }
+
 
   // Future<void> runTest() async {
   //   await FoodHistoryRepository.instance.changeConsumedCount(
