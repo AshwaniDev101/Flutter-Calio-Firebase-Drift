@@ -1,4 +1,3 @@
-
 import 'package:calio/models/consumed_diet_food.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +17,15 @@ import 'new_diet_food/add_edit_diet_food_dialog.dart';
 
 class CalorieCounterPage extends StatelessWidget {
   final DateTime pageDateTime;
+  final bool isOldPage;
 
-  CalorieCounterPage({Key? key, required this.pageDateTime}) : super(key: key ?? ValueKey(pageDateTime));
+  CalorieCounterPage({Key? key, required this.pageDateTime, this.isOldPage = false})
+    : super(key: key ?? ValueKey(pageDateTime));
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CalorieCounterViewModel(pageDateTime: pageDateTime),
+      create: (_) => CalorieCounterViewModel(pageDateTime: pageDateTime, isOldPage: isOldPage),
       child: const _CalorieCounterPageBody(),
     );
   }
@@ -52,45 +53,44 @@ class _CalorieCounterPageBody extends StatelessWidget {
       title: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-
-          getTitle(vm),
-
-        ],
+        children: [getTitle(vm)],
       ),
       actions: [
-        Row(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChangeNotifierProvider(
-                      create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: vm.pageDateTime),
-                      child: CalorieHistoryPage(),
+        vm.isOldPage
+            ? Text('')
+            : Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => ChangeNotifierProvider(
+                              create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: vm.pageDateTime),
+                              child: CalorieHistoryPage(),
+                            ),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_month_rounded, color: AppColors.appbarContent, size: 22),
+                        SizedBox(width: 6),
+                        Text(
+                          'History',
+                          style: TextStyle(fontSize: 14, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_month_rounded, color: AppColors.appbarContent, size: 22),
-                    SizedBox(width: 6),
-                    Text(
-                      'History',
-                      style: TextStyle(fontSize: 14, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
-                    ),
-                  ],
                 ),
-              ),
+                SizedBox(width: 10),
+              ],
             ),
-            SizedBox(width: 10,)
-          ],
-        ),
 
         // PopupMenuButton<String>(
         //   icon: const Icon(Icons.more_vert_rounded, color: Colors.blueGrey),
@@ -124,8 +124,6 @@ class _CalorieCounterPageBody extends StatelessWidget {
   }
 
   Widget getTitle(CalorieCounterViewModel vm) {
-
-
     bool isToday = isSameDate(vm.pageDateTime, DateTime.now());
 
     String date = '${vm.pageDateTime.day}/${vm.pageDateTime.month}/${vm.pageDateTime.year}';
@@ -136,9 +134,13 @@ class _CalorieCounterPageBody extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-      Text(isToday?'Today':date, style: AppTextStyle.appBarTextStyle),
-      Text(isToday?date:'($weekdayName)', style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12,fontWeight: FontWeight.normal)),
-    ],);
+        Text(isToday ? 'Today' : date, style: AppTextStyle.appBarTextStyle),
+        Text(
+          isToday ? date : '($weekdayName)',
+          style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.normal),
+        ),
+      ],
+    );
   }
 }
 
@@ -195,6 +197,7 @@ class ScrollWithTopCard extends StatelessWidget {
     );
   }
 }
+
 class _SearchBar extends StatefulWidget {
   const _SearchBar();
 
@@ -262,10 +265,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
                 prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[600], size: 16),
                 prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide.none,
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -289,11 +289,7 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
                   color: Colors.white, // clean modern look
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 3,
-                      offset: const Offset(0, 1),
-                    ),
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 3, offset: const Offset(0, 1)),
                   ],
                   border: Border.all(color: Colors.grey.shade300, width: 1), // subtle border
                 ),
@@ -304,28 +300,20 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
                     const SizedBox(width: 6),
                     Text(
                       'New',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.appbarContent,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
               ),
             ),
 
-
-            SizedBox(width: 10,)
+            SizedBox(width: 10),
           ],
         ),
-
       ],
     );
   }
 }
-
-
 
 class _FoodListSliver extends StatelessWidget {
   final CalorieCounterViewModel viewModel;
@@ -340,35 +328,24 @@ class _FoodListSliver extends StatelessWidget {
         final foods = snapshot.data ?? [];
 
         // Apply search filter
-        final filteredFoods = foods
-            .where((food) => food.name.toLowerCase().contains(viewModel.searchQuery.toLowerCase()))
-            .toList();
+        final filteredFoods =
+            foods.where((food) => food.name.toLowerCase().contains(viewModel.searchQuery.toLowerCase())).toList();
 
         if (foods.isEmpty) {
           return const SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text('No foods added yet.'),
-              ),
-            ),
+            child: Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No foods added yet.'))),
           );
         }
 
         if (filteredFoods.isEmpty) {
           return const SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text('No foods found.'),
-              ),
-            ),
+            child: Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No foods found.'))),
           );
         }
 
         return SliverList(
           delegate: SliverChildBuilderDelegate(
-                (context, index) {
+            (context, index) {
               final food = filteredFoods[index];
               final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
@@ -380,11 +357,7 @@ class _FoodListSliver extends StatelessWidget {
                   barColor: barColor,
                   onQuantityChange: viewModel.onQuantityChange,
                   editDeleteOptionMenu: EditDeleteOptionMenu(
-                    onEdit: () => DietFoodDialog.edit(
-                      context,
-                      food,
-                          (DietFood f) => viewModel.editFood(f),
-                    ),
+                    onEdit: () => DietFoodDialog.edit(context, food, (DietFood f) => viewModel.editFood(f)),
                     onDelete: () => viewModel.deleteFood(food),
                   ),
                 ),
@@ -397,7 +370,6 @@ class _FoodListSliver extends StatelessWidget {
     );
   }
 }
-
 
 class _FoodCard extends StatelessWidget {
   final DietFood food;
@@ -470,7 +442,8 @@ class _FoodCard extends StatelessWidget {
             ),
             FoodQuantitySelector(
               initialValue: food.count,
-              onChanged: (oldValue, newValue) => onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
+              onChanged:
+                  (oldValue, newValue) => onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
             ),
             const SizedBox(width: 6),
             editDeleteOptionMenu,
@@ -481,4 +454,3 @@ class _FoodCard extends StatelessWidget {
     );
   }
 }
-

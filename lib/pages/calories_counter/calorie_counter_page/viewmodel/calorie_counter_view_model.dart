@@ -8,8 +8,9 @@ import '../manager/food_manager.dart';
 
 class CalorieCounterViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
+  final bool isOldPage;
 
-  CalorieCounterViewModel({required this.pageDateTime});
+  CalorieCounterViewModel({required this.pageDateTime, required this.isOldPage});
 
 
 

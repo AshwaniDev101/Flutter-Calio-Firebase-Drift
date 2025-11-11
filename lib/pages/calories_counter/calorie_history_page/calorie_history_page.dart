@@ -124,7 +124,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CalorieCounterPage(pageDateTime: cardDateTime),
+                              builder: (context) => CalorieCounterPage(pageDateTime: cardDateTime,isOldPage: true,),
                             ),
                           ).then((_) {
                             vm.loadMonthStats();
