@@ -2,9 +2,11 @@
 import 'package:calio/models/consumed_diet_food.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/viewmodel/calorie_counter_view_model.dart';
 import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/food_quantity_selector.dart';
+import '../../../core/helper.dart';
 import '../../../models/diet_food.dart';
 import '../../../models/food_stats.dart';
 import '../../../theme/app_colors.dart';
@@ -51,8 +53,9 @@ class _CalorieCounterPageBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Today', style: AppTextStyle.appBarTextStyle),
-          Text(' 08-10-2025', style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12,fontWeight: FontWeight.normal)),
+
+          getTitle(vm),
+
         ],
       ),
       actions: [
@@ -118,6 +121,24 @@ class _CalorieCounterPageBody extends StatelessWidget {
         // ),
       ],
     );
+  }
+
+  Widget getTitle(CalorieCounterViewModel vm) {
+
+
+    bool isToday = isSameDate(vm.pageDateTime, DateTime.now());
+
+    String date = '${vm.pageDateTime.day}/${vm.pageDateTime.month}/${vm.pageDateTime.year}';
+
+    String weekdayName = DateFormat('EEEE').format(vm.pageDateTime);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+      Text(isToday?'Today':date, style: AppTextStyle.appBarTextStyle),
+      Text(isToday?date:'($weekdayName)', style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12,fontWeight: FontWeight.normal)),
+    ],);
   }
 }
 
