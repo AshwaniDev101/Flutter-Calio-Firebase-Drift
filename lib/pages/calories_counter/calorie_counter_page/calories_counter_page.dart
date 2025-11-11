@@ -134,9 +134,9 @@ class ScrollWithTopCard extends StatelessWidget {
           child: StreamBuilder(
             stream: vm.watchConsumedFoodStats,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              // if (snapshot.connectionState == ConnectionState.waiting) {
+              //   return const Center(child: CircularProgressIndicator());
+              // }
 
               final foodStats = snapshot.data ?? FoodStats.empty();
               final caloriesCount = foodStats.calories;
@@ -318,36 +318,65 @@ class _FoodListSliver extends StatelessWidget {
       builder: (context, snapshot) {
         final foods = snapshot.data ?? [];
 
+        // Apply search filter
+        final filteredFoods = foods
+            .where((food) => food.name.toLowerCase().contains(viewModel.searchQuery.toLowerCase()))
+            .toList();
+
         if (foods.isEmpty) {
           return const SliverToBoxAdapter(
-            child: Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No foods added yet.'))),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text('No foods added yet.'),
+              ),
+            ),
+          );
+        }
+
+        if (filteredFoods.isEmpty) {
+          return const SliverToBoxAdapter(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text('No foods found.'),
+              ),
+            ),
           );
         }
 
         return SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            final food = foods[index];
-            final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
+          delegate: SliverChildBuilderDelegate(
+                (context, index) {
+              final food = filteredFoods[index];
+              final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: _FoodCard(
-                key: ValueKey(food.id),
-                food: food,
-                barColor: barColor,
-                onQuantityChange: viewModel.onQuantityChange,
-                editDeleteOptionMenu: EditDeleteOptionMenu(
-                  onEdit: () => DietFoodDialog.edit(context, food, (DietFood f) => viewModel.editFood(f)),
-                  onDelete: () => viewModel.deleteFood(food),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: _FoodCard(
+                  key: ValueKey(food.id),
+                  food: food,
+                  barColor: barColor,
+                  onQuantityChange: viewModel.onQuantityChange,
+                  editDeleteOptionMenu: EditDeleteOptionMenu(
+                    onEdit: () => DietFoodDialog.edit(
+                      context,
+                      food,
+                          (DietFood f) => viewModel.editFood(f),
+                    ),
+                    onDelete: () => viewModel.deleteFood(food),
+                  ),
                 ),
-              ),
-            );
-          }, childCount: foods.length),
+              );
+            },
+            childCount: filteredFoods.length, // ⚡ Use filtered list length
+          ),
         );
       },
     );
   }
 }
+
 
 class _FoodCard extends StatelessWidget {
   final DietFood food;

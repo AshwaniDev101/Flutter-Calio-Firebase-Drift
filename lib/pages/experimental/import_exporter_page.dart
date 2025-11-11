@@ -1,11 +1,5 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import '../../models/diet_food.dart';
-import '../../models/food_stats.dart';
-
 
 class ImportExporterPage extends StatelessWidget {
   ImportExporterPage({super.key});
@@ -15,79 +9,67 @@ class ImportExporterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Import Exported'),
-      ),
+      appBar: AppBar(title: Text('Import Exported')),
       body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(onPressed: () {
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
                         // readyData();
                         // uploadHistoryToFirebase();
                         // calorieDataImporter();
                         // readyData();
                         uploadHistoryToFirebase();
-                      }, child: Text('Ready Data')),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            // globalFoodListExporter();
-                            allHistoryDataExporter();
-                          },
-                          child: Text('Export')),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 300,
-                    width: double.infinity,
-                    color: Colors.white,
-                    padding: const EdgeInsets.all(8),
-                    child: TextField(
-                      controller: textEditingController,
-                      readOnly: true,
-                      showCursor: false,
-                      expands: true,
-                      maxLines: null,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontFamily: 'monospace',
-                        fontSize: 8,
-                      ),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isCollapsed: true,
-                      ),
+                      },
+                      child: Text('Ready Data'),
                     ),
+                    SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        // globalFoodListExporter();
+                        allHistoryDataExporter();
+                      },
+                      child: Text('Export'),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: 300,
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(8),
+                  child: TextField(
+                    controller: textEditingController,
+                    readOnly: true,
+                    showCursor: false,
+                    expands: true,
+                    maxLines: null,
+                    style: TextStyle(color: Colors.grey.shade600, fontFamily: 'monospace', fontSize: 8),
+                    decoration: const InputDecoration(border: InputBorder.none, isCollapsed: true),
                   ),
                 ),
-              ],
-            ),
-          )),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-
 
   void allHistoryDataExporter() async {
     final db = FirebaseFirestore.instance;
 
     //users/user1/history/2025/data/1-11
-    final ref =
-    db.collection('users')
-        .doc('user1')
-        .collection('history')
-    .doc('2025')
-    .collection('data');
+    final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
 
     final snapshot = await ref.get();
 
@@ -100,7 +82,6 @@ class ImportExporterPage extends StatelessWidget {
       print('id:${doc.id.toString()} ${data.toString()}\n');
     }
   }
-
 
   final historyList = [
     {
@@ -235,17 +216,10 @@ class ImportExporterPage extends StatelessWidget {
     },
   ];
 
-
-
   Future<void> uploadHistoryToFirebase() async {
     final db = FirebaseFirestore.instance;
 
-    final ref = db
-        .collection('users')
-        .doc('user1')
-        .collection('history')
-        .doc('2025')
-        .collection('data');
+    final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
 
     for (final data in historyList) {
       final String id = data['id'].toString() ?? ref.doc().id.toString(); // use provided ID or generate one
@@ -254,9 +228,6 @@ class ImportExporterPage extends StatelessWidget {
       await ref.doc(id).set(map);
     }
 
-    print('✅ Upload complete. ${historyList.length} documents added.');
+    print('Upload complete. ${historyList.length} documents added.');
   }
-
-
-
 }

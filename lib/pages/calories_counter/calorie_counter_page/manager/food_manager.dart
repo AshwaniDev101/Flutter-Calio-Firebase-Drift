@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:calio/models/consumed_diet_food.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../../../core/utils/logger.dart';
 import '../../../../database/repository/consumed_diet_food_repository.dart';
 import '../../../../database/repository/food_stats_history_repository.dart';
 import '../../../../database/repository/global_diet_food_repository.dart';
@@ -27,9 +28,9 @@ class FoodManager {
       _watchGlobalDietFood(),
       _watchConsumedFood(dateTime),
           (globalDietFoodList, consumedDietFoodList) {
-        print("---- 🔄 Merging Global and Consumed Lists ----");
-        print("Global List Count: ${globalDietFoodList.length}");
-        print("Consumed List Count: ${consumedDietFoodList.length}");
+        // print("---- 🔄 Merging Global and Consumed Lists ----");
+        // print("Global List Count: ${globalDietFoodList.length}");
+        // print("Consumed List Count: ${consumedDietFoodList.length}");
 
         final consumedDietFoodMap = {
           for (final food in consumedDietFoodList) food.id: food
@@ -45,9 +46,10 @@ class FoodManager {
           final gc = gFood.foodStats.calories;
           final cc = consumed.foodStats.calories;
 
-          print("✅ [${gFood.name}] Global: $gc | Consumed: $cc");
           if (gc != cc) {
-            print("❗ Mismatch Detected for ${gFood.name} (ID: ${gFood.id})");
+
+           Log.e("❗ Mismatch Detected for ${gFood.name} (ID: ${gFood.id})");
+           Log.e("Calories $gc != $cc)");
 
             fixMissMatch(gFood,consumed,dateTime);
           }
@@ -58,7 +60,7 @@ class FoodManager {
           );
         }).toList();
 
-        print("---- ✅ Merge Complete | Total: ${mergedList.length} ----");
+        Log.i("---- ✅ Merge Complete G|C[${globalDietFoodList.length}|${consumedDietFoodList.length}] ----");
         mergedList.sort((a, b) => a.name.compareTo(b.name));
 
         return mergedList;

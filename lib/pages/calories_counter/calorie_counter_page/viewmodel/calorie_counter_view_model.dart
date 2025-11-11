@@ -1,6 +1,7 @@
 import 'package:calio/models/consumed_diet_food.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../../core/utils/logger.dart';
 import '../../../../models/diet_food.dart';
 import '../../../../models/food_stats.dart';
 import '../manager/food_manager.dart';
@@ -27,6 +28,8 @@ class CalorieCounterViewModel extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   set updateSearchQuery(String query) {
     _searchQuery = query;
+
+    Log.i('query: $_searchQuery');
     notifyListeners();
   }
 
