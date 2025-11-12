@@ -310,6 +310,48 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
             SizedBox(width: 10),
           ],
         ),
+
+        // const SizedBox(width: 6),
+        //
+        // Row(
+        //   children: [
+        //     InkWell(
+        //       onTap: () {
+        //         DietFoodDialog.add(context, (DietFood food) => vm.addFood(food));
+        //       },
+        //       borderRadius: BorderRadius.circular(18),
+        //       child: Container(
+        //         height: 38, // same as search bar
+        //         padding: const EdgeInsets.symmetric(horizontal: 12),
+        //         decoration: BoxDecoration(
+        //           color: Colors.white, // clean modern look
+        //           borderRadius: BorderRadius.circular(18),
+        //           boxShadow: [
+        //             BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 3, offset: const Offset(0, 1)),
+        //           ],
+        //           border: Border.all(color: Colors.grey.shade300, width: 1), // subtle border
+        //         ),
+        //         child: Row(
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: [
+        //             Icon(Icons.sort, color: AppColors.appbarContent, size: 16),
+        //             // const SizedBox(width: 6),
+        //             // Text(
+        //             //   'New',
+        //             //   style: TextStyle(fontSize: 12, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
+        //             // ),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //
+        //     SizedBox(width: 10),
+        //   ],
+        // ),
+
+
+
+
       ],
     );
   }
@@ -417,7 +459,9 @@ class _FoodCard extends StatelessWidget {
                       food.name,
                       style: AppTextStyle.textStyleCardTitle.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Colors.grey[800],
+                        decoration: food.name=='Deleted'?TextDecoration.lineThrough:null,
+
+                        color: food.name=='Deleted'?Colors.red:Colors.grey[800],
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
