@@ -50,11 +50,7 @@ class _CalorieCounterPageBody extends StatelessWidget {
       backgroundColor: AppColors.appbar,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [getTitle(vm)],
-      ),
+      title: getTitle(context, vm),
       actions: [
         vm.isOldPage
             ? Text('')
@@ -123,23 +119,41 @@ class _CalorieCounterPageBody extends StatelessWidget {
     );
   }
 
-  Widget getTitle(CalorieCounterViewModel vm) {
+
+
+
+  Widget getTitle(BuildContext context,CalorieCounterViewModel vm) {
     bool isToday = isSameDate(vm.pageDateTime, DateTime.now());
 
     String date = '${vm.pageDateTime.day}/${vm.pageDateTime.month}/${vm.pageDateTime.year}';
 
     String weekdayName = DateFormat('EEEE').format(vm.pageDateTime);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(isToday ? 'Today' : date, style: AppTextStyle.appBarTextStyle),
-        Text(
-          isToday ? date : '($weekdayName)',
-          style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.normal),
-        ),
-      ],
+    return InkWell(
+      onTap: () async {
+        final DateTime? selectedDate = await showDatePicker(
+          context: context,
+          initialDate: vm.pageDateTime,
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2100),
+        );
+
+        if (selectedDate != null) {
+          // Update the page with the selected date
+          vm.updatePageDateTime(selectedDate);
+        }
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(isToday ? 'Today' : date, style: AppTextStyle.appBarTextStyle),
+          Text(
+            isToday ? date : '($weekdayName)',
+            style: AppTextStyle.appBarTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.normal),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:calio/models/consumed_diet_food.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../core/utils/logger.dart';
 import '../../../../models/diet_food.dart';
@@ -7,7 +8,7 @@ import '../../../../models/food_stats.dart';
 import '../manager/food_manager.dart';
 
 class CalorieCounterViewModel extends ChangeNotifier {
-  final DateTime pageDateTime;
+  DateTime pageDateTime;
   final bool isOldPage;
 
   CalorieCounterViewModel({required this.pageDateTime, required this.isOldPage});
@@ -56,6 +57,10 @@ class CalorieCounterViewModel extends ChangeNotifier {
 
   }
 
+  void updatePageDateTime(DateTime newDate) {
+    pageDateTime = newDate;
+    notifyListeners();
+  }
 
 
 

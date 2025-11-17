@@ -9,7 +9,6 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
 
   CalorieFoodStatsHistoryViewModel({required this.pageDateTime});
 
-
   final FoodStatsHistoryRepository _repository = FoodStatsHistoryRepository.instance;
 
   List<FoodStatsEntry> monthStatsMap = [];
@@ -20,22 +19,7 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadMonthStats() async {
-    monthStatsMap = await _repository.getMonthStats(
-      year: pageDateTime.year,
-      month: pageDateTime.month,
-    );
-
-    // final data = await FoodHistoryRepository.instance.getYearStats(year: pageDateTime.year);
-    // final Map<int, FoodStats> flattened = {};
-    //
-    // data.forEach((month, days) {
-    //   days.forEach((day, stats) {
-    //     final combinedKey = month * 100 + day; // e.g., 305 → March 5
-    //     flattened[combinedKey] = stats;
-    //   });
-    // });
-
-    // monthStatsMap = flattened;
+    monthStatsMap = await _repository.getMonthStats(year: pageDateTime.year, month: pageDateTime.month);
 
     excessCalories = _calculateNetExcess(monthStatsMap);
 
@@ -51,21 +35,6 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
 
     return total;
   }
-
-
-  // Future<void> runTest() async {
-  //   await FoodHistoryRepository.instance.changeConsumedCount(
-  //     0,
-  //     DietFood(
-  //       id: '-1',
-  //       name: 'Test 0',
-  //       timestamp: Timestamp.fromDate(DateTime.now()),
-  //       foodStats: FoodStats(proteins: 0, carbohydrates: 0, fats: 0, vitamins: 0, minerals: 0, calories: 1),
-  //     ),
-  //     DateTime(2025, 10, 25),
-  //   );
-  //   await loadMonthStats();
-  // }
 
   void onDelete(DateTime cardDateTime) async {
     await _repository.deleteFoodStats(date: cardDateTime);
