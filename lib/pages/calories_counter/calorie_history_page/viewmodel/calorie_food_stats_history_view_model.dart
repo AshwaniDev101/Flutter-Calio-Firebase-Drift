@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import '../../../../core/app_settings.dart';
 import '../../../../database/repository/food_stats_history_repository.dart';
-import '../../../../models/food_stats.dart';
 import '../../../../models/foodstats_entry.dart';
 
 class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {

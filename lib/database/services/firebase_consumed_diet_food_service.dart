@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/consumed_diet_food.dart';
-import '../../models/diet_food.dart';
 import '../../models/food_stats.dart';
 
 class FirebaseConsumedDietFoodService {
@@ -31,7 +30,7 @@ class FirebaseConsumedDietFoodService {
           data['id'] = doc.id;
           final consumed = ConsumedDietFood.fromMap(data);
           list.add(consumed);
-        } catch (e, st) {
+        } catch (e) {
           // Ignore documents that fail to parse.
         }
       }

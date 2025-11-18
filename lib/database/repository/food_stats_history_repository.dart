@@ -1,6 +1,5 @@
 
 
-import '../../models/diet_food.dart';
 import '../../models/food_stats.dart';
 import '../../models/foodstats_entry.dart';
 import '../services/firebase_food_stats_history_service.dart';
