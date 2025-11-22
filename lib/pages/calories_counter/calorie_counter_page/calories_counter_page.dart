@@ -179,15 +179,18 @@ class ScrollWithTopCard extends StatelessWidget {
               final caloriesCount = foodStats.calories;
 
               return Padding(
-                padding: const EdgeInsets.only(top: 5, left: 50, right: 50),
-                child: CalorieSemicircle(
-                  currentCalories: caloriesCount,
-                  atLeastCalories: 1600,
-                  atMostCalories: 2500,
-                  // size: 300,
-                  strokeWidth: 20,
-                  // pulseDuration: Duration(seconds: 10),
+                padding: const EdgeInsets.only(top: 14, left: 50, right: 50),
+
+                child: CalorieSemicircleRefactored(current: caloriesCount,
                 ),
+                // child: CalorieSemicircle(
+                //   currentCalories: caloriesCount,
+                //   atLeastCalories: 1600,
+                //   atMostCalories: 2500,
+                //   // size: 300,
+                //   strokeWidth: 20,
+                //   // pulseDuration: Duration(seconds: 10),
+                // ),
               );
             },
           ),
