@@ -20,11 +20,19 @@ Color getProgressCircleColor(FoodStats foodStats) {
   return getProgressVisuals(foodStats).color;
 }
 
-/// Returns the visuals (color, shadow, icon) based on the progress ratio
+/// Returns the visuals (color, shadow, icon) based on the calorie ratio.
+/// Returns visual color + icon based on the progress ratio.
+/// 4-color system: grey → green → amber → red.
 ProgressVisuals getProgressVisuals(FoodStats foodStats) {
-  final ratio = getProgressRatio(foodStats); // Use the extracted ratio
+  final double ratio = getProgressRatio(foodStats).clamp(0.0, 10.0);
 
-  if (ratio < 0.75) {
+  if (ratio < 0.50) {
+    return const ProgressVisuals(
+      Colors.grey,
+      Colors.grey,
+      Icons.horizontal_rule_rounded, // neutral icon
+    );
+  } else if (ratio < 0.75) {
     return const ProgressVisuals(
       Colors.green,
       Colors.green,
@@ -44,6 +52,8 @@ ProgressVisuals getProgressVisuals(FoodStats foodStats) {
     );
   }
 }
+
+
 
 /// Formats a double for display.
 /// If the number is a whole number (e.g., 1.0), it returns an integer string ('1').
