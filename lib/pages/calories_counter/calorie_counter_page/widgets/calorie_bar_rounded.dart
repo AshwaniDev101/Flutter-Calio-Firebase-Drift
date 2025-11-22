@@ -1,22 +1,22 @@
-// calorie_semicircle.dart
+// calorie_semicircle_refactored.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
-
 import '../../helper/progress_visuals_helper.dart';
 
 class CalorieSemicircle extends StatelessWidget {
   final double currentCalories;
   final double atLeastCalories;
   final double atMostCalories;
-  final double greenPercent; // portion of semicircle reserved for "green" (0..1)
-  final double yellowPercent; // portion up to "yellow" (0..1)
+  final double greenPercent; // 0..1 portion of the semicircle reserved for green
+  final double yellowPercent; // 0..1 portion up to yellow (must be > greenPercent)
   final double strokeWidth;
   final double size;
-  final double overflowFactor; // how far beyond atMost we scale (1.0 => atMost*2)
+  final double overflowFactor; // how far above atMost we map (1.0 => atMost * 2)
   final bool showPercent;
   final Color bgColor;
+  final Color greyColor;
   final Color greenColor;
-  final Color yellowColor;
+  final Color midColor;   // explicit yellow/mid color (new)
   final Color redColor;
 
   const CalorieSemicircle({
@@ -31,21 +31,33 @@ class CalorieSemicircle extends StatelessWidget {
     this.overflowFactor = 1.0,
     this.showPercent = true,
     this.bgColor = const Color(0xFFECEFF1),
-    this.greenColor = const Color(0xFFFFE082),
-    this.yellowColor = const Color(0xFF8CE99A),
+    this.greyColor = const Color(0xFFD8D8D8),
+    this.greenColor = const Color(0xFF8CE99A),
+    this.midColor = const Color(0xFFFFE082), // default soft yellow
     this.redColor = const Color(0xFFFF6B6B),
   })  : assert(greenPercent > 0 && greenPercent < yellowPercent && yellowPercent < 1.0),
         assert(atLeastCalories > 0 && atMostCalories > atLeastCalories),
         assert(overflowFactor > 0);
 
-  // single mapping used for both arc and tick placement
-  double _fracFor(double value) {
-    final a = atLeastCalories.toDouble();
-    final m = atMostCalories.toDouble();
+  double _mapCaloriesToFraction(double value) {
+    final a = atLeastCalories;
+    final m = atMostCalories;
     final g = greenPercent;
     final y = yellowPercent;
-    if (value <= a) return (value / a) * g;
-    if (value <= m) return g + ((value - a) / (m - a)) * (y - g);
+
+    if (value <= a) return _mapBelowAtLeast(value, a, g);
+    if (value <= m) return _mapBetween(value, a, m, g, y);
+    return _mapOverflow(value, m, y);
+  }
+
+  double _mapBelowAtLeast(double value, double a, double g) => (value / a) * g;
+
+  double _mapBetween(double value, double a, double m, double g, double y) {
+    final ratio = (value - a) / (m - a); // 0..1
+    return g + ratio * (y - g);
+  }
+
+  double _mapOverflow(double value, double m, double y) {
     final maxCal = m * (1.0 + overflowFactor);
     final t = ((value - m) / (maxCal - m)).clamp(0.0, 1.0);
     return y + t * (1.0 - y);
@@ -53,15 +65,15 @@ class CalorieSemicircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final frac = _fracFor(currentCalories.toDouble()).clamp(0.0, 1.0);
-    final aFrac = _fracFor(atLeastCalories.toDouble()).clamp(0.0, 1.0);
-    final mFrac = _fracFor(atMostCalories.toDouble()).clamp(0.0, 1.0);
+    final targetFrac = _mapCaloriesToFraction(currentCalories).clamp(0.0, 1.0);
+    final atLeastFrac = _mapCaloriesToFraction(atLeastCalories).clamp(0.0, 1.0);
+    final atMostFrac = _mapCaloriesToFraction(atMostCalories).clamp(0.0, 1.0);
 
     return SizedBox(
       width: size,
       height: size / 2 + 64,
       child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: frac),
+        tween: Tween(begin: 0.0, end: targetFrac),
         duration: const Duration(milliseconds: 420),
         curve: Curves.easeOutCubic,
         builder: (_, animFrac, __) {
@@ -69,38 +81,36 @@ class CalorieSemicircle extends StatelessWidget {
           return Stack(
             alignment: Alignment.topCenter,
             children: [
-              // Semicircle
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
-                // height: size / 2 + strokeWidth,
                 height: size / 2 + strokeWidth / 2,
                 child: CustomPaint(
                   painter: _SemiCirclePainter(
                     animFrac: animFrac,
                     strokeWidth: strokeWidth,
                     bgColor: bgColor,
-                    greenColor: greenColor,
-                    yellowColor: yellowColor,
+                    greenColor: greenColor,    // fixed mapping: greenColor -> green segment
+                    yellowColor: midColor,     // explicit middle/yellow color
                     redColor: redColor,
                     greenPercent: greenPercent,
                     yellowPercent: yellowPercent,
-                    atLeastFrac: aFrac,
-                    atMostFrac: mFrac,
+                    atLeastFrac: atLeastFrac,
+                    atMostFrac: atMostFrac,
                     atLeastValue: atLeastCalories,
                     atMostValue: atMostCalories,
                   ),
                 ),
               ),
               Positioned(
-                top: size / 8+50,
+                top: size / 8 + 50,
                 left: 0,
                 right: 0,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('$currentCalories kcal',
+                    Text('${currentCalories.toStringAsFixed(0)} kcal',
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                     if (showPercent) const SizedBox(height: 6),
                     if (showPercent)
@@ -154,21 +164,27 @@ class _SemiCirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas c, Size s) {
-    final center = Offset(s.width / 2, s.height+50);
-
-    // final center = Offset(s.width / 2, s.height - strokeWidth / 2);
+    // Center is shifted downward intentionally so the semicircle sits within visible area
+    final center = Offset(s.width / 2, s.height + 50);
     final r = s.width / 2;
     final rect = Rect.fromCircle(center: center, radius: r);
     const start = pi;
     const sweep = pi;
 
-    final bg = Paint()
-      ..color = bgColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
-    c.drawArc(rect, start, sweep, false, bg);
+    // background semicircle
+    c.drawArc(
+      rect,
+      start,
+      sweep,
+      false,
+      Paint()
+        ..color = bgColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.butt,
+    );
 
+    // compute sweeps for segments
     final gSweep = sweep * greenPercent;
     final ySweep = sweep * (yellowPercent - greenPercent);
     final rSweep = sweep * (1.0 - yellowPercent);
@@ -182,25 +198,26 @@ class _SemiCirclePainter extends CustomPainter {
     remain -= yDraw;
     final rDraw = remain > 0 ? min(remain, rSweep) : 0.0;
 
-    void seg(double sw, Color col) {
-      if (sw <= 0) return;
+    // draw a segment and advance the current start angle
+    void drawSegment(double sweepAngle, Color color) {
+      if (sweepAngle <= 0) return;
       c.drawArc(
         rect,
         curStart,
-        sw,
+        sweepAngle,
         false,
         Paint()
-          ..color = col
+          ..color = color
           ..style = PaintingStyle.stroke
           ..strokeWidth = strokeWidth
           ..strokeCap = StrokeCap.butt,
       );
-      curStart += sw;
+      curStart += sweepAngle;
     }
 
-    seg(gDraw, greenColor);
-    seg(yDraw, yellowColor);
-    seg(rDraw, redColor);
+    drawSegment(gDraw, greenColor);
+    drawSegment(yDraw, yellowColor);
+    drawSegment(rDraw, redColor);
 
     // ticks
     final tickLenOuter = strokeWidth / 2 + 2;
@@ -217,15 +234,15 @@ class _SemiCirclePainter extends CustomPainter {
     tickAt(atLeastFrac);
     tickAt(atMostFrac);
 
-    // compact pill labels
+    // small labeled pills next to ticks
     void pill(double frac, String text) {
       final a = start + sweep * frac;
       final labelR = r + strokeWidth / 2 + 10;
       final pos = Offset(center.dx + labelR * cos(a), center.dy + labelR * sin(a));
       final tp = TextPainter(
-          text: TextSpan(text: text, style: TextStyle(fontSize: 11, color: Colors.grey.shade900, fontWeight: FontWeight.w600)),
-          textDirection: TextDirection.ltr)
-        ..layout();
+        text: TextSpan(text: text, style: TextStyle(fontSize: 11, color: Colors.grey.shade900, fontWeight: FontWeight.w600)),
+        textDirection: TextDirection.ltr,
+      )..layout();
 
       final ph = 8.0, pv = 4.0;
       final rect = Rect.fromLTWH(pos.dx - tp.width / 2 - ph, pos.dy - tp.height / 2 - pv, tp.width + ph * 2, tp.height + pv * 2);

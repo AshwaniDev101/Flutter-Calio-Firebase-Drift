@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-class CalorieBar extends StatelessWidget {
+class CalorieBarLinear extends StatelessWidget {
   final int currentCalories;
   final int atLeastCalories; // green threshold
   final int atMostCalories; // yellow threshold
@@ -14,7 +14,7 @@ class CalorieBar extends StatelessWidget {
   final Color yellowColor;
   final Color redColor;
 
-  const CalorieBar({
+  const CalorieBarLinear({
     super.key,
     required this.currentCalories,
     required this.atLeastCalories,
@@ -25,7 +25,8 @@ class CalorieBar extends StatelessWidget {
     this.showPercent = true,
     this.bgColor = const Color(0xFFF0F0F0),
     this.greenColor = const Color(0xFF8CE99A),
-    this.yellowColor = const Color(0xFFFFE082),
+    // this.yellowColor = const Color(0xFFFFE082),
+    this.yellowColor = const Color(0xFF9C9C9C),
     this.redColor = const Color(0xFFFF474F),
   })  : assert(greenPercent > 0 && greenPercent < yellowPercent && yellowPercent < 1.0),
         assert(atLeastCalories > 0 && atMostCalories > atLeastCalories);
