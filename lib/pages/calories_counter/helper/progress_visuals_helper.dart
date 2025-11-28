@@ -26,13 +26,40 @@ Color getProgressCircleColor(FoodStats foodStats) {
 ProgressVisuals getProgressVisuals(FoodStats foodStats) {
   final double ratio = getProgressRatio(foodStats).clamp(0.0, 10.0);
 
-  if (ratio < 0.50) {
+  // if (ratio < 0.50) {
+  //   return const ProgressVisuals(
+  //     Colors.grey,
+  //     Colors.grey,
+  //     Icons.horizontal_rule_rounded, // neutral icon
+  //   );
+  // } else if (ratio < 0.75) {
+  //   return const ProgressVisuals(
+  //     Colors.green,
+  //     Colors.green,
+  //     Icons.arrow_downward_rounded,
+  //   );
+  // } else if (ratio < 1.0) {
+  //   return const ProgressVisuals(
+  //     Colors.amber,
+  //     Colors.amber,
+  //     Icons.arrow_downward_rounded,
+  //   );
+  // } else {
+  //   return const ProgressVisuals(
+  //     Colors.red,
+  //     Colors.red,
+  //     Icons.arrow_upward_rounded,
+  //   );
+  // }
+
+
+  if (ratio < 0.6) {
     return const ProgressVisuals(
       Colors.grey,
       Colors.grey,
-      Icons.horizontal_rule_rounded, // neutral icon
+      Icons.apple_rounded, // neutral icon
     );
-  } else if (ratio < 0.75) {
+  } else if (ratio < 0.68) {
     return const ProgressVisuals(
       Colors.green,
       Colors.green,
