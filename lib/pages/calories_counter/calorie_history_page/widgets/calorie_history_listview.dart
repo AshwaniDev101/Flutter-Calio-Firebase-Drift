@@ -159,20 +159,30 @@ class _DayCard extends StatelessWidget {
 
                     const SizedBox(width: 8),
 
+
+                    Expanded(child: Wrap(
+                          spacing: 4,
+                          runSpacing: 2,
+                      children: [
+                        getText()
+
+                      ],
+                    ))
+
                     // Column 3: Nutrient chips
-                    Expanded(
-                      child: Wrap(
-                        spacing: 4,
-                        runSpacing: 2,
-                        children: [
-                          _buildNutrientChip('Protein', foodStats.proteins, Colors.pink.shade300),
-                          _buildNutrientChip('Carbs', foodStats.carbohydrates, Colors.orange.shade300),
-                          _buildNutrientChip('Fats', foodStats.fats, Colors.amber.shade400),
-                          _buildNutrientChip('Vitamins', foodStats.vitamins, Colors.green.shade300),
-                          _buildNutrientChip('Minerals', foodStats.minerals, Colors.blue.shade300),
-                        ],
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: Wrap(
+                    //     spacing: 4,
+                    //     runSpacing: 2,
+                    //     children: [
+                    //       _buildNutrientChip('Protein', foodStats.proteins, Colors.pink.shade300),
+                    //       _buildNutrientChip('Carbs', foodStats.carbohydrates, Colors.orange.shade300),
+                    //       _buildNutrientChip('Fats', foodStats.fats, Colors.amber.shade400),
+                    //       _buildNutrientChip('Vitamins', foodStats.vitamins, Colors.green.shade300),
+                    //       _buildNutrientChip('Minerals', foodStats.minerals, Colors.blue.shade300),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -254,6 +264,106 @@ class _DayCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget getText() {
+    final max = AppSettings.atMaxCalories;
+    final cal = foodStats.calories;
+
+    const rangeA = 1500;
+    const rangeB = 1700;
+
+    String text = "";
+    String stringValue = "";
+    IconData iconData = Icons.square_outlined;
+    Color iconColor = Colors.black;
+
+    if (cal >= rangeA && cal <= rangeB) {
+      text = "Perfect Loss:";
+      stringValue = "${trimTrailingZero(rangeB - cal)} Kcal";
+      iconColor = Colors.green;
+      iconData = Icons.check_circle;
+    }
+    else if (cal > rangeB && cal <= max) {
+      text = "Over-eat:";
+      stringValue = "${trimTrailingZero(cal - rangeB)} Kcal";
+      iconData = Icons.arrow_circle_down_rounded;
+      iconColor = Colors.amber;
+    }
+    else if (cal > max) {
+      text = "Weight gained:";
+      stringValue = "+${trimTrailingZero(cal - max)} Kcal";
+      iconColor = Colors.red;
+      iconData = Icons.warning_rounded;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(iconData, size: 24, color: iconColor),
+            SizedBox(width: 6),
+            Text(text, style: TextStyle(color: iconColor)),
+          ],
+        ),
+        if (stringValue.isNotEmpty)
+          Text(stringValue, style: TextStyle(color: iconColor)),
+      ],
+    );
+  }
+
+// Widget getText() {
+  //
+  //   var max = AppSettings.atMaxCalories;
+  //
+  //   var cal = foodStats.calories;
+  //
+  //   var range_a = 1500;
+  //   var range_b = 1700;
+  //
+  //   String text = "";
+  //   String stringValue = '';
+  //   IconData iconData = Icons.square_outlined;
+  //   Color iconColor = Colors.black;
+  //
+  //   if (cal>range_a && cal<range_b)
+  //     {
+  //       text = "Perfect Lost: ";
+  //     }
+  //   else if(cal>range_b && cal<max)
+  //     {
+  //       text = "Over-eat: ";
+  //
+  //
+  //       stringValue = '${trimTrailingZero(cal-range_b)} Kcal';
+  //       iconData = Icons.arrow_circle_down_rounded;
+  //       iconColor = Colors.amber;
+  //     }
+  //   else if(cal>=max)
+  //   {
+  //     text = "Weight gained:";
+  //
+  //     stringValue='+${trimTrailingZero(cal-max)} Kcal';
+  //   }
+  //
+  //
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.start,
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //
+  //       Row(
+  //         children: [
+  //           Text('${text}', style: TextStyle(color: iconColor),),
+  //           // Icon(iconData,size: 30,color: iconColor,),
+  //         ],
+  //       ),
+  //
+  //       Text(stringValue, style: TextStyle(color: iconColor),),
+  //
+  //     ],
+  //   );
+  // }
 
 
 }
