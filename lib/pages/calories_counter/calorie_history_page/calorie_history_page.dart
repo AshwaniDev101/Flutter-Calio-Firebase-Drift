@@ -35,7 +35,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
             vm.excessCalories > 0 ? "Kcal Gained : " : "Kcal Lost : (${vm.monthStatsMap.length} Days) : ",
             style: TextStyle(fontSize: 12),
           ),
-          Text("${trimTrailingZero(vm.excessCalories)} Kcal",
+          Text("${trimTrailingZero(vm.excessCalories)} Kcal (${kcalToWeightString(vm.excessCalories)})",
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.bold, color: vm.excessCalories > 0 ? Colors.red : Colors.green)),
           SizedBox(
@@ -44,6 +44,18 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
         ],
       ),
     );
+  }
+
+
+  String kcalToWeightString(double kcal) {
+    const double kcalPerKg = 7700;
+
+    double totalKg = kcal / kcalPerKg;
+
+    int kg = totalKg.floor();                        // whole kilograms
+    int g = ((totalKg - kg) * 1000).round();         // remaining grams
+
+    return "${kg}kg${g}g";
   }
 
   @override
