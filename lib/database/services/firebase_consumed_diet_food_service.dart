@@ -16,7 +16,7 @@ class FirebaseConsumedDietFoodService {
     return _db
         .collection(_root)
         .doc(_userId)
-        .collection('user_history')
+        .collection('history')
         .doc('${date.year}')
         .collection('data')
         .doc('${date.day}-${date.month}')
@@ -42,7 +42,7 @@ class FirebaseConsumedDietFoodService {
     final dayMonthDocRef = _db
         .collection(_root)
         .doc(_userId)
-        .collection('user_history')
+        .collection('history')
         .doc('${dateTime.year}')
         .collection('data')
         .doc('${dateTime.day}-${dateTime.month}');
@@ -133,7 +133,7 @@ class FirebaseConsumedDietFoodService {
   //   final dayDocRef = _db
   //       .collection(_root)
   //       .doc(_userId)
-  //       .collection('user_history')
+  //       .collection('history')
   //       .doc('${dateTime.year}')
   //       .collection('data')
   //       .doc('${dateTime.day}-${dateTime.month}');
@@ -163,7 +163,7 @@ class FirebaseConsumedDietFoodService {
     final dayDocRef = _db
         .collection(_root)
         .doc(_userId)
-        .collection('user_history')
+        .collection('history')
         .doc('${dateTime.year}')
         .collection('data')
         .doc('${dateTime.day}-${dateTime.month}');

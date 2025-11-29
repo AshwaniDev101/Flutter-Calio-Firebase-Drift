@@ -3,7 +3,7 @@ import '../../models/food_stats.dart';
 import '../../models/foodstats_entry.dart';
 
 /// A dedicated Firebase service responsible for managing the user's
-/// calorie user_history data.
+/// calorie history data.
 class FirebaseFoodStatsHistoryService {
   FirebaseFoodStatsHistoryService._();
 
@@ -22,7 +22,7 @@ class FirebaseFoodStatsHistoryService {
     final ref = _db
         .collection(_root)
         .doc(_userId)
-        .collection('user_history')
+        .collection('history')
         .doc('${date.year}')
         .collection('data')
         .doc('${date.day}-${date.month}');
@@ -46,7 +46,7 @@ class FirebaseFoodStatsHistoryService {
     final ref = _db
         .collection(_root)
         .doc(_userId)
-        .collection('user_history')
+        .collection('history')
         .doc('$year')
         .collection('data')
         .orderBy('timestamp', descending: true);
@@ -63,7 +63,7 @@ class FirebaseFoodStatsHistoryService {
   // Future<Map<String, FoodStats>> getFoodStatsForMonth({required int year, required int month}) async {
   //   final monthRef = _db.collection(_root)
   //       .doc(_userId)
-  //       .collection('user_history')
+  //       .collection('history')
   //       .doc(year.toString())
   //       .collection('data')
   //       .orderBy('timestamp', descending: true);
@@ -92,7 +92,7 @@ class FirebaseFoodStatsHistoryService {
     final docRef = _db
         .collection(_root)
         .doc(_userId)
-        .collection('user_history')
+        .collection('history')
         .doc(cardDateTime.year.toString())
         .collection('data')
         .doc('${cardDateTime.day}-${cardDateTime.month}');
