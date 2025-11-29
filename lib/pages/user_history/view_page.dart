@@ -1,13 +1,15 @@
 
-import 'package:calio/pages/calories_counter/calorie_history_page/viewmodel/calorie_food_stats_history_view_model.dart';
-import 'package:calio/pages/calories_counter/calorie_history_page/widgets/calorie_history_listview.dart';
+import 'package:calio/models/foodstats_entry.dart';
+import 'package:calio/pages/user_history/view_model.dart';
+import 'package:calio/pages/user_history/widgets/listview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/app_colors.dart';
-import '../calorie_counter_page/calories_counter_page.dart';
-import '../helper/progress_visuals_helper.dart';
+import '../../helper/progress_visuals_helper.dart';
+import '../../widgets/month_heatmap.dart';
+import '../calorie_counter/view_page.dart';
 
-/// Main page displaying calorie history for a month
+/// Main page displaying calorie user_history for a month
 class CalorieHistoryPage extends StatefulWidget {
   const CalorieHistoryPage({super.key});
 
@@ -26,25 +28,50 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
   }
 
   Widget _buildExcessLabel(vm) {
+
+
+
     return Padding(
       padding: const EdgeInsets.all(4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            vm.excessCalories > 0 ? "Kcal Gained : " : "Kcal Lost : (${vm.monthStatsMap.length} Days) : ",
-            style: TextStyle(fontSize: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                vm.excessCalories > 0 ? "Kcal Gained : " : "Kcal Lost : (${vm.monthStatsMap.length} Days) : ",
+                style: TextStyle(fontSize: 12),
+              ),
+              Text("${trimTrailingZero(vm.excessCalories)} Kcal (${kcalToWeightString(vm.excessCalories)})",
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold, color: vm.excessCalories > 0 ? Colors.red : Colors.green)),
+
+
+              SizedBox(
+                width: 10,
+              )
+            ],
           ),
-          Text("${trimTrailingZero(vm.excessCalories)} Kcal (${kcalToWeightString(vm.excessCalories)})",
-              style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.bold, color: vm.excessCalories > 0 ? Colors.red : Colors.green)),
-          SizedBox(
-            width: 10,
-          )
+          getLowerLabel(vm)
+
+
         ],
       ),
     );
   }
+
+
+  Widget getLowerLabel(vm)
+  {
+
+    var severDayDum = sumFirstSevenCalories(vm);
+    return  Text("7Days ${trimTrailingZero(severDayDum)} Kcal (${kcalToWeightString(severDayDum)})",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: vm.excessCalories > 0 ? Colors.red : Colors.green));
+  }
+
 
 
   String kcalToWeightString(double kcal) {
@@ -57,6 +84,22 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
 
     return "${kg}kg${g}g";
   }
+
+  double sumFirstSevenCalories(vm) {
+    List<FoodStatsEntry> items = vm.monthStatsMap;
+
+    int limit = items.length < 7 ? items.length : 7;
+
+    double total = 0;
+    for (int i = 0; i < limit; i++) {
+
+      var diff = items[i].stats.calories - 1700;
+      total += diff;
+    }
+
+    return total;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +167,9 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
         child: Column(
           children: [
             _buildExcessLabel(vm),
+            // Container(color: Colors.green,height: 50,),
+            // // heatLevelMap:{'1':10,'2':20,'3':30,'4':40,'5':50,'6':60,'7':70,'8':80,'9':90,'10':100}
+            MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),
             vm.monthStatsMap.isEmpty
                 ? const Center(child: Text('No data found'))
                 : Expanded(
@@ -153,4 +199,21 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
       ),
     );
   }
+
+
+
+  Stream<Map<String, dynamic>> dummyStream() async* {
+    int counter = 0;
+
+    while (true) {
+      await Future.delayed(Duration(seconds: 1));
+
+      yield {
+
+      };
+
+      counter++;
+    }
+  }
+
 }

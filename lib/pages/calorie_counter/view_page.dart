@@ -1,19 +1,19 @@
 import 'package:calio/models/consumed_diet_food.dart';
-import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/calorie_bar_rounded.dart';
+import 'package:calio/pages/calorie_counter/view_model.dart';
+import 'package:calio/pages/calorie_counter/widgets/calorie_bar_rounded.dart';
+import 'package:calio/pages/calorie_counter/widgets/food_quantity_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:calio/pages/calories_counter/calorie_counter_page/viewmodel/calorie_counter_view_model.dart';
-import 'package:calio/pages/calories_counter/calorie_counter_page/widgets/food_quantity_selector.dart';
 import '../../../core/helper.dart';
 import '../../../models/diet_food.dart';
 import '../../../models/food_stats.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widget/edit_delete_option_menu.dart';
-import '../calorie_history_page/calorie_history_page.dart';
-import '../calorie_history_page/viewmodel/calorie_food_stats_history_view_model.dart';
-import '../helper/progress_visuals_helper.dart';
-import 'new_diet_food/add_edit_diet_food_dialog.dart';
+import '../../helper/progress_visuals_helper.dart';
+import '../../widgets/edit_delete_option_menu.dart';
+import '../user_history/view_model.dart';
+import '../user_history/view_page.dart';
+import 'add_new/add_edit_dialog.dart';
 
 class CalorieCounterPage extends StatelessWidget {
   final DateTime pageDateTime;
@@ -181,7 +181,7 @@ class ScrollWithTopCard extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(top: 14, left: 50, right: 50),
 
-                child: CalorieSemicircleRefactored(current: caloriesCount,
+                child: CalorieSemicircleProgressBar(current: caloriesCount,
                 ),
                 // child: CalorieSemicircle(
                 //   currentCalories: caloriesCount,

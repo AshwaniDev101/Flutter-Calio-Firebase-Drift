@@ -2,10 +2,10 @@ import 'package:calio/models/consumed_diet_food.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/logger.dart';
-import '../../../../models/diet_food.dart';
-import '../../../../models/food_stats.dart';
-import '../manager/food_manager.dart';
+import '../../../core/utils/logger.dart';
+import '../../../models/diet_food.dart';
+import '../../../models/food_stats.dart';
+import 'manager/food_manager.dart';
 
 class CalorieCounterViewModel extends ChangeNotifier {
   DateTime pageDateTime;

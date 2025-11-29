@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 import '../../../../core/app_settings.dart';
 import '../../../../models/food_stats.dart';
 import '../../../../models/foodstats_entry.dart';
-import '../../../../widget/edit_delete_option_menu.dart';
-import '../../helper/progress_visuals_helper.dart';
-import '../../widget/caution_label_widget.dart';
+import '../../../helper/progress_visuals_helper.dart';
+import '../../../widgets/caution_label_widget.dart';
+import '../../../widgets/edit_delete_option_menu.dart';
 
 class CalorieHistoryListview extends StatelessWidget {
   final List<FoodStatsEntry> monthStats;

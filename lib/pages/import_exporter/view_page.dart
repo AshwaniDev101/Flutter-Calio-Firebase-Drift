@@ -68,8 +68,8 @@ class ImportExporterPage extends StatelessWidget {
   void allHistoryDataExporter() async {
     final db = FirebaseFirestore.instance;
 
-    //users/user1/history/2025/data/1-11
-    final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
+    //users/user1/user_history/2025/data/1-11
+    final ref = db.collection('users').doc('user1').collection('user_history').doc('2025').collection('data');
 
     final snapshot = await ref.get();
 
@@ -219,7 +219,7 @@ class ImportExporterPage extends StatelessWidget {
   Future<void> uploadHistoryToFirebase() async {
     final db = FirebaseFirestore.instance;
 
-    final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
+    final ref = db.collection('users').doc('user1').collection('user_history').doc('2025').collection('data');
 
     for (final data in historyList) {
       final String id = data['id'].toString() ?? ref.doc().id.toString(); // use provided ID or generate one
