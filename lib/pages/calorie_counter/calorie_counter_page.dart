@@ -2,9 +2,12 @@ import 'package:calio/pages/calorie_counter/view_model.dart';
 import 'package:calio/pages/calorie_counter/widgets/calorie_counter_sliver_app_bar.dart';
 import 'package:calio/pages/calorie_counter/widgets/food_list_sliver.dart';
 import 'package:calio/pages/calorie_counter/widgets/top_progress_sliver.dart';
+import 'package:calio/pages/calorie_counter/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../models/diet_food.dart';
 import '../../theme/app_colors.dart';
+import 'add_new/add_edit_dialog.dart';
 
 class CalorieCounterPage extends StatelessWidget {
   final DateTime pageDateTime;
@@ -27,11 +30,8 @@ class CalorieCounterPage extends StatelessWidget {
 class _CalorieCounterPageBody extends StatelessWidget {
   const _CalorieCounterPageBody();
 
-
-
   @override
   Widget build(BuildContext context) {
-
     final vm = context.watch<CalorieCounterViewModel>();
 
     return Scaffold(
@@ -48,8 +48,15 @@ class _CalorieCounterPageBody extends StatelessWidget {
             TopProgressSliver(viewModel: vm),
 
             // Search bar
-            const SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: SearchBar())),
+            // SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: SearchBar())),
+            // SliverPadding(
+            //   padding: const EdgeInsets.all(12),
+            //   sliver: SliverToBoxAdapter(
+            //     child: SearchBar(),
+            //   ),
+            // ),
 
+            SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: MySearchBar())),
             // Food list sliver
             FoodListSliver(viewModel: vm),
           ],
@@ -58,3 +65,7 @@ class _CalorieCounterPageBody extends StatelessWidget {
     );
   }
 }
+
+
+
+
