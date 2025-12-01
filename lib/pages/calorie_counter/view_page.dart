@@ -38,91 +38,20 @@ class _CalorieCounterPageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: _buildAppBar(context),
+      // appBar: _buildAppBar(context),
+      // appBar: _buildSliverAppBar(),
+        extendBodyBehindAppBar: true,
       body: const ScrollWithTopCard(),
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    final vm = context.watch<CalorieCounterViewModel>();
 
-    return AppBar(
-      backgroundColor: AppColors.appbar,
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      title: getTitle(context, vm),
-      actions: [
-        vm.isOldPage
-            ? Text('')
-            : Row(
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => ChangeNotifierProvider(
-                              create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: vm.pageDateTime),
-                              child: CalorieHistoryPage(),
-                            ),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_month_rounded, color: AppColors.appbarContent, size: 22),
-                        SizedBox(width: 6),
-                        Text(
-                          'History',
-                          style: TextStyle(fontSize: 14, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-              ],
-            ),
+}
 
-        // PopupMenuButton<String>(
-        //   icon: const Icon(Icons.more_vert_rounded, color: Colors.blueGrey),
-        //   onSelected: (value) {
-        //     switch (value) {
-        //       case 'History':
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(
-        //             builder:
-        //                 (_) => ChangeNotifierProvider(
-        //                   create: (_) => CalorieHistoryViewModel(pageDateTime: vm.pageDateTime),
-        //
-        //                   child: CalorieHistoryPage(),
-        //                 ),
-        //           ),
-        //         );
-        //         break;
-        //       case 'Settings':
-        //         break;
-        //     }
-        //   },
-        //   itemBuilder:
-        //       (_) => const [
-        //         PopupMenuItem(value: 'History', child: Text('History')),
-        //         PopupMenuItem(value: 'Settings', child: Text('Settings')),
-        //       ],
-        // ),
-      ],
-    );
-  }
+class ScrollWithTopCard extends StatelessWidget {
+  const ScrollWithTopCard({super.key});
 
-
-
-
-  Widget getTitle(BuildContext context,CalorieCounterViewModel vm) {
+  Widget getTitle(BuildContext context, CalorieCounterViewModel vm) {
     bool isToday = isSameDate(vm.pageDateTime, DateTime.now());
 
     String date = '${vm.pageDateTime.day}/${vm.pageDateTime.month}/${vm.pageDateTime.year}';
@@ -156,61 +85,98 @@ class _CalorieCounterPageBody extends StatelessWidget {
       ),
     );
   }
-}
 
-class ScrollWithTopCard extends StatelessWidget {
-  const ScrollWithTopCard({super.key});
+  SliverAppBar _buildSliverAppBar(BuildContext context) {
+    final vm = context.watch<CalorieCounterViewModel>();
+
+    return SliverAppBar(
+      floating: true,   // allow to appear on scroll up
+      snap: true,       // snap into view immediately
+      pinned: false,    // do NOT pin (so it can hide)
+      backgroundColor: AppColors.appbar,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      title: getTitle(context, vm),
+
+      actions: [
+        if (!vm.isOldPage)
+          Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ChangeNotifierProvider(
+                        create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: vm.pageDateTime),
+                        child: CalorieHistoryPage(),
+                      ),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_month_rounded, color: AppColors.appbarContent, size: 22),
+                      const SizedBox(width: 6),
+                      Text(
+                        'History',
+                        style: TextStyle(fontSize: 14, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+          ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<CalorieCounterViewModel>();
 
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: StreamBuilder(
-            stream: vm.watchConsumedFoodStats,
-            builder: (context, snapshot) {
-              // if (snapshot.connectionState == ConnectionState.waiting) {
-              //   return const Center(child: CircularProgressIndicator());
-              // }
+    return SafeArea(
+        top: false,
+      child: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(context),
 
-              final foodStats = snapshot.data ?? FoodStats.empty();
-              final caloriesCount = foodStats.calories;
 
-              return Padding(
-                padding: const EdgeInsets.only(top: 14, left: 50, right: 50),
+          // Progress bar Dashboard
+          SliverToBoxAdapter(
+            child: StreamBuilder(
+              stream: vm.watchConsumedFoodStats,
+              builder: (context, snapshot) {
+                // if (snapshot.connectionState == ConnectionState.waiting) {
+                //   return const Center(child: CircularProgressIndicator());
+                // }
 
-                child: CalorieSemicircleProgressBar(current: caloriesCount,
-                ),
-                // child: CalorieSemicircle(
-                //   currentCalories: caloriesCount,
-                //   atLeastCalories: 1600,
-                //   atMostCalories: 2500,
-                //   // size: 300,
-                //   strokeWidth: 20,
-                //   // pulseDuration: Duration(seconds: 10),
-                // ),
-              );
-            },
+                final foodStats = snapshot.data ?? FoodStats.empty();
+                final caloriesCount = foodStats.calories;
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 14, left: 50, right: 50),
+
+                  child: CalorieSemicircleProgressBar(current: caloriesCount),
+
+                );
+              },
+            ),
           ),
-        ),
 
-        // SliverToBoxAdapter(
-        //   child: CalorieProgressBarDashboard(
-        //     currentDateTime: vm.pageDateTime,
-        //     stream: vm.watchConsumedFoodStats,
-        //     onClickAdd: () => DietFoodDialog.add(context, (DietFood food) => vm.addFood(food)),
-        //     onClickBack: () => Navigator.pop(context),
-        //   ),
-        // ),
+          // search bar
+          const SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: _SearchBar())),
 
-        // search bar
-        const SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: _SearchBar())),
-
-        // food list
-        _FoodListSliver(viewModel: vm),
-      ],
+          // food list
+          _FoodListSliver(viewModel: vm),
+        ],
+      ),
     );
   }
 }
@@ -327,48 +293,6 @@ class _SearchBarState extends State<_SearchBar> with WidgetsBindingObserver {
             SizedBox(width: 10),
           ],
         ),
-
-        // const SizedBox(width: 6),
-        //
-        // Row(
-        //   children: [
-        //     InkWell(
-        //       onTap: () {
-        //         DietFoodDialog.add(context, (DietFood food) => vm.addFood(food));
-        //       },
-        //       borderRadius: BorderRadius.circular(18),
-        //       child: Container(
-        //         height: 38, // same as search bar
-        //         padding: const EdgeInsets.symmetric(horizontal: 12),
-        //         decoration: BoxDecoration(
-        //           color: Colors.white, // clean modern look
-        //           borderRadius: BorderRadius.circular(18),
-        //           boxShadow: [
-        //             BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 3, offset: const Offset(0, 1)),
-        //           ],
-        //           border: Border.all(color: Colors.grey.shade300, width: 1), // subtle border
-        //         ),
-        //         child: Row(
-        //           mainAxisSize: MainAxisSize.min,
-        //           children: [
-        //             Icon(Icons.sort, color: AppColors.appbarContent, size: 16),
-        //             // const SizedBox(width: 6),
-        //             // Text(
-        //             //   'New',
-        //             //   style: TextStyle(fontSize: 12, color: AppColors.appbarContent, fontWeight: FontWeight.w500),
-        //             // ),
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //
-        //     SizedBox(width: 10),
-        //   ],
-        // ),
-
-
-
-
       ],
     );
   }
@@ -409,7 +333,7 @@ class _FoodListSliver extends StatelessWidget {
               final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 child: _FoodCard(
                   key: ValueKey(food.id),
                   food: food,
@@ -476,9 +400,9 @@ class _FoodCard extends StatelessWidget {
                       food.name,
                       style: AppTextStyle.textStyleCardTitle.copyWith(
                         fontWeight: FontWeight.w700,
-                        decoration: food.name=='Deleted'?TextDecoration.lineThrough:null,
+                        decoration: food.name == 'Deleted' ? TextDecoration.lineThrough : null,
 
-                        color: food.name=='Deleted'?Colors.red:Colors.grey[800],
+                        color: food.name == 'Deleted' ? Colors.red : Colors.grey[800],
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
