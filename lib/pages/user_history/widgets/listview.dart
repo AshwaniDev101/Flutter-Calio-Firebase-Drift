@@ -272,26 +272,27 @@ class _DayCard extends StatelessWidget {
     const rangeA = 1500;
     const rangeB = 1700;
 
-    String text = "";
-    String stringValue = "";
-    IconData iconData = Icons.square_outlined;
-    Color iconColor = Colors.black;
+    String text = "Under Eating";
+    String stringValue = "${trimTrailingZero(rangeA - cal)} Kcal (eat more)";
+    IconData iconData = Icons.fastfood_rounded;
+    Color iconColor = Colors.grey;
 
     if (cal >= rangeA && cal <= rangeB) {
-      text = "Perfect Loss:";
-      stringValue = "${trimTrailingZero(rangeB - cal)} Kcal";
+      text = "Perfect!";
+      stringValue = "";
+      // stringValue = "${trimTrailingZero(rangeB - cal)} Kcal";
       iconColor = Colors.green;
       iconData = Icons.check_circle;
     }
     else if (cal > rangeB && cal <= max) {
-      text = "Over-eat:";
-      stringValue = "${trimTrailingZero(cal - rangeB)} Kcal";
+      text = "Over Consumed";
+      stringValue = "${trimTrailingZero(cal - rangeB)} Kcal (eat to-much)";
       iconData = Icons.arrow_circle_down_rounded;
       iconColor = Colors.amber;
     }
     else if (cal > max) {
-      text = "Weight gained:";
-      stringValue = "+${trimTrailingZero(cal - max)} Kcal";
+      text = "Over Weight";
+      stringValue = "+${trimTrailingZero(cal - max)} Kcal (gain)";
       iconColor = Colors.red;
       iconData = Icons.warning_rounded;
     }
