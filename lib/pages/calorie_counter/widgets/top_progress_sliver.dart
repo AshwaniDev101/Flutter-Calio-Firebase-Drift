@@ -117,11 +117,6 @@ import 'calorie_bar_rounded.dart';
 
 
 
-import 'package:flutter/material.dart';
-import '../../../models/food_stats.dart';
-import '../view_model.dart';
-import 'calorie_bar_linear.dart';
-import 'calorie_bar_rounded.dart';
 
 class TopProgressSliver extends StatelessWidget {
   final CalorieCounterViewModel viewModel;

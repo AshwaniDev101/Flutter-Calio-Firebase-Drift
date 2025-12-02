@@ -7,7 +7,7 @@ import '../add_new/add_edit_dialog.dart';
 import '../view_model.dart';
 
 class MySearchBar extends StatefulWidget {
-  const MySearchBar();
+  const MySearchBar({super.key});
 
   @override
   State<MySearchBar> createState() => _SearchBarState();
