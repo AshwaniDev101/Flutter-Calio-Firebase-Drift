@@ -166,10 +166,14 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
       body: SafeArea(
         child: Column(
           children: [
+
+            MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),
+
+
             _buildExcessLabel(vm),
             // Container(color: Colors.green,height: 50,),
             // // heatLevelMap:{'1':10,'2':20,'3':30,'4':40,'5':50,'6':60,'7':70,'8':80,'9':90,'10':100}
-            MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),
+
             vm.monthStatsMap.isEmpty
                 ? const Center(child: Text('No data found'))
                 : Expanded(

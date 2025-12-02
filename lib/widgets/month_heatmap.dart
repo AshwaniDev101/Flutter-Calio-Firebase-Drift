@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../core/helper.dart';
 
-
-/// 🧠 Main reactive heatmap widgets
 class MonthHeatmap extends StatelessWidget {
   final DateTime currentDateTime;
   final Stream<Map<String, dynamic>> heatmapStream;
@@ -20,17 +17,12 @@ class MonthHeatmap extends StatelessWidget {
       stream: heatmapStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-            height: 70,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
-          );
+          // Keep the loading indicator compact so it doesn't force a fixed height
+          return const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 1.5)));
         }
 
         if (snapshot.hasError) {
-          return const SizedBox(
-            height: 70,
-            child: Center(child: Text('Error loading heatmap')),
-          );
+          return const Center(child: Text('Error loading heatmap'));
         }
 
         final heatmapData = snapshot.data ?? {};
@@ -44,12 +36,12 @@ class MonthHeatmap extends StatelessWidget {
   }
 }
 
-/// 🧱 Builds the grid layout and handles month calculations
+/// Builds the grid layout and handles month calculations
 class HeatmapGrid extends StatelessWidget {
   final DateTime currentDateTime;
   final Map<String, dynamic> heatmapData;
 
-  final double height = 70;
+  // removed fixed height; keep other sizing constants
   final double hSpacing = 4;
   final double vSpacing = 4;
   final double horizontalPadding = 4;
@@ -79,20 +71,19 @@ class HeatmapGrid extends StatelessWidget {
     const rows = 2;
     final firstWeekday = DateTime(now.year, now.month, 1).weekday;
     final offset = (firstWeekday - 1) % rows;
-    final columns = ((offset + daysInMonth) / rows).ceil();
+    final columns = ((offset + daysInMonth) / rows).ceil().clamp(1, 1000);
 
     final deviceWidth = MediaQuery.of(context).size.width;
     final totalHSpacing = (columns - 1) * hSpacing;
     final availableWidth = deviceWidth - horizontalPadding * 2 - totalHSpacing;
     final rawBoxSize = (availableWidth / columns);
 
-    final totalVSpacing = (rows - 1) * vSpacing;
-    final availableHeight = height - verticalPadding * 2 - totalVSpacing;
-    final rawRowHeight = (availableHeight / rows);
-
+    // Determine box size from width only and clamp to sensible bounds.
+    const double minBox = 6.0;
+    const double maxBox = 48.0;
     final boxSize = rawBoxSize.isFinite
-        ? rawBoxSize.clamp(6.0, 48.0).clamp(0.0, rawRowHeight)
-        : rawRowHeight.clamp(6.0, 48.0);
+        ? rawBoxSize.clamp(minBox, maxBox)
+        : ((minBox + maxBox) / 2);
 
     final placeholderColor = hexToColorWithOpacity("#FFFFFF", 0);
 
@@ -140,10 +131,12 @@ class HeatmapGrid extends StatelessWidget {
 
     final rowContent = Row(children: weekColumns);
 
-    return SizedBox(
-      height: height,
+    // Let the Column size itself (MainAxisSize.min) so the height becomes dynamic.
+    return Container(
       width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -199,7 +192,6 @@ class HeatmapCell extends StatelessWidget {
       child: Center(
         child: Text(
           "$day",
-          // "$day",
           style: TextStyle(fontSize: 8, color: Colors.grey[800]),
         ),
       ),
