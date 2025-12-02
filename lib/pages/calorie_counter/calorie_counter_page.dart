@@ -43,19 +43,9 @@ class _CalorieCounterPageBody extends StatelessWidget {
           slivers: [
             // SliverAppBar
             CalorieCounterSliverAppBar(viewModel: vm),
-
             // Top semicircle progress
             TopProgressSliver(viewModel: vm),
-
             // Search bar
-            // SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: SearchBar())),
-            // SliverPadding(
-            //   padding: const EdgeInsets.all(12),
-            //   sliver: SliverToBoxAdapter(
-            //     child: SearchBar(),
-            //   ),
-            // ),
-
             SliverPadding(padding: EdgeInsets.all(12), sliver: SliverToBoxAdapter(child: MySearchBar())),
             // Food list sliver
             FoodListSliver(viewModel: vm),

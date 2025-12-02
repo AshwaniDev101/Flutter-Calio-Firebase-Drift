@@ -13,29 +13,24 @@ class CalorieCounterViewModel extends ChangeNotifier {
 
   CalorieCounterViewModel({required this.pageDateTime, required this.isOldPage});
 
-
-
   Stream<FoodStats?> get watchConsumedFoodStats => FoodManager.instance.watchConsumedFoodStats(pageDateTime);
-  Stream<List<DietFood>> get watchMergedFoodList => FoodManager.instance.watchMergedFoodList(pageDateTime);
 
+  Stream<List<DietFood>> get watchMergedFoodList => FoodManager.instance.watchMergedFoodList(pageDateTime);
 
   void onQuantityChange(double oldValue, double newValue, ConsumedDietFood food) {
     FoodManager.instance.changeConsumedCount(newValue - oldValue, food, pageDateTime);
   }
 
-
-
-
   String _searchQuery = '';
+
   String get searchQuery => _searchQuery;
+
   set updateSearchQuery(String query) {
     _searchQuery = query;
 
     Log.i('query: $_searchQuery');
     notifyListeners();
   }
-
-
 
   // ===== CRUD OPERATIONS =====
 
@@ -54,14 +49,10 @@ class CalorieCounterViewModel extends ChangeNotifier {
   /// Removes a [DietFood] item from the database.
   void deleteFood(DietFood food) {
     FoodManager.instance.removeFromAvailableFood(food);
-
   }
 
   void updatePageDateTime(DateTime newDate) {
     pageDateTime = newDate;
     notifyListeners();
   }
-
-
-
 }

@@ -16,8 +16,10 @@ class CalorieCounterSliverAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       floating: true,
+
+      // pinned: false,
       snap: true,
-      pinned: false,
+      pinned: true,
       backgroundColor: AppColors.appbar,
       elevation: 0,
       surfaceTintColor: Colors.transparent,

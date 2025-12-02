@@ -1,255 +1,294 @@
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 
-class CalorieBarLinear extends StatelessWidget {
-  final int currentCalories;
-  final int atLeastCalories; // green threshold
-  final int atMostCalories; // yellow threshold
-  final double greenPercent; // portion of bar reserved for "green"
-  final double yellowPercent; // portion of bar reserved for "yellow"
+String _trim(double v) =>
+    v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
+
+
+class CalorieLinearProgressBar extends StatelessWidget {
+  final double current;
+
+  final double maxCalories;
+  final double tick1;
+  final double tick2;
+  final double tick3;
+
+  final Color color0;
+  final Color color1;
+  final Color color2;
+  final Color color3;
+
   final double height;
-  final bool showPercent;
-  final Color bgColor;
-  final Color greenColor;
-  final Color yellowColor;
-  final Color redColor;
+  final Duration animationDuration;
 
-  const CalorieBarLinear({
+  const CalorieLinearProgressBar({
     super.key,
-    required this.currentCalories,
-    required this.atLeastCalories,
-    required this.atMostCalories,
-    this.greenPercent = 0.6,
-    this.yellowPercent = 0.8,
-    this.height = 24.0,
-    this.showPercent = true,
-    this.bgColor = const Color(0xFFF0F0F0),
-    this.greenColor = const Color(0xFF8CE99A),
-    // this.yellowColor = const Color(0xFFFFE082),
-    this.yellowColor = const Color(0xFF9C9C9C),
-    this.redColor = const Color(0xFFFF474F),
-  })  : assert(greenPercent > 0 && greenPercent < yellowPercent && yellowPercent < 1.0),
-        assert(atLeastCalories > 0 && atMostCalories > atLeastCalories);
+    required this.current,
+    this.maxCalories = 3500,
+    this.tick1 = 1500,
+    this.tick2 = 1700,
+    this.tick3 = 2500,
+    this.color0 = const Color(0xFFD8D8D8),
+    this.color1 = const Color(0xFF10DA48),
+    this.color2 = Colors.amber,
+    this.color3 = const Color(0xFFFF6B6B),
+    this.height = 22,
+    this.animationDuration = const Duration(milliseconds: 420),
+  });
 
-  double _computeFraction() {
-    final cur = currentCalories.toDouble();
-    final atLeast = atLeastCalories.toDouble(); // green threshold
-    final atMost = atMostCalories.toDouble();   // yellow threshold
-    final g = greenPercent;                    // 60%
-    final y = yellowPercent;                   // 80%
-
-    if (cur <= atLeast) return (cur / atLeast) * g;
-    if (cur <= atMost) {
-      final t = (cur - atLeast) / (atMost - atLeast);
-      return g + t * (y - g);
-    }
-
-    // Beyond atMost, extend proportionally to some maxCalories
-    final maxCalories = atMost * 2; // for example, adjust as needed
-    final t = ((cur - atMost) / (maxCalories - atMost)).clamp(0.0, 1.0);
-    return y + t * (1.0 - y);
-  }
-
-
-  double displayedPercent() {
-    final cur = currentCalories.toDouble();
-    // final atLeast = atLeastCalories.toDouble();
-    final atMost = atMostCalories.toDouble();
-
-    if (cur <= atMost) {
-      // proportional to atMostCalories as 100%
-      return (cur / atMost) * 100;
-    }
-    // beyond atMost, can scale beyond 100%
-    return (cur / atMost) * 100;
-  }
-
+  double _frac(double v) => (v / maxCalories).clamp(0, 1);
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final totalWidth = constraints.maxWidth;
-      final fraction = _computeFraction().clamp(0.0, 1.0);
+    final f1 = _frac(tick1);
+    final f2 = _frac(tick2);
+    final f3 = _frac(tick3);
 
-      // animate change in fraction smoothly when value changes
-      return TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: fraction),
-        duration: const Duration(milliseconds: 420),
-        curve: Curves.easeOutCubic,
-        builder: (context, animatedFraction, _) {
-          final filledWidth = animatedFraction * totalWidth;
-          final greenW = totalWidth * greenPercent;
-          final yellowW = totalWidth * (yellowPercent - greenPercent);
-          final redW = totalWidth * (1.0 - yellowPercent);
+    final seg0 = f1;
+    final seg1 = (f2 - f1).clamp(0.0, 1.0);
+    final seg2 = (f3 - f2).clamp(0.0, 1.0);
+    final seg3 = (1 - f3).clamp(0.0, 1.0);
 
-          // fixed label width for simple clamping
-          const labelW = 72.0;
-          final labelLeft = (filledWidth - labelW / 2).clamp(0.0, totalWidth - labelW);
+    final targetFrac = _frac(current);
 
-          // percent string
-          // final percentText = (animatedFraction * 100).toStringAsFixed(0) + '%';
-          final percentText = '${displayedPercent().toStringAsFixed(0)}%';
+    final deviceWidth = MediaQuery.of(context).size.width;
+    // Leave small insets from device edge so content doesn't touch the absolute edge.
+    const double deviceHorizontalInset = 16.0;
+    final innerWidth = (deviceWidth - deviceHorizontalInset * 2).clamp(0.0, deviceWidth);
 
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // background
-                  Container(
-                    height: height,
-                    decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(height / 2),
-                      border: Border.all(color: Colors.grey.shade300),
+    return Card(
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+      
+        ),
+      
+      
+        // padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 16,
+          right: 16,
+          bottom: 0, // tighter!
+        ),
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: targetFrac),
+          duration: animationDuration,
+          curve: Curves.easeOutCubic,
+          builder: (context, animFrac, _) {
+            // OverflowBox allows the inner child to be wider than the parent constraints
+            // so it appears full device width even inside padded parent.
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Progress bar
+                SizedBox(
+                  height: height + 10,
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: _LinearPainter(
+                      anim: animFrac,
+                      height: height,
+                      seg0: seg0,
+                      seg1: seg1,
+                      seg2: seg2,
+                      seg3: seg3,
+                      c0: color0,
+                      c1: color1,
+                      c2: color2,
+                      c3: color3,
+                      tick1: f1,
+                      tick2: f2,
+                      tick3: f3,
                     ),
                   ),
-
-                  // vertical markers
-                  Positioned(
-                    left: greenW - 1,
-                    top: 0,
-                    bottom: 0,
-                    child: Container(width: 2, color: Colors.grey.shade400),
-                  ),
-                  Positioned(
-                    left: greenW + yellowW - 1,
-                    top: 0,
-                    bottom: 0,
-                    child: Container(width: 2, color: Colors.grey.shade400),
-                  ),
-
-                  // filled segments (clamped per segment)
-                  // green segment
-                  if (filledWidth > 0)
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: filledWidth.clamp(0.0, greenW),
-                        decoration: BoxDecoration(
-                          color: greenColor,
-                          borderRadius: BorderRadius.horizontal(left: Radius.circular(height / 2)),
-                        ),
-                      ),
-                    ),
-
-                  // yellow segment
-                  if (filledWidth > greenW)
-                    Positioned(
-                      left: greenW,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: (filledWidth - greenW).clamp(0.0, yellowW),
-                        color: yellowColor,
-                      ),
-                    ),
-
-                  // red segment
-                  if (filledWidth > greenW + yellowW)
-                    Positioned(
-                      left: greenW + yellowW,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: (filledWidth - greenW - yellowW).clamp(0.0, redW),
-                        decoration: BoxDecoration(
-                          color: redColor,                     // move color here
-                          borderRadius: BorderRadius.horizontal(right: Radius.circular(height / 2)),
-                        ),
-                      ),
-                    ),
-
-
-                  // floating label above bar
-                  Positioned(
-                    left: labelLeft,
-                    top: -30,
-                    child: Tooltip(
-                      message: '$currentCalories kcal',
-                      child: Container(
-                        width: labelW,
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '$currentCalories kcal',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 2),
-                            Container(
-                              height: 4,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: FractionallySizedBox(
-                                alignment: Alignment.centerLeft,
-                                widthFactor: (animatedFraction).clamp(0.0, 1.0),
-                                child: Container(color: Colors.grey.shade300),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 6),
-
-              // bottom row: thresholds and optional percent
-              SizedBox(
-                height: 18,
-                width: totalWidth,
-                child: Stack(
-                  children: [
-                    // atLeast label (centered approximately on marker)
-                    Positioned(
-                      left: (greenW - 40).clamp(0.0, totalWidth - 80),
-                      child: Text(
-                        '$atLeastCalories kcal',
-                        style: TextStyle(fontSize: 10, color: Colors.grey[700]),
-                      ),
-                    ),
-
-                    // atMost label
-                    Positioned(
-                      left: (greenW + yellowW - 40).clamp(0.0, totalWidth - 80),
-                      child: Text(
-                        '$atMostCalories kcal',
-                        style: TextStyle(fontSize: 10, color: Colors.grey[700]),
-                      ),
-                    ),
-
-                    if (showPercent)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Text(
-                          percentText,
-                          style: TextStyle(fontSize: 10, color: Colors.grey[800], fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                  ],
                 ),
-              ),
-            ],
-          );
-        },
-      );
-    });
+      
+                // tiny gap
+                const SizedBox(height: 2),
+      
+                // Tick labels block:
+                // - most labels sit slightly BELOW their ticks (nudge up by -6)
+                // - tick2 (the middle one) placed ABOVE the bar to avoid overlap (nudge -18)
+                SizedBox(
+                  height: 20,
+                  width: double.infinity,
+                  child: LayoutBuilder(builder: (context, cons) {
+                    final width = cons.maxWidth;
+                    // Use fractional alignment positions; Align uses FractionalOffset( x, 0 )
+                    return Stack(
+                      children: [
+                        // left 0 kcal
+                        Align(
+                          alignment: const FractionalOffset(0, 0),
+                          child: Transform.translate(
+                            offset: const Offset(0, -6),
+                            child: const Text('0 kcal', style: TextStyle(fontSize: 11)),
+                          ),
+                        ),
+      
+                        // tick1 (slightly below)
+                        Align(
+                          alignment: FractionalOffset(f1.clamp(0.0, 1.0), 0),
+                          child: Transform.translate(
+                            offset: const Offset(0, -6),
+                            child: Text(_trim(tick1), style: const TextStyle(fontSize: 11)),
+                          ),
+                        ),
+      
+                        // tick2 (place above the bar to avoid overlap)
+                        Align(
+                          alignment: FractionalOffset(f2.clamp(0.0, 1.0), 0),
+                          child: Transform.translate(
+                            offset: const Offset(0, -50),
+                            child: Text(_trim(tick2), style: const TextStyle(fontSize: 11)),
+                          ),
+                        ),
+      
+                        // tick3 (slightly below)
+                        Align(
+                          alignment: FractionalOffset(f3.clamp(0.0, 1.0), 0),
+                          child: Transform.translate(
+                            offset: const Offset(0, -6),
+                            child: Text(_trim(tick3), style: const TextStyle(fontSize: 11)),
+                          ),
+                        ),
+      
+                        // right infinity label
+                        Align(
+                          alignment: const FractionalOffset(1, 0),
+                          child: Transform.translate(
+                            offset: const Offset(0, -6),
+                            child: const Text('\u221E kcal', style: TextStyle(fontSize: 11)),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+      
+                // const SizedBox(height: 2),
+      
+                // kcal number centered at bottom middle
+                // very small gap then kcal centered at bottom middle (tight)
+                // const SizedBox(height: 4),
+                // use TextStyle height = 1.0 to eliminate extra line-height spacing
+                Transform.translate(
+                  offset: const Offset(0, -2), // pull a touch upwards to tighten gap
+                  child: Text(
+                    '${_trim(current)} kcal',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.0),
+                  ),
+                ),
+                // Text('${_trim(current)} kcal',
+                //     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
+}
+
+/// Painter for the linear bar with square edges, colored dividers and colored ticks.
+class _LinearPainter extends CustomPainter {
+  final double anim;
+  final double height;
+
+  final double seg0, seg1, seg2, seg3;
+  final Color c0, c1, c2, c3;
+
+  final double tick1, tick2, tick3;
+
+  _LinearPainter({
+    required this.anim,
+    required this.height,
+    required this.seg0,
+    required this.seg1,
+    required this.seg2,
+    required this.seg3,
+    required this.c0,
+    required this.c1,
+    required this.c2,
+    required this.c3,
+    required this.tick1,
+    required this.tick2,
+    required this.tick3,
+  });
+
+  @override
+  void paint(Canvas c, Size s) {
+    const double top = 4.0;
+    final double barW = s.width;
+    final double barH = height;
+
+    // background (square)
+    c.drawRect(Rect.fromLTWH(0, top, barW, barH), Paint()..color = const Color(0xFFECEFF1));
+
+    // compute absolute segment widths
+    final s0 = seg0 * barW;
+    final s1 = seg1 * barW;
+    final s2 = seg2 * barW;
+    final s3 = seg3 * barW;
+
+    // fill segments progressively up to anim * total width
+    double remain = anim * barW;
+    double x = 0.0;
+
+    void drawSeg(double segW, Color col) {
+      if (segW <= 0) {
+        x += segW;
+        return;
+      }
+      final toDraw = min(remain, segW);
+      if (toDraw > 0) {
+        c.drawRect(Rect.fromLTWH(x, top, toDraw, barH), Paint()..color = col);
+      }
+      x += segW;
+      remain -= toDraw;
+    }
+
+    drawSeg(s0, c0);
+    drawSeg(s1, c1);
+    drawSeg(s2, c2);
+    drawSeg(s3, c3);
+
+
+    final dividerPaint = Paint()..strokeWidth = 1.3..strokeCap = StrokeCap.butt;
+
+    double d1 = s0;
+    double d2 = s0 + s1;
+    double d3 = s0 + s1 + s2;
+
+    dividerPaint.color = c1;
+    c.drawLine(Offset(d1, top - 3), Offset(d1, top + barH + 3), dividerPaint);
+    dividerPaint.color = c2;
+    c.drawLine(Offset(d2, top - 3), Offset(d2, top + barH + 3), dividerPaint);
+    dividerPaint.color = c3;
+    c.drawLine(Offset(d3, top - 3), Offset(d3, top + barH + 3), dividerPaint);
+
+    // ticks: colored according to their segment color; square caps
+    void drawTick(double frac, Color color) {
+      final xPos = frac * barW;
+      c.drawLine(
+        Offset(xPos, top - 3),
+        Offset(xPos, top + barH + 3),
+        Paint()
+          ..color = color
+          ..strokeWidth = 2
+          ..strokeCap = StrokeCap.butt,
+      );
+    }
+
+    drawTick(tick1, c1);
+    drawTick(tick2, c2);
+    drawTick(tick3, c3);
+  }
+
+  @override
+  bool shouldRepaint(covariant _LinearPainter old) => true;
 }
