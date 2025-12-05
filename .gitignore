@@ -82,3 +82,5 @@ web/build/
 **/_archive/
 **/archive/
 /devtools_options.yaml
+/firestore.rules
+/.firebaserc
