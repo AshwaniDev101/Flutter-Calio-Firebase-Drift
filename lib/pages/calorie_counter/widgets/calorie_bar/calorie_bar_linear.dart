@@ -5,7 +5,7 @@ String _trim(double v) =>
     v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
 
 
-class CalorieLinearProgressBar extends StatelessWidget {
+class CalorieLinearProgressBarWidget extends StatelessWidget {
   final double current;
 
   final double maxCalories;
@@ -21,7 +21,7 @@ class CalorieLinearProgressBar extends StatelessWidget {
   final double height;
   final Duration animationDuration;
 
-  const CalorieLinearProgressBar({
+  const CalorieLinearProgressBarWidget({
     super.key,
     required this.current,
     this.maxCalories = 3500,

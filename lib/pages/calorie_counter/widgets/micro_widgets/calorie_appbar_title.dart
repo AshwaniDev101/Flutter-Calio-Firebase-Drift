@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../core/helper.dart';
-import '../../../theme/app_colors.dart';
+import '../../../../core/helper.dart';
+import '../../../../theme/app_colors.dart';
 
 // AppBar title widget
 class CalorieAppBarTitle extends StatelessWidget {

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import '../../../models/diet_food.dart';
-import '../../../theme/app_colors.dart';
-import '../add_new/add_edit_dialog.dart';
-import '../view_model.dart';
+import '../../../../models/diet_food.dart';
+import '../../../../theme/app_colors.dart';
+import '../../add_new/add_edit_dialog.dart';
+import '../../view_model.dart';
 
-class MySearchBar extends StatefulWidget {
+class MySearchBarSliver extends StatefulWidget {
   final CalorieCounterViewModel viewModel;
 
-  const MySearchBar({required this.viewModel, super.key});
+  const MySearchBarSliver({required this.viewModel, super.key});
 
   @override
-  State<MySearchBar> createState() => _SearchBarState();
+  State<MySearchBarSliver> createState() => _SearchBarState();
 }
 
-class _SearchBarState extends State<MySearchBar> with WidgetsBindingObserver {
+class _SearchBarState extends State<MySearchBarSliver> with WidgetsBindingObserver {
   final FocusNode _focusNode = FocusNode();
   double _prevBottomInset = 0;
 

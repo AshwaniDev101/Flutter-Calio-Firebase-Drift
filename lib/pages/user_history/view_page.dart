@@ -7,7 +7,7 @@ import '../../../theme/app_colors.dart';
 import '../../helper/progress_visuals_helper.dart';
 import '../../widgets/weekdays_progress/weekdays_progress_widget.dart';
 import '../../widgets/weekly_list/weekly_list_widget.dart';
-import '../calorie_counter/calorie_counter_page.dart';
+import '../calorie_counter/view_page.dart';
 
 /// Main page displaying calorie user_history for a month
 class CalorieHistoryPage extends StatefulWidget {

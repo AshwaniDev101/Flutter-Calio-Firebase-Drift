@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../theme/app_colors.dart';
-import '../../user_history/view_model.dart';
-import '../../user_history/view_page.dart';
-import '../view_model.dart';
-import 'calorie_appbar_title.dart';
+import '../../../../theme/app_colors.dart';
+import '../../../user_history/view_model.dart';
+import '../../../user_history/view_page.dart';
+import '../../view_model.dart';
+import '../micro_widgets/calorie_appbar_title.dart';
 
 class CalorieCounterSliverAppBar extends StatelessWidget {
   final CalorieCounterViewModel viewModel;

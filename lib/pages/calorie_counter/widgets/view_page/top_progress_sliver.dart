@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
-import '../../../models/food_stats.dart';
-import '../view_model.dart';
-import 'calorie_bar_linear.dart';
-import 'calorie_bar_rounded.dart';
+import '../../../../models/food_stats.dart';
+import '../../view_model.dart';
+import '../calorie_bar/calorie_bar_linear.dart';
+import '../calorie_bar/calorie_bar_rounded.dart';
 
 
 class TopProgressSliver extends StatelessWidget {
@@ -63,7 +63,7 @@ class _TopProgressHeaderDelegate extends SliverPersistentHeaderDelegate {
         final foodStats = snapshot.data ?? FoodStats.empty();
         return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: CalorieLinearProgressBar(current: foodStats.calories),
+          child: CalorieLinearProgressBarWidget(current: foodStats.calories),
         );
       },
     );
@@ -77,7 +77,7 @@ class _TopProgressHeaderDelegate extends SliverPersistentHeaderDelegate {
         final foodStats = snapshot.data ?? FoodStats.empty();
         return Padding(
           padding: const EdgeInsets.only(top: 14, left: 50, right: 50),
-          child: CalorieSemicircleProgressBar(current: foodStats.calories),
+          child: CalorieSemicircleProgressBarWidget(current: foodStats.calories),
         );
       },
     );

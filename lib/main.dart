@@ -1,5 +1,5 @@
 
-import 'package:calio/pages/calorie_counter/calorie_counter_page.dart';
+import 'package:calio/pages/calorie_counter/view_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 

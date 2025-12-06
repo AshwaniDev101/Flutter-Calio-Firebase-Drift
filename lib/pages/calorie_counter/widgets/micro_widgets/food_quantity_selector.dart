@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../helper/progress_visuals_helper.dart';
+import '../../../../helper/progress_visuals_helper.dart';
 
 
 class FoodQuantitySelector extends StatefulWidget {

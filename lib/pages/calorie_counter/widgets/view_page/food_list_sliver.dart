@@ -1,14 +1,14 @@
 import 'package:calio/widgets/edit_delete_option_menu/edit_delete_option_menu.widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../../helper/progress_visuals_helper.dart';
-import '../../../models/consumed_diet_food.dart';
-import '../../../models/diet_food.dart';
-import '../../../theme/app_colors.dart';
+import '../../../../helper/progress_visuals_helper.dart';
+import '../../../../models/consumed_diet_food.dart';
+import '../../../../models/diet_food.dart';
+import '../../../../theme/app_colors.dart';
 
-import '../add_new/add_edit_dialog.dart';
-import '../view_model.dart';
-import 'food_quantity_selector.dart';
+import '../../add_new/add_edit_dialog.dart';
+import '../../view_model.dart';
+import '../micro_widgets/food_quantity_selector.dart';
 
 // Food list sliver
 // - Uses a stream from ViewModel and applies search filter

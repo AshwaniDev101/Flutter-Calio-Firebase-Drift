@@ -8,7 +8,7 @@ String _trimTrailingZero(double v) {
   return v.toString();
 }
 
-class CalorieSemicircleProgressBar extends StatelessWidget {
+class CalorieSemicircleProgressBarWidget extends StatelessWidget {
   // required
   final double current;
 
@@ -31,7 +31,7 @@ class CalorieSemicircleProgressBar extends StatelessWidget {
   final Color bgColor;
   final Duration animationDuration;
 
-  const CalorieSemicircleProgressBar({
+  const CalorieSemicircleProgressBarWidget({
     super.key,
     required this.current,
     this.maxCalories = 3500.0,

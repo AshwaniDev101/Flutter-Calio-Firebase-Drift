@@ -1,8 +1,8 @@
 import 'package:calio/pages/calorie_counter/view_model.dart';
-import 'package:calio/pages/calorie_counter/widgets/calorie_counter_sliver_app_bar.dart';
-import 'package:calio/pages/calorie_counter/widgets/food_list_sliver.dart';
-import 'package:calio/pages/calorie_counter/widgets/top_progress_sliver.dart';
-import 'package:calio/pages/calorie_counter/widgets/search_bar.dart';
+import 'package:calio/pages/calorie_counter/widgets/view_page/calorie_counter_sliver_app_bar.dart';
+import 'package:calio/pages/calorie_counter/widgets/view_page/food_list_sliver.dart';
+import 'package:calio/pages/calorie_counter/widgets/view_page/search_bar_sliver.dart';
+import 'package:calio/pages/calorie_counter/widgets/view_page/top_progress_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
@@ -49,7 +49,7 @@ class _CalorieCounterPageBody extends StatelessWidget {
             SliverToBoxAdapter(child: MonthHeatmapWidget(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),),
             // MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),
             // Search bar
-            MySearchBar(viewModel: vm),
+            MySearchBarSliver(viewModel: vm),
             // Food list sliver
             FoodListSliver(viewModel: vm),
           ],
