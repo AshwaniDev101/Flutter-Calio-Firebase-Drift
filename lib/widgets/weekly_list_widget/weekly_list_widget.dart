@@ -20,7 +20,7 @@ class WeeklyListWidget extends StatelessWidget {
             padding: const EdgeInsets.all(0),
             decoration: BoxDecoration(
               color: Colors.green[400],
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 4,

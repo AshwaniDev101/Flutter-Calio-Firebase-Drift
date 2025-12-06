@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../helper/progress_visuals_helper.dart';
-import '../../widgets/month_heatmap.dart';
-import '../../widgets/weekly_list/weekly_list_widget.dart';
+import '../../widgets/weekdays_widget/weekdays_widget.dart';
+import '../../widgets/weekly_list_widget/weekly_list_widget.dart';
 import '../calorie_counter/calorie_counter_page.dart';
 
 /// Main page displaying calorie user_history for a month
@@ -173,6 +173,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
 
 
             _buildExcessLabel(vm),
+            WeekDaysWidget(),
             WeeklyListWidget(),
             // Container(color: Colors.green,height: 50,),
             // // heatLevelMap:{'1':10,'2':20,'3':30,'4':40,'5':50,'6':60,'7':70,'8':80,'9':90,'10':100}
