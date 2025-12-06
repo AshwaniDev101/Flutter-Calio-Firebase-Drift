@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
-import '../../core/app_settings.dart';
-import '../../models/food_stats.dart';
-import '../helper/progress_visuals_helper.dart';
+import '../../../core/app_settings.dart';
+import '../../../models/food_stats.dart';
+import '../../helper/progress_visuals_helper.dart';
 
 
 class CationLabelWidget extends StatelessWidget {

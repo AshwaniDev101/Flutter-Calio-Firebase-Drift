@@ -6,7 +6,8 @@ import 'package:calio/pages/calorie_counter/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
-import '../../widgets/month_heatmap.dart';
+import '../../widgets/month_heatmap/month_heatmap_widget.dart';
+
 
 class CalorieCounterPage extends StatelessWidget {
   final DateTime pageDateTime;
@@ -45,7 +46,7 @@ class _CalorieCounterPageBody extends StatelessWidget {
             // Top semicircle progress
             TopProgressSliver(viewModel: vm),
             // Heatmap
-            SliverToBoxAdapter(child: MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),),
+            SliverToBoxAdapter(child: MonthHeatmapWidget(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),),
             // MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),
             // Search bar
             MySearchBar(viewModel: vm),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class NewButton extends StatelessWidget {
+class NewButtonWidget extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final Color? backgroundColor;
@@ -8,7 +8,7 @@ class NewButton extends StatelessWidget {
   final double borderRadius;
   final EdgeInsetsGeometry padding;
 
-  const NewButton({
+  const NewButtonWidget({
     super.key,
     required this.label,
     required this.onPressed,

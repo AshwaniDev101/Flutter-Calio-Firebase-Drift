@@ -1,14 +1,14 @@
 
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../../theme/app_colors.dart';
 
 
-class EditDeleteOptionMenu extends StatelessWidget {
+class EditDeleteOptionMenuWidget extends StatelessWidget {
   final Function() onEdit;
   final Function() onDelete;
 
-  const EditDeleteOptionMenu({
+  const EditDeleteOptionMenuWidget({
     super.key,
     required this.onEdit,
     required this.onDelete,

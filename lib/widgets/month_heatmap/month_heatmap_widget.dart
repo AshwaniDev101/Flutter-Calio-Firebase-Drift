@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../core/helper.dart';
+import '../../../core/helper.dart';
 
-class MonthHeatmap extends StatelessWidget {
+class MonthHeatmapWidget extends StatelessWidget {
   final DateTime currentDateTime;
   final Stream<Map<String, dynamic>> heatmapStream;
 
-  const MonthHeatmap({
+  const MonthHeatmapWidget({
     super.key,
     required this.currentDateTime,
     required this.heatmapStream,

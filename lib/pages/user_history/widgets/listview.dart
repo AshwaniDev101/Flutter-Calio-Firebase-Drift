@@ -5,8 +5,9 @@ import '../../../../core/app_settings.dart';
 import '../../../../models/food_stats.dart';
 import '../../../../models/foodstats_entry.dart';
 import '../../../helper/progress_visuals_helper.dart';
-import '../../../widgets/caution_label_widget.dart';
-import '../../../widgets/edit_delete_option_menu.dart';
+import '../../../widgets/caution_label/caution_label_widget.dart';
+import '../../../widgets/edit_delete_option_menu/edit_delete_option_menu.widget.dart';
+
 
 class CalorieHistoryListview extends StatelessWidget {
   final List<FoodStatsEntry> monthStats;
@@ -40,7 +41,7 @@ class CalorieHistoryListview extends StatelessWidget {
         return _DayCard(
           dateTime: cardDateTime,
           foodStats: entry.stats,
-          editDeleteOptionMenu: EditDeleteOptionMenu(
+          editDeleteOptionMenu: EditDeleteOptionMenuWidget(
             onDelete: () => onDelete(cardDateTime),
             onEdit: () => onEdit(cardDateTime),
           ),
@@ -54,7 +55,7 @@ class CalorieHistoryListview extends StatelessWidget {
 class _DayCard extends StatelessWidget {
   final DateTime dateTime;
   final FoodStats foodStats;
-  final EditDeleteOptionMenu editDeleteOptionMenu;
+  final EditDeleteOptionMenuWidget editDeleteOptionMenu;
 
   const _DayCard({
     // super.key,
