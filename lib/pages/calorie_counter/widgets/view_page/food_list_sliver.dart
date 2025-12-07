@@ -64,7 +64,7 @@ class FoodListSliver extends StatelessWidget {
   }
 }
 
-// Individual food card
+// Improved compact food card
 class _FoodCard extends StatelessWidget {
   final DietFood food;
   final Color barColor;
@@ -83,70 +83,77 @@ class _FoodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDeleted = food.name == 'Deleted';
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-      elevation: 2,
-      color: Colors.white,
-      shadowColor: barColor.withOpacity(0.3),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: Row(
-          children: [
-            Container(
-              width: 6,
-              height: 70,
-              decoration: BoxDecoration(
-                color: barColor,
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), bottomLeft: Radius.circular(14)),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            offset: Offset(0, 1),
+            blurRadius: 3,
+            color: barColor.withOpacity(0.2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 5,
+            height: 60,
+            decoration: BoxDecoration(
+              color: barColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
               ),
             ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      food.name,
-                      style: AppTextStyle.textStyleCardTitle.copyWith(
-                        fontWeight: FontWeight.w700,
-                        decoration: isDeleted ? TextDecoration.lineThrough : null,
-                        color: isDeleted ? Colors.red : Colors.grey[800],
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          '${trimTrailingZero(food.foodStats.calories)} kcal',
-                          style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[700]),
-                        ),
-                        if (food.count > 1)
-                          Text(
-                            ' (total: ${trimTrailingZero(food.foodStats.calories * food.count)})',
-                            style: AppTextStyle.textStyleCardSubTitle.copyWith(color: Colors.grey[600]),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          food.name,
+                          style: AppTextStyle.textStyleCardTitle.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            decoration: isDeleted ? TextDecoration.lineThrough : null,
+                            color: isDeleted ? Colors.red : Colors.grey[850],
                           ),
-                      ],
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    '${trimTrailingZero(food.foodStats.calories)} kcal' +
+                        (food.count > 1 ? '  |  total ${trimTrailingZero(food.foodStats.calories * food.count)}' : ''),
+                    style: AppTextStyle.textStyleCardSubTitle.copyWith(
+                      fontSize: 12,
+                      color: Colors.grey[700],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-
-            FoodQuantitySelector(
-              initialValue: food.count,
-              onChanged:
-                  (oldValue, newValue) => onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
-            ),
-            const SizedBox(width: 6),
-            editDeleteOptionMenu,
-            const SizedBox(width: 6),
-          ],
-        ),
+          ),
+          FoodQuantitySelector(
+            initialValue: food.count,
+            onChanged: (oldValue, newValue) =>
+                onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
+          ),
+          const SizedBox(width: 4),
+          editDeleteOptionMenu,
+          const SizedBox(width: 4),
+        ],
       ),
     );
   }

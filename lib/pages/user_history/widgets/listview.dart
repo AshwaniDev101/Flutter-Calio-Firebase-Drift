@@ -52,13 +52,13 @@ class CalorieHistoryListview extends StatelessWidget {
 
 }
 
+// Improved Compact & Modern DayCard
 class _DayCard extends StatelessWidget {
   final DateTime dateTime;
   final FoodStats foodStats;
   final EditDeleteOptionMenuWidget editDeleteOptionMenu;
 
   const _DayCard({
-    // super.key,
     required this.dateTime,
     required this.foodStats,
     required this.editDeleteOptionMenu,
@@ -66,126 +66,69 @@ class _DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String weekdayName = DateFormat('EEEE').format(dateTime);
+    final weekdayName = DateFormat('EEE').format(dateTime).toUpperCase();
+    final formattedDate = DateFormat('d MMM, y').format(dateTime);
 
-    final cardDay = dateTime.day;
-    final cardMonth = DateFormat.MMMM().format(dateTime);
-    final cardYear = DateFormat.y().format(dateTime);
-
-    return Card(
-      elevation: 1.5,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade300.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Stack(
         children: [
-          Positioned(
-            top: 8,
-            right: 2,
-            child: editDeleteOptionMenu,
-          ),
+          Positioned(top: 6, right: 4, child: editDeleteOptionMenu),
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                // Date
-                Text(
-                  '$cardDay $cardMonth, $cardYear ($weekdayName)',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[500],
-                    fontWeight: FontWeight.w500,
+                // Progress Circle
+                _buildProgressCircle(),
+                const SizedBox(width: 12),
+
+                // Date + Calories + Status
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$formattedDate ($weekdayName)',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
+                      ),
+                      const SizedBox(height: 2),
+
+                      Row(
+                        children: [
+                          Text(
+                            '${trimTrailingZero(foodStats.calories)} kcal',
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '/${AppSettings.atLeastCalories} - max(${AppSettings.atMaxCalories})',
+                            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width:50,
+                          child: CationLabelWidget(foodStats: foodStats)),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(width: 4),
 
-                // 4-column row
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Column 1: Progress Circle
-                    _buildProgressCircle(),
-
-                    const SizedBox(width: 8),
-
-                    // Column 2: Calories info
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${trimTrailingZero(foodStats.calories)} kcal',
-
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                              Text(
-                                '/${AppSettings.atLeastCalories}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  // fontWeight: FontWeight.w600,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                              Text(
-                                'max(${AppSettings.atMaxCalories})',
-                                style: TextStyle(
-                                  fontSize:8,
-                                  // fontWeight: FontWeight.w600,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                            ],)
-
-                          ],
-                        ),
-                        // if (foodStats.calories > AppSettings.atMaxCalories)
-
-                        CationLabelWidget(foodStats: foodStats,)
-
-                      ],
-                    ),
-
-                    const SizedBox(width: 8),
-
-
-                    Expanded(child: Wrap(
-                          spacing: 4,
-                          runSpacing: 2,
-                      children: [
-                        getText()
-
-                      ],
-                    ))
-
-                    // Column 3: Nutrient chips
-                    // Expanded(
-                    //   child: Wrap(
-                    //     spacing: 4,
-                    //     runSpacing: 2,
-                    //     children: [
-                    //       _buildNutrientChip('Protein', foodStats.proteins, Colors.pink.shade300),
-                    //       _buildNutrientChip('Carbs', foodStats.carbohydrates, Colors.orange.shade300),
-                    //       _buildNutrientChip('Fats', foodStats.fats, Colors.amber.shade400),
-                    //       _buildNutrientChip('Vitamins', foodStats.vitamins, Colors.green.shade300),
-                    //       _buildNutrientChip('Minerals', foodStats.minerals, Colors.blue.shade300),
-                    //     ],
-                    //   ),
-                    // ),
-                  ],
-                ),
+                // Status Summary
+                getText(),
               ],
             ),
           ),
@@ -194,24 +137,18 @@ class _DayCard extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildProgressCircle() {
-
-
-
     final progress = getProgressRatio(foodStats);
-
     return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 400),
-      tween: Tween(begin: 0, end: progress > 1.0 ? 1.0 : progress),
+      duration: const Duration(milliseconds: 350),
+      tween: Tween(begin: 0, end: progress > 1 ? 1 : progress),
       builder: (context, animatedValue, _) {
         return Stack(
           alignment: Alignment.center,
           children: [
             SizedBox(
-              height: 36,
-              width: 36,
+              height: 38,
+              width: 38,
               child: CircularProgressIndicator(
                 strokeWidth: 4,
                 value: 1,
@@ -219,57 +156,25 @@ class _DayCard extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 36,
-              width: 36,
+              height: 38,
+              width: 38,
               child: CircularProgressIndicator(
                 strokeWidth: 4,
                 value: animatedValue,
-                color: getProgressCircleColor(foodStats),
                 strokeCap: StrokeCap.round,
+                color: getProgressCircleColor(foodStats),
               ),
             ),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 300),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                // color: progress >= 1.0 ? Colors.redAccent : Colors.black,
-                color: Colors.black,
-              ),
-              child: Text("${(progress * 100).toStringAsFixed(0)}%"),
-            ),
+            Text('${(progress * 100).toStringAsFixed(0)}%', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
           ],
         );
       },
     );
   }
 
-
-  Widget _buildNutrientChip(String label, double value, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(radius: 2.5, backgroundColor: color),
-          const SizedBox(width: 2),
-          Text(
-            '$label: ${trimTrailingZero(value)}',
-            style: TextStyle(fontSize: 10, color: Colors.grey.shade800),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget getText() {
     final max = AppSettings.atMaxCalories;
     final cal = foodStats.calories;
-
     const rangeA = 1500;
     const rangeB = 1700;
 
@@ -279,96 +184,44 @@ class _DayCard extends StatelessWidget {
     Color iconColor = Colors.grey;
 
     if (cal >= rangeA && cal <= rangeB) {
-      text = "Perfect!";
+      text = "Perfect";
       stringValue = "";
-      // stringValue = "${trimTrailingZero(rangeB - cal)} Kcal";
       iconColor = Colors.green;
-      iconData = Icons.check_circle;
-    }
-    else if (cal > rangeB && cal <= max) {
+      iconData = Icons.check_circle_rounded;
+    } else if (cal > rangeB && cal <= max) {
       text = "Over Consumed";
-      stringValue = "${trimTrailingZero(cal - rangeB)} Kcal (eat to-much)";
-      iconData = Icons.arrow_circle_down_rounded;
-      iconColor = Colors.amber;
-    }
-    else if (cal > max) {
-      text = "Over Weight";
-      stringValue = "+${trimTrailingZero(cal - max)} Kcal (gain)";
+      stringValue = "${trimTrailingZero(cal - rangeB)} Kcal (reduce)";
+      iconData = Icons.warning_amber_rounded;
+      iconColor = Colors.orange;
+    } else if (cal > max) {
+      text = "Exceeded";
+      stringValue = "+${trimTrailingZero(cal - max)} Kcal (risk)";
       iconColor = Colors.red;
-      iconData = Icons.warning_rounded;
+      iconData = Icons.error_rounded;
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Row(
           children: [
-            Icon(iconData, size: 24, color: iconColor),
-            SizedBox(width: 6),
-            Text(text, style: TextStyle(color: iconColor)),
+            Icon(iconData, size: 20, color: iconColor),
+            const SizedBox(width: 4),
+            Text(text, style: TextStyle(color: iconColor, fontWeight: FontWeight.w600, fontSize: 12)),
           ],
         ),
         if (stringValue.isNotEmpty)
-          Text(stringValue, style: TextStyle(color: iconColor)),
+          Text(
+            stringValue,
+            style: TextStyle(color: iconColor, fontSize: 11),
+            textAlign: TextAlign.right,
+          ),
       ],
     );
   }
-
-// Widget getText() {
-  //
-  //   var max = AppSettings.atMaxCalories;
-  //
-  //   var cal = foodStats.calories;
-  //
-  //   var range_a = 1500;
-  //   var range_b = 1700;
-  //
-  //   String text = "";
-  //   String stringValue = '';
-  //   IconData iconData = Icons.square_outlined;
-  //   Color iconColor = Colors.black;
-  //
-  //   if (cal>range_a && cal<range_b)
-  //     {
-  //       text = "Perfect Lost: ";
-  //     }
-  //   else if(cal>range_b && cal<max)
-  //     {
-  //       text = "Over-eat: ";
-  //
-  //
-  //       stringValue = '${trimTrailingZero(cal-range_b)} Kcal';
-  //       iconData = Icons.arrow_circle_down_rounded;
-  //       iconColor = Colors.amber;
-  //     }
-  //   else if(cal>=max)
-  //   {
-  //     text = "Weight gained:";
-  //
-  //     stringValue='+${trimTrailingZero(cal-max)} Kcal';
-  //   }
-  //
-  //
-  //   return Column(
-  //     mainAxisAlignment: MainAxisAlignment.start,
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //
-  //       Row(
-  //         children: [
-  //           Text('${text}', style: TextStyle(color: iconColor),),
-  //           // Icon(iconData,size: 30,color: iconColor,),
-  //         ],
-  //       ),
-  //
-  //       Text(stringValue, style: TextStyle(color: iconColor),),
-  //
-  //     ],
-  //   );
-  // }
-
-
 }
+
+
 
 
 
