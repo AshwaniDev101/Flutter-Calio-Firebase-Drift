@@ -7,12 +7,10 @@ import '../../../widgets/caution_label/caution_label_widget.dart';
 class WeeklyListWidget extends StatelessWidget {
   const WeeklyListWidget({super.key});
 
-  final bool isPerfect = false;
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 54,
+      height: 50,   // <-- MAIN HEIGHT
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
@@ -22,64 +20,53 @@ class WeeklyListWidget extends StatelessWidget {
           final color = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              width: 115,
+              duration: const Duration(milliseconds: 250),
+              width: 100,  // <-- MAIN WIDTH
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
               child: Row(
                 children: [
-                  // Left Color Pill
+                  // Left Accent Bar
                   Container(
-                    width: 8,
+                    width: 7,
                     height: double.infinity,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          color.withOpacity(.9),
-                          color.withOpacity(.65),
-                        ],
-                      ),
+                      color: color.withOpacity(.80),
                       borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(14),
-                        bottomLeft: Radius.circular(14),
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
                       ),
                     ),
                   ),
 
                   const SizedBox(width: 6),
 
-                  // Main Content
+                  // Centered Content
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                    child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Week ${index + 11}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: Colors.black.withOpacity(.7),
                             ),
                           ),
-                          const SizedBox(height: 3),
-
-                          // Calorie Label
+                          const SizedBox(height: 2),
                           Text(
                             "12,000 kcal",
                             style: TextStyle(
@@ -91,7 +78,7 @@ class WeeklyListWidget extends StatelessWidget {
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
