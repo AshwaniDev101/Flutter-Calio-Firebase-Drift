@@ -1,8 +1,5 @@
-import 'package:calio/models/food_stats.dart';
 import 'package:flutter/material.dart';
-
 import '../../../theme/app_colors.dart';
-import '../../../widgets/caution_label/caution_label_widget.dart';
 
 class WeeklyListWidget extends StatelessWidget {
   const WeeklyListWidget({super.key});
@@ -10,7 +7,7 @@ class WeeklyListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,   // <-- MAIN HEIGHT
+      height: 50, // <-- MAIN HEIGHT
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
@@ -23,17 +20,11 @@ class WeeklyListWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              width: 100,  // <-- MAIN WIDTH
+              width: 100,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 6,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: Offset(0, 3))],
               ),
               child: Row(
                 children: [
@@ -57,23 +48,27 @@ class WeeklyListWidget extends StatelessWidget {
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "Week ${index + 11}",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black.withOpacity(.7),
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Week ${index + 11}",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black.withValues(alpha: 0.7),
+                                ),
+                              ),
+                              Icon(Icons.star, color: Colors.amber, size: 14)
+                            ],
                           ),
                           const SizedBox(height: 2),
                           Text(
                             "12,000 kcal",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green.shade600,
-                            ),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green.shade600),
                           ),
                         ],
                       ),
