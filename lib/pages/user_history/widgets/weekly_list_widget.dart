@@ -12,71 +12,92 @@ class WeeklyListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,
+      height: 54,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
         itemCount: 7,
-        padding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         itemBuilder: (context, index) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Row(
-              children: [
+          final color = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
-                Container(
-                  width: 6,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: AppColors.colorPalette[index % AppColors.colorPalette.length],
-                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(14), bottomLeft: Radius.circular(14)),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              width: 115,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
                   ),
-                ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  // Left Color Pill
+                  Container(
+                    width: 8,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          color.withOpacity(.9),
+                          color.withOpacity(.65),
+                        ],
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(14),
+                        bottomLeft: Radius.circular(14),
+                      ),
+                    ),
+                  ),
 
-                Container(
-                  width: 100,
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.all(0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [BoxShadow(blurRadius: 4, offset: Offset(0, 2), color: Colors.black.withValues(alpha: 0.05))],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Week ${index + 11}", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                      SizedBox(height: 2),
-                      // SizedBox(
-                      //   width: 50,
-                      //     child: CationLabelWidget(foodStats: FoodStats.empty(),)),
-                      getLabel(),
-                      //
-                    ],
-                  ),
-                ),
-              ],
+                  const SizedBox(width: 6),
+
+                  // Main Content
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Week ${index + 11}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+
+                          // Calorie Label
+                          Text(
+                            "12,000 kcal",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           );
         },
       ),
     );
-  }
-
-  Widget getLabel() {
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text("${12000}", style: TextStyle(fontSize:16 ,color: Colors.green[400], fontWeight: FontWeight.w800)),
-        Text(" kcal", style: TextStyle(fontSize:12 ,color: Colors.green[400], fontWeight: FontWeight.bold)),
-      ],
-    );
-    // return Container(
-    //   width: 74,
-    //   height: 18,
-    //   // decoration: BoxDecoration(color: Colors.green[400], borderRadius: BorderRadius.circular(20)),
-    //   child: Center(child: Text("${12000} kcal", style: TextStyle(fontSize:12 ,color: Colors.green[400], fontWeight: FontWeight.bold))),
-    // );
   }
 }
