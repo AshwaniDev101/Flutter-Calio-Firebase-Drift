@@ -70,13 +70,13 @@ class _DayCard extends StatelessWidget {
     final formattedDate = DateFormat('d MMM, y').format(dateTime);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade300.withOpacity(0.3),
+            color: Colors.grey.shade300.withValues(alpha: 0.3),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
