@@ -112,9 +112,15 @@ class _DayCard extends StatelessWidget {
                             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(width: 6),
+
+
                           Text(
-                            '/${AppSettings.atLeastCalories} - max(${AppSettings.atMaxCalories})',
+                            '/${AppSettings.atLeastCalories})',
                             style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                          ),
+                          Text(
+                            'max(${AppSettings.atMaxCalories})',
+                            style: TextStyle(color: Colors.grey[500], fontSize: 8),
                           )
                         ],
                       ),
@@ -129,6 +135,7 @@ class _DayCard extends StatelessWidget {
 
                 // Status Summary
                 getText(),
+                SizedBox(width: 10,)
               ],
             ),
           ),
