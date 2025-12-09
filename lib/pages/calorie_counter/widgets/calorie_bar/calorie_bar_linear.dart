@@ -1,9 +1,11 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-String _trim(double v) =>
-    v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
+import 'calorie_config.dart';
 
+
+String _trim(double v) => trimTrailingZero(v);
 
 class CalorieLinearProgressBarWidget extends StatelessWidget {
   final double current;
@@ -28,32 +30,35 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
     this.tick1 = 1500,
     this.tick2 = 1700,
     this.tick3 = 2500,
-    // this.color0 = const Color(0xFFD8D8D8),
     this.color0 = const Color(0xFF504D4D),
     this.color1 = const Color(0xFF10DA48),
     this.color2 = Colors.amber,
     this.color3 = const Color(0xFFFF6B6B),
     this.height = 22,
     this.animationDuration = const Duration(milliseconds: 420),
-  });
+  })  : assert(maxCalories > 0),
+        assert(0 <= tick1 && tick1 < tick2 && tick2 < tick3 && tick3 <= maxCalories);
 
   double _frac(double v) => (v / maxCalories).clamp(0, 1);
 
   @override
   Widget build(BuildContext context) {
-    final f1 = _frac(tick1);
-    final f2 = _frac(tick2);
-    final f3 = _frac(tick3);
+    final config = CalorieConfig(
+      maxCalories: maxCalories,
+      tick1: tick1,
+      tick2: tick2,
+      tick3: tick3,
+      color0: color0,
+      color1: color1,
+      color2: color2,
+      color3: color3,
+      animationDuration: animationDuration,
+    );
 
-    final seg0 = f1;
-    final seg1 = (f2 - f1).clamp(0.0, 1.0);
-    final seg2 = (f3 - f2).clamp(0.0, 1.0);
-    final seg3 = (1 - f3).clamp(0.0, 1.0);
-
-    final targetFrac = _frac(current);
+    final seg = config.segments();
+    final targetFrac = config.numToFrac(current);
 
     final deviceWidth = MediaQuery.of(context).size.width;
-    // Leave small insets from device edge so content doesn't touch the absolute edge.
     const double deviceHorizontalInset = 16.0;
     final innerWidth = (deviceWidth - deviceHorizontalInset * 2).clamp(0.0, deviceWidth);
 
@@ -63,12 +68,7 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-      
         ),
-      
-      
-        // padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      
         padding: const EdgeInsets.only(
           top: 16,
           left: 16,
@@ -77,11 +77,9 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
         ),
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: targetFrac),
-          duration: animationDuration,
+          duration: config.animationDuration,
           curve: Curves.easeOutCubic,
           builder: (context, animFrac, _) {
-            // OverflowBox allows the inner child to be wider than the parent constraints
-            // so it appears full device width even inside padded parent.
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -93,33 +91,30 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                     painter: _LinearPainter(
                       anim: animFrac,
                       height: height,
-                      seg0: seg0,
-                      seg1: seg1,
-                      seg2: seg2,
-                      seg3: seg3,
-                      c0: color0,
-                      c1: color1,
-                      c2: color2,
-                      c3: color3,
-                      tick1: f1,
-                      tick2: f2,
-                      tick3: f3,
+                      seg0: seg.segFrac0,
+                      seg1: seg.segFrac1,
+                      seg2: seg.segFrac2,
+                      seg3: seg.segFrac3,
+                      c0: config.color0,
+                      c1: config.color1,
+                      c2: config.color2,
+                      c3: config.color3,
+                      tick1: seg.tick1Frac,
+                      tick2: seg.tick2Frac,
+                      tick3: seg.tick3Frac,
                     ),
                   ),
                 ),
-      
+
                 // tiny gap
                 const SizedBox(height: 2),
-      
+
                 // Tick labels block:
-                // - most labels sit slightly BELOW their ticks (nudge up by -6)
-                // - tick2 (the middle one) placed ABOVE the bar to avoid overlap (nudge -18)
                 SizedBox(
                   height: 20,
                   width: double.infinity,
                   child: LayoutBuilder(builder: (context, cons) {
                     final width = cons.maxWidth;
-                    // Use fractional alignment positions; Align uses FractionalOffset( x, 0 )
                     return Stack(
                       children: [
                         // left 0 kcal
@@ -130,34 +125,34 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                             child: const Text('0 kcal', style: TextStyle(fontSize: 11)),
                           ),
                         ),
-      
+
                         // tick1 (slightly below)
                         Align(
-                          alignment: FractionalOffset(f1.clamp(0.0, 1.0), 0),
+                          alignment: FractionalOffset(seg.tick1Frac.clamp(0.0, 1.0), 0),
                           child: Transform.translate(
                             offset: const Offset(0, -6),
                             child: Text(_trim(tick1), style: const TextStyle(fontSize: 11)),
                           ),
                         ),
-      
+
                         // tick2 (place above the bar to avoid overlap)
                         Align(
-                          alignment: FractionalOffset(f2.clamp(0.0, 1.0), 0),
+                          alignment: FractionalOffset(seg.tick2Frac.clamp(0.0, 1.0), 0),
                           child: Transform.translate(
                             offset: const Offset(0, -50),
                             child: Text(_trim(tick2), style: const TextStyle(fontSize: 11)),
                           ),
                         ),
-      
+
                         // tick3 (slightly below)
                         Align(
-                          alignment: FractionalOffset(f3.clamp(0.0, 1.0), 0),
+                          alignment: FractionalOffset(seg.tick3Frac.clamp(0.0, 1.0), 0),
                           child: Transform.translate(
                             offset: const Offset(0, -6),
                             child: Text(_trim(tick3), style: const TextStyle(fontSize: 11)),
                           ),
                         ),
-      
+
                         // right infinity label
                         Align(
                           alignment: const FractionalOffset(1, 0),
@@ -170,13 +165,8 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                     );
                   }),
                 ),
-      
-                // const SizedBox(height: 2),
-      
+
                 // kcal number centered at bottom middle
-                // very small gap then kcal centered at bottom middle (tight)
-                // const SizedBox(height: 4),
-                // use TextStyle height = 1.0 to eliminate extra line-height spacing
                 Transform.translate(
                   offset: const Offset(0, -2), // pull a touch upwards to tighten gap
                   child: Text(
@@ -184,8 +174,6 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.0),
                   ),
                 ),
-                // Text('${_trim(current)} kcal',
-                //     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               ],
             );
           },

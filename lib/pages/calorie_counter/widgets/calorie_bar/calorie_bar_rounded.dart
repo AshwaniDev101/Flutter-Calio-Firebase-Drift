@@ -1,18 +1,16 @@
 
-
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-String _trimTrailingZero(double v) {
-  if (v == v.roundToDouble()) return v.toStringAsFixed(0);
-  return v.toString();
-}
+import 'calorie_config.dart';
+
 
 class CalorieSemicircleProgressBarWidget extends StatelessWidget {
   // required
   final double current;
 
-  // sensible defaults (user may override)
+  // keep original public API but delegate defaults to CalorieConfig
   final double maxCalories; // what maps to the full semicircle (1.0)
   final double tick1;
   final double tick2;
@@ -38,13 +36,9 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
     this.tick1 = 1500.0,
     this.tick2 = 1700.0,
     this.tick3 = 2500.0,
-    // this.color0 = Colors.grey,
-    // this.color0 = const Color(0xFFD8D8D8),
     this.color0 = const Color(0xFF504D4D),
-    // this.color1 = Colors.green,
-    this.color1  = const Color(0xFF10DA48),
+    this.color1 = const Color(0xFF10DA48),
     this.color2 = Colors.amber,
-    // this.color3 = Colors.red,
     this.color3 = const Color(0xFFFF6B6B),
     this.strokeWidth = 18.0,
     this.size = 220.0,
@@ -54,23 +48,31 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
   })  : assert(maxCalories > 0),
         assert(0 <= tick1 && tick1 < tick2 && tick2 < tick3 && tick3 <= maxCalories);
 
-  // numeric -> fraction helper (0..1)
-  double _numToFrac(double value) => (value / maxCalories).clamp(0.0, 1.0).toDouble();
-
   @override
   Widget build(BuildContext context) {
-    final targetFrac = _numToFrac(current);
+    final config = CalorieConfig(
+      maxCalories: maxCalories,
+      tick1: tick1,
+      tick2: tick2,
+      tick3: tick3,
+      color0: color0,
+      color1: color1,
+      color2: color2,
+      color3: color3,
+      bgColor: bgColor,
+      strokeWidth: strokeWidth,
+      animationDuration: animationDuration,
+    );
 
-    final f1 = _numToFrac(tick1);
-    final f2 = _numToFrac(tick2);
-    final f3 = _numToFrac(tick3);
+    final targetFrac = config.numToFrac(current);
+    final seg = config.segments();
 
     return SizedBox(
       width: size,
       height: size / 2 + 84, // extra space for bottom labels & tick labels
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: targetFrac),
-        duration: animationDuration,
+        duration: config.animationDuration,
         curve: Curves.easeOutCubic,
         builder: (_, animFrac, __) {
           final pct = (animFrac * 100).clamp(0, 999).toStringAsFixed(0);
@@ -87,19 +89,19 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
                 child: CustomPaint(
                   painter: _RefactoredPainter(
                     animFrac: animFrac,
-                    strokeWidth: strokeWidth,
-                    bgColor: bgColor,
-                    segFrac0: f1,
-                    segFrac1: (f2 - f1).clamp(0.0, 1.0),
-                    segFrac2: (f3 - f2).clamp(0.0, 1.0),
-                    segFrac3: (1.0 - f3).clamp(0.0, 1.0),
-                    segColor0: color0,
-                    segColor1: color1,
-                    segColor2: color2,
-                    segColor3: color3,
-                    tick1Frac: f1,
-                    tick2Frac: f2,
-                    tick3Frac: f3,
+                    strokeWidth: config.strokeWidth,
+                    bgColor: config.bgColor,
+                    segFrac0: seg.segFrac0,
+                    segFrac1: seg.segFrac1,
+                    segFrac2: seg.segFrac2,
+                    segFrac3: seg.segFrac3,
+                    segColor0: config.color0,
+                    segColor1: config.color1,
+                    segColor2: config.color2,
+                    segColor3: config.color3,
+                    tick1Frac: seg.tick1Frac,
+                    tick2Frac: seg.tick2Frac,
+                    tick3Frac: seg.tick3Frac,
                     tick1Value: tick1,
                     tick2Value: tick2,
                     tick3Value: tick3,
@@ -117,7 +119,7 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${_trimTrailingZero(current)} kcal',
+                      '${trimTrailingZero(current)} kcal',
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                     ),
                     if (showCenterPercent) const SizedBox(height: 6),
@@ -139,7 +141,6 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('0 kcal', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-                    // Text('kcal', style: TextStyle(fontSize: 12, color: Colors.grey[700], fontWeight: FontWeight.w600)),
                     Text('\u221E kcal', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
                   ],
                 ),
@@ -249,7 +250,7 @@ class _RefactoredPainter extends CustomPainter {
 
     // Increase outer length and inner length so ticks cut across the arc thickness
     final tickOuter = strokeWidth / 2 + 10; // extends outside arc
-    final tickInner = strokeWidth / 2 + 0;  // extends inside arc
+    final tickInner = strokeWidth / 2 + 0; // extends inside arc
 
     void drawTick(double frac, Color color, double value) {
       final angle = start + totalSweep * frac;
@@ -265,7 +266,7 @@ class _RefactoredPainter extends CustomPainter {
 
       final tp = TextPainter(
         text: TextSpan(
-          text: _trimTrailingZero(value),
+          text: trimTrailingZero(value),
           style: TextStyle(fontSize: 11, color: Colors.grey.shade900),
         ),
         textDirection: TextDirection.ltr,
