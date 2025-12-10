@@ -7,14 +7,14 @@ class WeeklyListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50, // <-- MAIN HEIGHT
+      height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
         itemCount: 7,
         padding: const EdgeInsets.symmetric(horizontal: 6),
         itemBuilder: (context, index) {
-          final color = AppColors.colorPalette[index % AppColors.colorPalette.length];
+          final cardColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -33,7 +33,8 @@ class WeeklyListWidget extends StatelessWidget {
                     width: 7,
                     height: double.infinity,
                     decoration: BoxDecoration(
-                      color: color.withOpacity(.80),
+                      // color: color.withOpacity(.80),
+                      color: cardColor,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         bottomLeft: Radius.circular(12),
