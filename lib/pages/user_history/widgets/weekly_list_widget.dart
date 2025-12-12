@@ -1,8 +1,11 @@
+import 'package:calio/models/week_stats.dart';
 import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 
 class WeeklyListWidget extends StatelessWidget {
-  const WeeklyListWidget({super.key});
+
+  final List<WeekStats> weekStatsList;
+  const WeeklyListWidget({super.key, required this.weekStatsList});
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +14,12 @@ class WeeklyListWidget extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
-        itemCount: 7,
+        itemCount: weekStatsList.length,
         padding: const EdgeInsets.symmetric(horizontal: 6),
         itemBuilder: (context, index) {
-          final cardColor =
-          AppColors.colorPalette[index % AppColors.colorPalette.length];
+          final cardColor = AppColors.getColorOnWeek(weekStatsList[index].foodStatsEntry.getDateTime(weekStatsList[index].year)); //colorPalette[index % AppColors.colorPalette.length];
+
+          WeekStats weekStats = weekStatsList[index];
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -44,7 +48,7 @@ class WeeklyListWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Week ${index + 11}",
+                              "Week ${weekStats.weekNumber}",
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -58,7 +62,7 @@ class WeeklyListWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "12,000 kcal",
+                          "${weekStats.foodStatsEntry.stats.calories}",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,

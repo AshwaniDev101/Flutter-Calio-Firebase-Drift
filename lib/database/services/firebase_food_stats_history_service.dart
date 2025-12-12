@@ -39,9 +39,8 @@ class FirebaseFoodStatsHistoryService {
   }
 
   /// Retrieves all stored [FoodStats] documents for a specific [year] and [month].
-  Future<List<FoodStatsEntry>> getFoodStatsForMonth({
+  Future<List<FoodStatsEntry>> getAllFoodStats({
     required int year,
-    required int month,
   }) async {
     final ref = _db
         .collection(_root)

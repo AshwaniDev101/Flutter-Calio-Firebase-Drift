@@ -23,11 +23,10 @@ class FoodStatsHistoryRepository {
   }
 
   /// Get food stats for a specific month
-  Future<List<FoodStatsEntry>> getMonthStats({
+  Future<List<FoodStatsEntry>> getYearStats({
     required int year,
-    required int month,
   }) {
-    return _service.getFoodStatsForMonth(year: year, month: month);
+    return _service.getAllFoodStats(year: year);
   }
 
 

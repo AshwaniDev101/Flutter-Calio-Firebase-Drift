@@ -1,4 +1,5 @@
 
+import 'package:calio/models/week_stats.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/app_settings.dart';
@@ -20,144 +21,14 @@ class DayCard extends StatelessWidget {
     required this.editDeleteOptionMenu,
   });
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   final weekdayName = DateFormat('EEE').format(dateTime).toUpperCase();
-  //   final formattedDate = DateFormat('d MMM, y').format(dateTime);
-  //
-  //   // ISO week calculation
-  //   final numberOfDays = int.parse(DateFormat("D").format(dateTime));
-  //   final int weekDayNo = dateTime.weekday;
-  //   final int weekInTheYear = ((numberOfDays - weekDayNo + 10) ~/ 7);
-  //
-  //   final cardColor = AppColors.colorPalette[weekInTheYear % AppColors.colorPalette.length];
-  //
-  //   return Container(
-  //     margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-  //     child: IntrinsicHeight( // ensures left bar matches card height
-  //       child: Row(
-  //         crossAxisAlignment: CrossAxisAlignment.stretch,
-  //         children: [
-  //           // Left colored bar
-  //           Container(
-  //             width: 8,
-  //             decoration: BoxDecoration(
-  //               color: cardColor,
-  //               borderRadius: const BorderRadius.only(
-  //                 topLeft: Radius.circular(12),
-  //                 bottomLeft: Radius.circular(12),
-  //               ),
-  //             ),
-  //           ),
-  //
-  //           // Card content
-  //           Expanded(
-  //             child: Container(
-  //               decoration: BoxDecoration(
-  //                 color: Colors.white,
-  //                 borderRadius: const BorderRadius.only(
-  //                   topRight: Radius.circular(14),
-  //                   bottomRight: Radius.circular(14),
-  //                 ),
-  //                 boxShadow: [
-  //                   BoxShadow(
-  //                     color: Colors.grey.shade300.withValues(alpha: 0.3),
-  //                     spreadRadius: 1,
-  //                     blurRadius: 4,
-  //                     offset: const Offset(0, 2),
-  //                   ),
-  //                 ],
-  //               ),
-  //               child: Stack(
-  //                 children: [
-  //                   // Edit/Delete menu
-  //                   Positioned(top: 6, right: 4, child: editDeleteOptionMenu),
-  //                   Padding(
-  //                     padding: const EdgeInsets.all(12.0),
-  //                     child: Row(
-  //                       children: [
-  //                         // Progress Circle
-  //                         _buildProgressCircle(),
-  //                         const SizedBox(width: 12),
-  //
-  //                         // Date + Calories + Status
-  //                         Expanded(
-  //                           child: Column(
-  //                             crossAxisAlignment: CrossAxisAlignment.start,
-  //                             children: [
-  //                               RichText(
-  //                                 text: TextSpan(
-  //                                   style: TextStyle(
-  //                                     fontSize: 11,
-  //                                     fontWeight: FontWeight.w500,
-  //                                     color: Colors.grey[500], // default color
-  //                                   ),
-  //                                   children: [
-  //                                     TextSpan(text: formattedDate + ' '), // Date in default color
-  //                                     TextSpan(
-  //                                       text: '($weekdayName) ',
-  //                                       style: const TextStyle(fontWeight: FontWeight.bold), // weekday bold
-  //                                     ),
-  //                                     TextSpan(
-  //                                       text: '-week:$weekInTheYear',
-  //                                       style: TextStyle(color: Colors.blue[400], fontStyle: FontStyle.italic,), // week number in different color
-  //                                     ),
-  //                                   ],
-  //                                 ),
-  //                               ),
-  //                               const SizedBox(height: 2),
-  //                               Row(
-  //                                 children: [
-  //                                   Text(
-  //                                     '${trimTrailingZero(foodStats.calories)} kcal',
-  //                                     style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-  //                                   ),
-  //                                   const SizedBox(width: 6),
-  //                                   Text(
-  //                                     '/${AppSettings.atLeastCalories})',
-  //                                     style: TextStyle(color: Colors.grey[500], fontSize: 11),
-  //                                   ),
-  //                                   const SizedBox(width: 4),
-  //                                   Text(
-  //                                     'max(${AppSettings.atMaxCalories})',
-  //                                     style: TextStyle(color: Colors.grey[500], fontSize: 8),
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                               const SizedBox(height: 4),
-  //                               SizedBox(
-  //                                 width: 50,
-  //                                 child: CationLabelWidget(foodStats: foodStats),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                         const SizedBox(width: 4),
-  //
-  //                         // Status Summary
-  //                         getText(),
-  //                         const SizedBox(width: 10),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     final weekdayName = DateFormat('EEE').format(dateTime).toUpperCase();
     final formattedDate = DateFormat('d MMM, y').format(dateTime);
 
-    // ISO week calculation
-    final numberOfDays = int.parse(DateFormat("D").format(dateTime));
-    final int weekDayNo = dateTime.weekday;
-    final int weekInTheYear = ((numberOfDays - weekDayNo + 10) ~/ 7); // Week ${weekInTheYear} example: Week 16
+
+
+
 
     final Color cardColor = AppColors.getColorOnWeek(dateTime);
 
@@ -205,7 +76,7 @@ class DayCard extends StatelessWidget {
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
-                              text: "-week:$weekInTheYear",
+                              text: "-week:${WeekStats.getWeekInTheYear(dateTime)}",
                               style: TextStyle(
                                 fontStyle: FontStyle.italic,
                                 color: Colors.blue[400],

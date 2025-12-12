@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import '../../../core/app_settings.dart';
 import '../../../database/repository/food_stats_history_repository.dart';
 import '../../../models/food_stats_entry.dart';
+import '../../models/food_stats.dart';
+import '../../models/week_stats.dart';
 
 class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
@@ -10,38 +12,56 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
 
   final FoodStatsHistoryRepository _repository = FoodStatsHistoryRepository.instance;
 
-  List<FoodStatsEntry> monthStatsMap = [];
+  List<FoodStatsEntry> yearStatsMap = [];
+  List<WeekStats> weekListMap = [];
+
   double excessCalories = 0;
 
   Future<void> loadMonthStats() async {
-    await _loadMonthStats();
-  }
+    yearStatsMap = await _repository.getYearStats(year: pageDateTime.year);
 
-  Future<void> _loadMonthStats() async {
-    monthStatsMap = await _repository.getMonthStats(year: pageDateTime.year, month: pageDateTime.month);
-
-    excessCalories = _calculateNetExcess(monthStatsMap);
+    // excessCalories = _filterYearStatsMap(yearStatsMap);
 
     notifyListeners();
   }
 
-  double _calculateNetExcess(List<FoodStatsEntry> monthStats) {
-    double total = 0;
+  // This function is responsible for going though the whole list and filtering it. Extracting Data like Week List
+  void _filterYearStatsMap(List<FoodStatsEntry> monthStats) {
+    // double total = 0;
 
-    for (var entry in monthStats) {
-      total += entry.stats.calories - AppSettings.atMaxCalories;
+    int currentWeekNumber = -1;
+
+    WeekStats weekStats = WeekStats(
+      year: pageDateTime.year,
+      foodStatsEntry: FoodStatsEntry('empty', FoodStats.empty()),
+    );
+
+    for (FoodStatsEntry entry in monthStats) {
+      // Set access calories
+      // excessCalories += entry.stats.calories - AppSettings.atMaxCalories;
+
+      // WeekStats weekStats = WeekStats(year:pageDateTime.year, foodStatsEntry: entry);
+
+      if (currentWeekNumber == WeekStats.getWeekInTheYear(pageDateTime)) {
+        weekStats.foodStatsEntry.stats.sum(entry.stats);
+      } else {
+        if (weekStats.foodStatsEntry.id != 'empty') {
+          weekListMap.add(weekStats);
+        }
+
+        currentWeekNumber = weekStats.weekNumber;
+        weekStats = WeekStats(year: pageDateTime.year, foodStatsEntry: FoodStatsEntry('empty', FoodStats.empty()));
+      }
     }
-
-    return total;
+    // return total;
   }
 
   void onDelete(DateTime cardDateTime) async {
     await _repository.deleteFoodStats(date: cardDateTime);
     // monthStatsMap.remove(cardDateTime.day.toString());
-    monthStatsMap.remove('${cardDateTime.day.toString()}-${cardDateTime.month.toString()}');
+    yearStatsMap.remove('${cardDateTime.day.toString()}-${cardDateTime.month.toString()}');
     notifyListeners();
   }
-
 
   String kcalToWeightString(double kcal) {
     const double kcalPerKg = 7700;
@@ -55,7 +75,7 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   }
 
   double sumFirstSevenCalories(vm) {
-    List<FoodStatsEntry> items = vm.monthStatsMap;
+    List<FoodStatsEntry> items = vm.yearStatsMap;
 
     int limit = items.length < 7 ? items.length : 7;
 

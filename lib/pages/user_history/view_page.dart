@@ -101,18 +101,20 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
         ],
       ),
       body: SafeArea(
-        child: vm.monthStatsMap.isEmpty
+        child: vm.yearStatsMap.isEmpty
             ? const Center(child: Text('No data found'))
             : Column(
               children: [
-                WeeklyListWidget(),
+                WeeklyListWidget(
+                  weekStatsList: vm.weekListMap,
+                ),
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: vm.loadMonthStats,
                     color: AppColors.getColorOnWeek(vm.pageDateTime),
                     child: CalorieHistoryListview(
                       pageDateTime: vm.pageDateTime,
-                      monthStats: vm.monthStatsMap,
+                      monthStats: vm.yearStatsMap,
                       onEdit: (DateTime cardDateTime) {
                         Navigator.push(
                           context,
@@ -147,7 +149,7 @@ class _CalorieHistoryPageState extends State<CalorieHistoryPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                vm.excessCalories > 0 ? "Kcal Gained : " : "Kcal Lost : (${vm.monthStatsMap.length} Days) : ",
+                vm.excessCalories > 0 ? "Kcal Gained : " : "Kcal Lost : (${vm.yearStatsMap.length} Days) : ",
                 style: TextStyle(fontSize: 12),
               ),
               Text(
