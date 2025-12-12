@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AppColors {
   // Color Palette
@@ -8,15 +11,15 @@ class AppColors {
   static const Color fourth = Color(0xFFE5E9C5);
 
   // App bar
-  static Color appbar = Colors.grey[100]!;
+  static final Color appbar = Colors.grey[100]!;
 
   // Value for Colors.blueGrey.shade50
-  static Color appbarContent = Color(0xFF546E7A);
+  static final Color appbarContent = Color(0xFF546E7A);
 
   // static const Color appbarContent = Color(0xFFECEFF1);
 
-  static Color backgroundColor = Colors.grey[100]!;
-  static Color slideUpPanelColor = Colors.grey[100]!;
+  static final Color backgroundColor = Colors.grey[100]!;
+  static final Color slideUpPanelColor = Colors.grey[100]!;
 
   // Option Menu
   // Value for Colors.grey.shade50
@@ -63,6 +66,27 @@ class AppColors {
     Color(0xFFEC407A),
     Color(0xFFAB47BC),
   ];
+
+
+  static final Random _rand = Random();
+  Color get randomColor => colorPalette[_rand.nextInt(colorPalette.length)];
+
+
+
+  static Color getColorOnWeek(DateTime dateTime)
+  {
+    // ISO week calculation
+    final numberOfDays = int.parse(DateFormat("D").format(dateTime));
+    final int weekDayNo = dateTime.weekday;
+    final int weekInTheYear = ((numberOfDays - weekDayNo + 10) ~/ 7);
+
+    return getColorAtIndex(weekInTheYear);
+  }
+
+  static Color getColorAtIndex(int index)
+  {
+    return colorPalette[index % colorPalette.length];
+  }
 }
 
 class AppTextStyle {

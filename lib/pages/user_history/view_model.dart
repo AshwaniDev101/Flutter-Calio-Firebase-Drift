@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import '../../../core/app_settings.dart';
 import '../../../database/repository/food_stats_history_repository.dart';
-import '../../../models/foodstats_entry.dart';
+import '../../../models/food_stats_entry.dart';
 
 class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
@@ -40,5 +40,31 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
     // monthStatsMap.remove(cardDateTime.day.toString());
     monthStatsMap.remove('${cardDateTime.day.toString()}-${cardDateTime.month.toString()}');
     notifyListeners();
+  }
+
+
+  String kcalToWeightString(double kcal) {
+    const double kcalPerKg = 7700;
+
+    double totalKg = kcal / kcalPerKg;
+
+    int kg = totalKg.floor(); // whole kilograms
+    int g = ((totalKg - kg) * 1000).round(); // remaining grams
+
+    return "${kg}kg${g}g";
+  }
+
+  double sumFirstSevenCalories(vm) {
+    List<FoodStatsEntry> items = vm.monthStatsMap;
+
+    int limit = items.length < 7 ? items.length : 7;
+
+    double total = 0;
+    for (int i = 0; i < limit; i++) {
+      var diff = items[i].stats.calories - 1700;
+      total += diff;
+    }
+
+    return total;
   }
 }

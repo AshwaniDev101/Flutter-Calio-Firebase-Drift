@@ -2,64 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/app_settings.dart';
+import '../../../../helper/progress_visuals_helper.dart';
 import '../../../../models/food_stats.dart';
-import '../../../../models/foodstats_entry.dart';
-import '../../../helper/progress_visuals_helper.dart';
-import '../../../theme/app_colors.dart';
-import '../../../widgets/caution_label/caution_label_widget.dart';
-import '../../../widgets/edit_delete_option_menu/edit_delete_option_menu.widget.dart';
+import '../../../../theme/app_colors.dart';
+import '../../../../widgets/caution_label/caution_label_widget.dart';
+import '../../../../widgets/edit_delete_option_menu/edit_delete_option_menu.widget.dart';
 
-
-class CalorieHistoryListview extends StatelessWidget {
-  final List<FoodStatsEntry> monthStats;
-  final DateTime pageDateTime;
-
-  final void Function(DateTime) onEdit;
-  final void Function(DateTime) onDelete;
-
-  const CalorieHistoryListview(
-      {required this.pageDateTime, required this.monthStats, required this.onEdit, required this.onDelete, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Sort entries by ID (descending by date)
-    final sortedStats = List<FoodStatsEntry>.from(monthStats);
-      // ..sort((a, b) => b.id.compareTo(a.id));
-
-    return ListView.separated(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: sortedStats.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 6),
-      itemBuilder: (context, index) {
-        final entry = sortedStats[index];
-        final parts = entry.id.split('-');
-        final day = int.parse(parts[0]);
-        final month = int.parse(parts[1]);
-
-        final cardDateTime = DateTime(pageDateTime.year, month, day);
-
-        return _DayCard(
-          dateTime: cardDateTime,
-          foodStats: entry.stats,
-          editDeleteOptionMenu: EditDeleteOptionMenuWidget(
-            onDelete: () => onDelete(cardDateTime),
-            onEdit: () => onEdit(cardDateTime),
-          ),
-        );
-      },
-    );
-  }
-
-}
-
-// Improved Compact & Modern DayCard
-class _DayCard extends StatelessWidget {
+class DayCard extends StatelessWidget {
   final DateTime dateTime;
   final FoodStats foodStats;
   final EditDeleteOptionMenuWidget editDeleteOptionMenu;
 
-  const _DayCard({
+  const DayCard({
+    super.key,
     required this.dateTime,
     required this.foodStats,
     required this.editDeleteOptionMenu,
@@ -202,9 +157,9 @@ class _DayCard extends StatelessWidget {
     // ISO week calculation
     final numberOfDays = int.parse(DateFormat("D").format(dateTime));
     final int weekDayNo = dateTime.weekday;
-    final int weekInTheYear = ((numberOfDays - weekDayNo + 10) ~/ 7);
+    final int weekInTheYear = ((numberOfDays - weekDayNo + 10) ~/ 7); // Week ${weekInTheYear} example: Week 16
 
-    final Color cardColor = AppColors.colorPalette[weekInTheYear % AppColors.colorPalette.length];
+    final Color cardColor = AppColors.getColorOnWeek(dateTime);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
@@ -453,12 +408,6 @@ class CornerTrianglePainter extends CustomPainter {
   bool shouldRepaint(CornerTrianglePainter oldDelegate) =>
       oldDelegate.color != color || oldDelegate.isTopLeft != isTopLeft;
 }
-
-
-
-
-
-
 
 
 

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/food_stats.dart';
-import '../../models/foodstats_entry.dart';
+import '../../models/food_stats_entry.dart';
 
 /// A dedicated Firebase service responsible for managing the user's
 /// calorie history data.

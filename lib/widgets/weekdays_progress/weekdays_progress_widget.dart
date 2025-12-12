@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Currently not in used
 class WeekDaysProgressWidget extends StatelessWidget {
   final Map<int, bool> weekStatus; // 1 = Mon → 7 = Sun
   const WeekDaysProgressWidget({super.key, required this.weekStatus});

@@ -1,7 +1,7 @@
 
 
 import '../../models/food_stats.dart';
-import '../../models/foodstats_entry.dart';
+import '../../models/food_stats_entry.dart';
 import '../services/firebase_food_stats_history_service.dart';
 
 /// Repository for calorie data
