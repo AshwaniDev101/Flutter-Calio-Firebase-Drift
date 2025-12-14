@@ -35,7 +35,7 @@ class CalorieHistoryListview extends StatelessWidget {
 
         return DayCard(
           dateTime: cardDateTime,
-          foodStats: entry.stats,
+          foodStats: entry.foodStats,
           editDeleteOptionMenu: EditDeleteOptionMenuWidget(
             onDelete: () => onDelete(cardDateTime),
             onEdit: () => onEdit(cardDateTime),

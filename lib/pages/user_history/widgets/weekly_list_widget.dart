@@ -17,8 +17,9 @@ class WeeklyListWidget extends StatelessWidget {
         itemCount: weekStatsList.length,
         padding: const EdgeInsets.symmetric(horizontal: 6),
         itemBuilder: (context, index) {
-          final cardColor = AppColors.getColorOnWeek(weekStatsList[index].foodStatsEntry.getDateTime(weekStatsList[index].year)); //colorPalette[index % AppColors.colorPalette.length];
+          // final cardColor = AppColors.getColorOnWeek(weekStatsList[index].foodStatsEntry.getDateTime(weekStatsList[index].year)); //colorPalette[index % AppColors.colorPalette.length];
 
+          final cardColor = AppColors.getColorAtIndex(weekStatsList[index].weekNumber);
           WeekStats weekStats = weekStatsList[index];
 
           return Padding(
@@ -62,7 +63,7 @@ class WeeklyListWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "${weekStats.foodStatsEntry.stats.calories}",
+                          "${weekStats.foodStatsEntry.foodStats.calories}",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
