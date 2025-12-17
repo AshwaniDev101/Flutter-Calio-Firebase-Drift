@@ -13,7 +13,6 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
 
   List<FoodStatsEntry> yearStatsMap = [];
   List<WeekStats> weekListMap = [
-
   ];
 
   // double excessCalories = 0;
@@ -34,20 +33,27 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
     int? currentWeekNumber;
     FoodStats foodStatsTotal = FoodStats.empty();
 
+    String? lastEntryId;
+
     for (final entry in allStatsList) {
       final entryWeek = WeekStats.getWeekInTheYear(
         entry.getDateTime(pageDateTime.year),
       );
 
+      // print('${currentWeekNumber} == ${entryWeek}');
+
       if (currentWeekNumber == entryWeek) {
-        foodStatsTotal.sum(entry.foodStats);
+        foodStatsTotal = foodStatsTotal.sum(entry.foodStats);
+
+        // print('foodStats ${entry.foodStats.calories}');
+        // print('foodStatsTotal == ${foodStatsTotal.calories}');
       } else {
         if (currentWeekNumber != null) {
           weekListMap.add(
             WeekStats(
               year: pageDateTime.year,
               foodStatsEntry: FoodStatsEntry(
-                entry.id,
+                lastEntryId!,
                 foodStatsTotal,
               ),
             ),
@@ -55,9 +61,9 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
         }
 
         currentWeekNumber = entryWeek;
-        foodStatsTotal = FoodStats.empty();
-        foodStatsTotal.sum(entry.foodStats);
+        foodStatsTotal = entry.foodStats;
       }
+      lastEntryId = entry.id;
     }
 
     // add last week
@@ -66,12 +72,19 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
         WeekStats(
           year: pageDateTime.year,
           foodStatsEntry: FoodStatsEntry(
-            "test",
+            lastEntryId!,
             foodStatsTotal,
           ),
         ),
       );
     }
+
+    // print('=========================');
+    //
+    // weekListMap.forEach((entry){
+    //   print('${entry.weekNumber} ${entry.foodStatsEntry.foodStats.calories}');
+    // });
+
   }
 
 

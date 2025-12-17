@@ -8,7 +8,7 @@ class FoodStatsEntry {
 
   DateTime getDateTime(int year) {
 
-    print("ID:${id}");
+    // print("ID:${id}");
     final parts = id.split('-');
     final day = int.parse(parts[0]);
     final month = int.parse(parts[1]);
