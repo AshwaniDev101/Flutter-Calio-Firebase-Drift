@@ -26,12 +26,10 @@ class HeatmapGrid extends StatelessWidget {
   final DateTime currentDateTime;
   final Map<String, FoodStats> heatmapData;
 
-  // removed fixed height; keep other sizing constants
   final double hSpacing = 4;
   final double vSpacing = 4;
   final double horizontalPadding = 4;
   final double verticalPadding = 4;
-  final bool useHorizontalScroll = true;
 
   const HeatmapGrid({
     super.key,
@@ -42,24 +40,15 @@ class HeatmapGrid extends StatelessWidget {
   int _daysInMonth(DateTime date) => DateTime(date.year, date.month + 1, 0).day;
 
   Color _getColor(double calories) {
-
-    if(calories>1500 && calories<=1700)
-      {
-        // return Colors.green;
-        return hexToColorWithOpacity("#6ede8a", 50);
-      }
-    else if(calories>1700 && calories<=2500)
-      {
-        return hexToColorWithOpacity("#ffe66d", 50);
-      }
-    else if(calories>2500)
-    {
+    if (calories > 1500 && calories <= 1700) {
+      return hexToColorWithOpacity("#6ede8a", 50);
+    } else if (calories > 1700 && calories <= 2500) {
+      return hexToColorWithOpacity("#ffe66d", 50);
+    } else if (calories > 2500) {
       return hexToColorWithOpacity("#ff6b6b", 50);
+    } else {
+      return hexToColorWithOpacity("#EBEDF0", 100);
     }
-    else
-      {
-        return hexToColorWithOpacity("#EBEDF0", 100);
-      }
   }
 
   @override
@@ -67,50 +56,18 @@ class HeatmapGrid extends StatelessWidget {
     final now = currentDateTime;
     final daysInMonth = _daysInMonth(now);
 
-    const rows = 2;
-    // Calculate columns needed to fit all days in 'rows' rows
-    final columns = (daysInMonth / rows).ceil().clamp(1, 1000);
-
+    // Increased columnsPerRow from 11 to 15 to make cells even smaller.
+    const int columnsPerRow = 16;
+    
     final deviceWidth = MediaQuery.of(context).size.width;
-    final totalHSpacing = (columns - 1) * hSpacing;
-    final availableWidth = deviceWidth - horizontalPadding * 2 - totalHSpacing;
-    final rawBoxSize = (availableWidth / columns);
+    final availableWidth = deviceWidth - horizontalPadding * 2 - 8; // -8 for internal padding
+    final totalHSpacing = (columnsPerRow - 1) * hSpacing;
+    
+    // Calculate square box size to fit exactly columnsPerRow in the width
+    final boxSize = (availableWidth - totalHSpacing) / columnsPerRow;
 
-    // Determine box size from width only and clamp to sensible bounds.
-    const double minBox = 6.0;
-    const double maxBox = 48.0;
-    final boxSize = rawBoxSize.isFinite
-        ? rawBoxSize.clamp(minBox, maxBox)
-        : ((minBox + maxBox) / 2);
-
-    final placeholderColor = hexToColorWithOpacity("#FFFFFF", 0);
-
-    final totalCells = columns * rows;
-    final cells = List.generate(totalCells, (cellIndex) {
-      // Determine row and column from the flat cellIndex
-      // This maps cells column-by-column into the weekColumns list below.
-      final rowIndex = cellIndex % rows;
-      final colIndex = cellIndex ~/ rows;
-
-      // To get Day 1, 2, 3... in the top row, we calculate the day based on colIndex
-      // Row 0: colIndex + 1
-      // Row 1: colIndex + 1 + columns
-      final dayNumber = colIndex + 1 + (rowIndex * columns);
-      final isValidDay = dayNumber >= 1 && dayNumber <= daysInMonth;
-
-      if (!isValidDay) {
-        return Container(
-          width: boxSize,
-          height: boxSize,
-          margin: EdgeInsets.only(bottom: vSpacing),
-          decoration: BoxDecoration(
-            color: placeholderColor,
-            borderRadius: BorderRadius.circular(3),
-          ),
-        );
-      }
-
-      // Updated key format to match "day-month-year"
+    final cells = List.generate(daysInMonth, (index) {
+      final dayNumber = index + 1;
       final key = "$dayNumber-${now.month}-${now.year}";
       final stats = heatmapData[key];
       final calories = stats?.calories ?? 0.0;
@@ -128,20 +85,6 @@ class HeatmapGrid extends StatelessWidget {
       );
     });
 
-    final weekColumns = List.generate(columns, (colIndex) {
-      final start = colIndex * rows;
-      final end = start + rows;
-      final columnCells = cells.sublist(start, end);
-
-      return Container(
-        margin: EdgeInsets.only(right: colIndex == columns - 1 ? 0 : hSpacing),
-        child: Column(children: columnCells),
-      );
-    });
-
-    final rowContent = Row(children: weekColumns);
-
-    // Let the Column size itself (MainAxisSize.min) so the height becomes dynamic.
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
@@ -158,12 +101,11 @@ class HeatmapGrid extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(4.0),
-            child: useHorizontalScroll
-                ? SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: rowContent,
-            )
-                : rowContent,
+            child: Wrap(
+              spacing: hSpacing,
+              runSpacing: 0, // HeatmapCell handles its own bottom margin via vSpacing
+              children: cells,
+            ),
           ),
         ],
       ),
