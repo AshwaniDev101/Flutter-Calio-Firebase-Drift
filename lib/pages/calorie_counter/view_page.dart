@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/month_heatmap/month_heatmap_widget.dart';
+import '../user_history/view_model.dart';
 
 
 class CalorieCounterPage extends StatelessWidget {
@@ -20,8 +21,15 @@ class CalorieCounterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Creates the ViewModel for the page.
-    return ChangeNotifierProvider(
-      create: (_) => CalorieCounterViewModel(pageDateTime: pageDateTime, isOldPage: isOldPage),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => CalorieCounterViewModel(pageDateTime: pageDateTime, isOldPage: isOldPage),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: pageDateTime)..loadMonthStats(),
+        ),
+      ],
       child: const _CalorieCounterPageBody(),
     );
   }
@@ -30,9 +38,14 @@ class CalorieCounterPage extends StatelessWidget {
 class _CalorieCounterPageBody extends StatelessWidget {
   const _CalorieCounterPageBody();
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<CalorieCounterViewModel>();
+    final vmHistory = context.watch<CalorieFoodStatsHistoryViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -46,8 +59,12 @@ class _CalorieCounterPageBody extends StatelessWidget {
             // Top semicircle progress
             TopProgressSliver(viewModel: vm),
             // Heatmap
-            SliverToBoxAdapter(child: MonthHeatmapWidget(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),),
-            // MonthHeatmap(currentDateTime: DateTime.now(),heatmapStream: dummyStream(),),
+            SliverToBoxAdapter(
+              child: MonthHeatmapWidget(
+                currentDateTime: vm.pageDateTime,
+                heatmapData: vmHistory.heatmap,
+              ),
+            ),
             // Search bar
             MySearchBarSliver(viewModel: vm),
             // Food list sliver
@@ -57,24 +74,4 @@ class _CalorieCounterPageBody extends StatelessWidget {
       ),
     );
   }
-
-
-
-  Stream<Map<String, dynamic>> dummyStream() async* {
-    int counter = 0;
-
-    while (true) {
-      await Future.delayed(Duration(seconds: 1));
-
-      yield {
-
-      };
-
-      counter++;
-    }
-  }
 }
-
-
-
-

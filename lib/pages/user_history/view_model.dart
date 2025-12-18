@@ -12,8 +12,8 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
   final FoodStatsHistoryRepository _repository = FoodStatsHistoryRepository.instance;
 
   List<FoodStatsEntry> yearStatsMap = [];
-  List<WeekStats> weekListMap = [
-  ];
+  List<WeekStats> weekListMap = [];
+  Map<String,FoodStats> heatmap = {};
 
   // double excessCalories = 0;
 
@@ -36,9 +36,10 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
     String? lastEntryId;
 
     for (final entry in allStatsList) {
-      final entryWeek = WeekStats.getWeekInTheYear(
-        entry.getDateTime(pageDateTime.year),
-      );
+
+      heatmap['${entry.id}-${pageDateTime.year}'] = entry.foodStats;
+
+      final entryWeek = WeekStats.getWeekInTheYear(entry.getDateTime(pageDateTime.year));
 
       // print('${currentWeekNumber} == ${entryWeek}');
 
@@ -50,13 +51,7 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
       } else {
         if (currentWeekNumber != null) {
           weekListMap.add(
-            WeekStats(
-              year: pageDateTime.year,
-              foodStatsEntry: FoodStatsEntry(
-                lastEntryId!,
-                foodStatsTotal,
-              ),
-            ),
+            WeekStats(year: pageDateTime.year, foodStatsEntry: FoodStatsEntry(lastEntryId!, foodStatsTotal)),
           );
         }
 
@@ -68,15 +63,7 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
 
     // add last week
     if (currentWeekNumber != null) {
-      weekListMap.add(
-        WeekStats(
-          year: pageDateTime.year,
-          foodStatsEntry: FoodStatsEntry(
-            lastEntryId!,
-            foodStatsTotal,
-          ),
-        ),
-      );
+      weekListMap.add(WeekStats(year: pageDateTime.year, foodStatsEntry: FoodStatsEntry(lastEntryId!, foodStatsTotal)));
     }
 
     // print('=========================');
@@ -84,9 +71,7 @@ class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
     // weekListMap.forEach((entry){
     //   print('${entry.weekNumber} ${entry.foodStatsEntry.foodStats.calories}');
     // });
-
   }
-
 
   void onDelete(DateTime cardDateTime) async {
     await _repository.deleteFoodStats(date: cardDateTime);

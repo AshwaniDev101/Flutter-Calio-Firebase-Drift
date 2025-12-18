@@ -1,37 +1,22 @@
 import 'package:flutter/material.dart';
 import '../../../core/helper.dart';
+import '../../models/food_stats.dart';
 
 class MonthHeatmapWidget extends StatelessWidget {
   final DateTime currentDateTime;
-  final Stream<Map<String, dynamic>> heatmapStream;
+  final Map<String, FoodStats> heatmapData;
 
   const MonthHeatmapWidget({
     super.key,
     required this.currentDateTime,
-    required this.heatmapStream,
+    required this.heatmapData,
   });
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Map<String, dynamic>>(
-      stream: heatmapStream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Keep the loading indicator compact so it doesn't force a fixed height
-          return const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 1.5)));
-        }
-
-        if (snapshot.hasError) {
-          return const Center(child: Text('Error loading heatmap'));
-        }
-
-        final heatmapData = snapshot.data ?? {};
-
-        return HeatmapGrid(
-          currentDateTime: currentDateTime,
-          heatmapData: heatmapData,
-        );
-      },
+    return HeatmapGrid(
+      currentDateTime: currentDateTime,
+      heatmapData: heatmapData,
     );
   }
 }
@@ -39,7 +24,7 @@ class MonthHeatmapWidget extends StatelessWidget {
 /// Builds the grid layout and handles month calculations
 class HeatmapGrid extends StatelessWidget {
   final DateTime currentDateTime;
-  final Map<String, dynamic> heatmapData;
+  final Map<String, FoodStats> heatmapData;
 
   // removed fixed height; keep other sizing constants
   final double hSpacing = 4;
@@ -56,11 +41,25 @@ class HeatmapGrid extends StatelessWidget {
 
   int _daysInMonth(DateTime date) => DateTime(date.year, date.month + 1, 0).day;
 
-  Color _getColor(double percentage) {
-    percentage = percentage.clamp(0, 100);
-    return percentage == 0
-        ? hexToColorWithOpacity("#EBEDF0", 100)
-        : hexToColorWithOpacity("#38d9a9", percentage);
+  Color _getColor(double calories) {
+
+    if(calories>1500 && calories<=1700)
+      {
+        // return Colors.green;
+        return hexToColorWithOpacity("#6ede8a", 100);
+      }
+    else if(calories>1700 && calories<=2500)
+      {
+        return hexToColorWithOpacity("#ffe66d", 100);
+      }
+    else if(calories>2500)
+    {
+      return hexToColorWithOpacity("#ff6b6b", 100);
+    }
+    else
+      {
+        return hexToColorWithOpacity("#EBEDF0", 100);
+      }
   }
 
   @override
@@ -69,9 +68,8 @@ class HeatmapGrid extends StatelessWidget {
     final daysInMonth = _daysInMonth(now);
 
     const rows = 2;
-    final firstWeekday = DateTime(now.year, now.month, 1).weekday;
-    final offset = (firstWeekday - 1) % rows;
-    final columns = ((offset + daysInMonth) / rows).ceil().clamp(1, 1000);
+    // Calculate columns needed to fit all days in 'rows' rows
+    final columns = (daysInMonth / rows).ceil().clamp(1, 1000);
 
     final deviceWidth = MediaQuery.of(context).size.width;
     final totalHSpacing = (columns - 1) * hSpacing;
@@ -89,7 +87,15 @@ class HeatmapGrid extends StatelessWidget {
 
     final totalCells = columns * rows;
     final cells = List.generate(totalCells, (cellIndex) {
-      final dayNumber = (cellIndex - offset + 1);
+      // Determine row and column from the flat cellIndex
+      // This maps cells column-by-column into the weekColumns list below.
+      final rowIndex = cellIndex % rows;
+      final colIndex = cellIndex ~/ rows;
+
+      // To get Day 1, 2, 3... in the top row, we calculate the day based on colIndex
+      // Row 0: colIndex + 1
+      // Row 1: colIndex + 1 + columns
+      final dayNumber = colIndex + 1 + (rowIndex * columns);
       final isValidDay = dayNumber >= 1 && dayNumber <= daysInMonth;
 
       if (!isValidDay) {
@@ -104,14 +110,18 @@ class HeatmapGrid extends StatelessWidget {
         );
       }
 
-      final value = (heatmapData[dayNumber.toString()] ?? 0).toDouble();
+      // Updated key format to match "day-month-year"
+      final key = "$dayNumber-${now.month}-${now.year}";
+      final stats = heatmapData[key];
+      final calories = stats?.calories ?? 0.0;
+      
       final isToday = (now.day == dayNumber &&
           DateTime.now().month == now.month &&
           DateTime.now().year == now.year);
 
       return HeatmapCell(
         day: dayNumber,
-        color: _getColor(value),
+        color: _getColor(calories),
         isToday: isToday,
         size: boxSize,
         vSpacing: vSpacing,
