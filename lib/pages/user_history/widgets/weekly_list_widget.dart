@@ -10,7 +10,7 @@ class WeeklyListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
+      height: 80,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
@@ -51,11 +51,13 @@ class WeeklyListWidget extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Week ${weekStats.weekNumber}",
+                                "   Week ${weekStats.weekNumber}",
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black.withValues(alpha: 0.7),
+                                  color: Colors.blue[400],
+                                  // color: Colors.blue.withValues(alpha: 0.7),
+                                  fontStyle: FontStyle.italic,
                                 ),
                               ),
                               const SizedBox(width: 4),

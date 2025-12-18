@@ -34,128 +34,131 @@ class DayCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-      child: Stack(
-        children: [
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
 
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade300.withValues(alpha: 0.3),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                _buildProgressCircle(),
-                const SizedBox(width: 12),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300.withValues(alpha: 0.3),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  _buildProgressCircle(),
+                  const SizedBox(width: 12),
 
-                // TEXT COLUMN
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[600],
-                          ),
-                          children: [
-                            TextSpan(text: formattedDate + " "),
-                            TextSpan(
-                              text: "($weekdayName) ",
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                  // TEXT COLUMN
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
                             ),
-                            TextSpan(
-                              text: "-week:${WeekStats.getWeekInTheYear(dateTime)}",
-                              style: TextStyle(
-                                fontStyle: FontStyle.italic,
-                                color: Colors.blue[400],
+                            children: [
+                              TextSpan(text: formattedDate + " "),
+                              TextSpan(
+                                text: "($weekdayName) ",
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
+                              TextSpan(
+                                text: "Week ${WeekStats.getWeekInTheYear(dateTime)}",
+                                style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.blue[400],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        Row(
+                          children: [
+                            Text(
+                              '${trimTrailingZero(foodStats.calories)} kcal',
+                              style: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '/${AppSettings.atLeastCalories})',
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.grey[500]),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'max(${AppSettings.atMaxCalories})',
+                              style:
+                              TextStyle(fontSize: 8, color: Colors.grey[500]),
                             ),
                           ],
                         ),
-                      ),
 
-                      const SizedBox(height: 4),
+                        const SizedBox(height: 4),
 
-                      Row(
-                        children: [
-                          Text(
-                            '${trimTrailingZero(foodStats.calories)} kcal',
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '/${AppSettings.atLeastCalories})',
-                            style: TextStyle(
-                                fontSize: 11, color: Colors.grey[500]),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'max(${AppSettings.atMaxCalories})',
-                            style:
-                            TextStyle(fontSize: 8, color: Colors.grey[500]),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      SizedBox(
-                        width: 50,
-                        child: CationLabelWidget(foodStats: foodStats),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 50,
+                          child: CationLabelWidget(foodStats: foodStats),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                const SizedBox(width: 4),
-                getText(),
-                const SizedBox(width: 10),
-              ],
-            ),
-          ),
-
-          // TOP-LEFT TRIANGLE
-          Positioned(
-            top: 0,
-            left: 0,
-            child: CustomPaint(
-              painter: CornerTrianglePainter(
-                color: cardColor,
-                isTopLeft: true,
+                  const SizedBox(width: 4),
+                  getText(),
+                  const SizedBox(width: 10),
+                ],
               ),
-              size: const Size(26, 26),
             ),
-          ),
 
-          // BOTTOM-RIGHT TRIANGLE
-          // Positioned(
-          //   bottom: 0,
-          //   right: 0,
-          //   child: CustomPaint(
-          //     painter: CornerTrianglePainter(
-          //       color: cardColor,
-          //       isTopLeft: false,
-          //     ),
-          //     size: const Size(26, 26),
-          //   ),
-          // ),
+            // TOP-LEFT TRIANGLE
+            Positioned(
+              top: 0,
+              left: 0,
+              child: CustomPaint(
+                painter: CornerTrianglePainter(
+                  color: cardColor,
+                  isTopLeft: true,
+                ),
+                size: const Size(32, 32),
+              ),
+            ),
 
-          // EDIT / DELETE MENU
-          Positioned(top: 6, right: 4, child: editDeleteOptionMenu),
-        ],
+            // BOTTOM-RIGHT TRIANGLE
+            // Positioned(
+            //   bottom: 0,
+            //   right: 0,
+            //   child: CustomPaint(
+            //     painter: CornerTrianglePainter(
+            //       color: cardColor,
+            //       isTopLeft: false,
+            //     ),
+            //     size: const Size(26, 26),
+            //   ),
+            // ),
+
+            // EDIT / DELETE MENU
+            Positioned(top: 6, right: 4, child: editDeleteOptionMenu),
+          ],
+        ),
       ),
     );
   }
