@@ -24,99 +24,102 @@ class WeeklyListWidget extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Stack(
-              children: [
-                // CARD
-                Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      )
-                    ],
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Week ${weekStats.weekNumber}",
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black.withValues(alpha: 0.7),
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.star,
-                                color: Colors.amber, size: 14),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          "${weekStats.foodStatsEntry.foodStats.calories}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        Text(
-                          "${10500}-${11900}",
-                          style: TextStyle(
-                            fontSize: 10,
-                            // fontWeight: FontWeight.bold,
-                            color: Colors.green.shade600,
-                          ),
-                        ),
-                        Text(
-                          "${17500}",
-                          style: TextStyle(
-                            fontSize: 10,
-                            // fontWeight: FontWeight.bold,
-                            color: Colors.amber,
-                          ),
-                        ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                children: [
+                  // CARD
+                  Container(
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        )
                       ],
                     ),
-                  ),
-                ),
-
-                // TOP-LEFT TRIANGLE
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  child: CustomPaint(
-                    painter: CornerTrianglePainter(
-                      color: cardColor,
-                      isTopLeft: true,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Week ${weekStats.weekNumber}",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black.withValues(alpha: 0.7),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.star,
+                                  color: Colors.amber, size: 14),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            "${weekStats.foodStatsEntry.foodStats.calories}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey,
+                            ),
+                          ),
+                          Text(
+                            "${10500}-${11900}",
+                            style: TextStyle(
+                              fontSize: 10,
+                              // fontWeight: FontWeight.bold,
+                              color: Colors.green.shade600,
+                            ),
+                          ),
+                          Text(
+                            "${17500}",
+                            style: TextStyle(
+                              fontSize: 10,
+                              // fontWeight: FontWeight.bold,
+                              color: Colors.amber,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    size: const Size(22, 22),
                   ),
-                ),
 
-                // BOTTOM-RIGHT TRIANGLE
-                // Positioned(
-                //   bottom: 0,
-                //   right: 0,
-                //   child: CustomPaint(
-                //     painter: CornerTrianglePainter(
-                //       color: cardColor,
-                //       isTopLeft: false,
-                //     ),
-                //     size: const Size(22, 22),
-                //   ),
-                // ),
-              ],
+                  // TOP-LEFT TRIANGLE
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: CustomPaint(
+                      painter: CornerTrianglePainter(
+                        color: cardColor,
+                        isTopLeft: true,
+                      ),
+                      size: const Size(32, 32),
+                    ),
+                  ),
+
+                  // BOTTOM-RIGHT TRIANGLE
+                  // Positioned(
+                  //   bottom: 0,
+                  //   right: 0,
+                  //   child: CustomPaint(
+                  //     painter: CornerTrianglePainter(
+                  //       color: cardColor,
+                  //       isTopLeft: false,
+                  //     ),
+                  //     size: const Size(22, 22),
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
           );
         },
