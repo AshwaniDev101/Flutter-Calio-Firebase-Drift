@@ -46,15 +46,15 @@ class HeatmapGrid extends StatelessWidget {
     if(calories>1500 && calories<=1700)
       {
         // return Colors.green;
-        return hexToColorWithOpacity("#6ede8a", 100);
+        return hexToColorWithOpacity("#6ede8a", 50);
       }
     else if(calories>1700 && calories<=2500)
       {
-        return hexToColorWithOpacity("#ffe66d", 100);
+        return hexToColorWithOpacity("#ffe66d", 50);
       }
     else if(calories>2500)
     {
-      return hexToColorWithOpacity("#ff6b6b", 100);
+      return hexToColorWithOpacity("#ff6b6b", 50);
     }
     else
       {
