@@ -10,7 +10,7 @@ class WeeklyListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,
+      height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         reverse: true,
@@ -67,7 +67,23 @@ class WeeklyListWidget extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        Text(
+                          "${10500}-${11900}",
+                          style: TextStyle(
+                            fontSize: 10,
+                            // fontWeight: FontWeight.bold,
                             color: Colors.green.shade600,
+                          ),
+                        ),
+                        Text(
+                          "${17500}",
+                          style: TextStyle(
+                            fontSize: 10,
+                            // fontWeight: FontWeight.bold,
+                            color: Colors.amber,
                           ),
                         ),
                       ],
