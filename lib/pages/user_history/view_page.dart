@@ -13,7 +13,7 @@ class CalorieHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: DateTime.now())..loadMonthStats(),
+      create: (_) => CalorieHistoryViewModel(pageDateTime: DateTime.now())..loadMonthStats(),
       child: const _CalorieHistoryPageBody(),
     );
   }
@@ -24,7 +24,7 @@ class _CalorieHistoryPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<CalorieFoodStatsHistoryViewModel>();
+    final vm = context.watch<CalorieHistoryViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,

@@ -1,3 +1,4 @@
+import 'package:calio/pages/user_history/view_model.dart';
 import 'package:calio/widgets/edit_delete_option_menu/edit_delete_option_menu.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -14,11 +15,16 @@ import '../micro_widgets/food_quantity_selector.dart';
 // - Uses a stream from ViewModel and applies search filter
 class FoodListSliver extends StatelessWidget {
   final CalorieCounterViewModel viewModel;
+  final CalorieHistoryViewModel historyViewModel;
 
-  const FoodListSliver({required this.viewModel, super.key});
+  const FoodListSliver({required this.viewModel, super.key, required this.historyViewModel});
+
 
   @override
   Widget build(BuildContext context) {
+
+    historyViewModel.loadMonthStats();
+
     return StreamBuilder<List<DietFood>>(
       stream: viewModel.watchMergedFoodList,
       builder: (context, snapshot) {

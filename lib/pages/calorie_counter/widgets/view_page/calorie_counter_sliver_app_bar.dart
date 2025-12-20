@@ -51,7 +51,7 @@ class CalorieCounterSliverAppBar extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
-          create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: vm.pageDateTime),
+          create: (_) => CalorieHistoryViewModel(pageDateTime: vm.pageDateTime),
           child: CalorieHistoryPage(),
         ),
       ),

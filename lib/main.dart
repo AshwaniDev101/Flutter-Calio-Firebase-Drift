@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
       title: 'Calio Counter',
         debugShowCheckedModeBanner: false,
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: CalorieCounterPage(pageDateTime: DateTime.now())

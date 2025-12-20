@@ -4,10 +4,10 @@ import '../../../models/food_stats_entry.dart';
 import '../../models/food_stats.dart';
 import '../../models/week_stats.dart';
 
-class CalorieFoodStatsHistoryViewModel extends ChangeNotifier {
+class CalorieHistoryViewModel extends ChangeNotifier {
   final DateTime pageDateTime;
 
-  CalorieFoodStatsHistoryViewModel({required this.pageDateTime});
+  CalorieHistoryViewModel({required this.pageDateTime});
 
   final FoodStatsHistoryRepository _repository = FoodStatsHistoryRepository.instance;
 

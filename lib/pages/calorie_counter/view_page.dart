@@ -9,7 +9,6 @@ import '../../theme/app_colors.dart';
 import '../../widgets/month_heatmap/month_heatmap_widget.dart';
 import '../user_history/view_model.dart';
 
-
 class CalorieCounterPage extends StatelessWidget {
   final DateTime pageDateTime;
   final bool isOldPage;
@@ -27,7 +26,7 @@ class CalorieCounterPage extends StatelessWidget {
           create: (_) => CalorieCounterViewModel(pageDateTime: pageDateTime, isOldPage: isOldPage),
         ),
         ChangeNotifierProvider(
-          create: (_) => CalorieFoodStatsHistoryViewModel(pageDateTime: pageDateTime)..loadMonthStats(),
+          create: (_) => CalorieHistoryViewModel(pageDateTime: pageDateTime)..loadMonthStats(),
         ),
       ],
       child: const _CalorieCounterPageBody(),
@@ -38,14 +37,10 @@ class CalorieCounterPage extends StatelessWidget {
 class _CalorieCounterPageBody extends StatelessWidget {
   const _CalorieCounterPageBody();
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<CalorieCounterViewModel>();
-    final vmHistory = context.watch<CalorieFoodStatsHistoryViewModel>();
+    final vmCalorieCounter = context.watch<CalorieCounterViewModel>();
+    final vmFoodStatsHistory = context.watch<CalorieHistoryViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -55,20 +50,17 @@ class _CalorieCounterPageBody extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             // SliverAppBar
-            CalorieCounterSliverAppBar(viewModel: vm),
+            CalorieCounterSliverAppBar(viewModel: vmCalorieCounter),
             // Top semicircle progress
-            TopProgressSliver(viewModel: vm),
+            TopProgressSliver(viewModel: vmCalorieCounter),
             // Heatmap
             SliverToBoxAdapter(
-              child: MonthHeatmapWidget(
-                currentDateTime: vm.pageDateTime,
-                heatmapData: vmHistory.heatmap,
-              ),
+              child: MonthHeatmapWidget(currentDateTime: vmCalorieCounter.pageDateTime, heatmapData: vmFoodStatsHistory.heatmap),
             ),
             // Search bar
-            MySearchBarSliver(viewModel: vm),
+            MySearchBarSliver(viewModel: vmCalorieCounter),
             // Food list sliver
-            FoodListSliver(viewModel: vm),
+            FoodListSliver(viewModel: vmCalorieCounter, historyViewModel: vmFoodStatsHistory),
           ],
         ),
       ),
