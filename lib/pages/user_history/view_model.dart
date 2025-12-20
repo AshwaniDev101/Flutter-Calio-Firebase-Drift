@@ -13,7 +13,7 @@ class CalorieHistoryViewModel extends ChangeNotifier {
 
   List<FoodStatsEntry> yearStatsMap = [];
   List<WeekStats> weekListMap = [];
-  Map<String,FoodStats> heatmap = {};
+  Map<String, FoodStats> heatmap = {};
 
   // double excessCalories = 0;
 
@@ -36,7 +36,6 @@ class CalorieHistoryViewModel extends ChangeNotifier {
     String? lastEntryId;
 
     for (final entry in allStatsList) {
-
       heatmap['${entry.id}-${pageDateTime.year}'] = entry.foodStats;
 
       final entryWeek = WeekStats.getWeekInTheYear(entry.getDateTime(pageDateTime.year));

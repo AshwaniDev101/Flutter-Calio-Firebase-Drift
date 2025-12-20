@@ -25,9 +25,7 @@ class CalorieCounterPage extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => CalorieCounterViewModel(pageDateTime: pageDateTime, isOldPage: isOldPage),
         ),
-        ChangeNotifierProvider(
-          create: (_) => CalorieHistoryViewModel(pageDateTime: pageDateTime)..loadMonthStats(),
-        ),
+        ChangeNotifierProvider(create: (_) => CalorieHistoryViewModel(pageDateTime: pageDateTime)..loadMonthStats()),
       ],
       child: const _CalorieCounterPageBody(),
     );
@@ -55,7 +53,10 @@ class _CalorieCounterPageBody extends StatelessWidget {
             TopProgressSliver(viewModel: vmCalorieCounter),
             // Heatmap
             SliverToBoxAdapter(
-              child: MonthHeatmapWidget(currentDateTime: vmCalorieCounter.pageDateTime, heatmapData: vmFoodStatsHistory.heatmap),
+              child: MonthHeatmapWidget(
+                currentDateTime: vmCalorieCounter.pageDateTime,
+                heatmapData: vmFoodStatsHistory.heatmap,
+              ),
             ),
             // Search bar
             MySearchBarSliver(viewModel: vmCalorieCounter),

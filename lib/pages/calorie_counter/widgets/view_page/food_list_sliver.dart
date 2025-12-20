@@ -19,10 +19,8 @@ class FoodListSliver extends StatelessWidget {
 
   const FoodListSliver({required this.viewModel, super.key, required this.historyViewModel});
 
-
   @override
   Widget build(BuildContext context) {
-
     historyViewModel.loadMonthStats();
 
     return StreamBuilder<List<DietFood>>(
@@ -94,13 +92,7 @@ class _FoodCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            offset: Offset(0, 1),
-            blurRadius: 3,
-            color: barColor.withOpacity(0.2),
-          ),
-        ],
+        boxShadow: [BoxShadow(offset: Offset(0, 1), blurRadius: 3, color: barColor.withOpacity(0.2))],
       ),
       child: Row(
         children: [
@@ -109,10 +101,7 @@ class _FoodCard extends StatelessWidget {
             height: 60,
             decoration: BoxDecoration(
               color: barColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), bottomLeft: Radius.circular(12)),
             ),
           ),
           Expanded(
@@ -140,12 +129,8 @@ class _FoodCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '${trimTrailingZero(food.foodStats.calories)} kcal' +
-                        (food.count > 1 ? '  |  total ${trimTrailingZero(food.foodStats.calories * food.count)}' : ''),
-                    style: AppTextStyle.textStyleCardSubTitle.copyWith(
-                      fontSize: 12,
-                      color: Colors.grey[700],
-                    ),
+                    '${trimTrailingZero(food.foodStats.calories)} kcal${food.count > 1 ? '  |  total ${trimTrailingZero(food.foodStats.calories * food.count)}' : ''}',
+                    style: AppTextStyle.textStyleCardSubTitle.copyWith(fontSize: 12, color: Colors.grey[700]),
                   ),
                 ],
               ),
@@ -153,8 +138,8 @@ class _FoodCard extends StatelessWidget {
           ),
           FoodQuantitySelector(
             initialValue: food.count,
-            onChanged: (oldValue, newValue) =>
-                onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
+            onChanged:
+                (oldValue, newValue) => onQuantityChange(oldValue, newValue, ConsumedDietFood.fromDietFood(food)),
           ),
           const SizedBox(width: 4),
           editDeleteOptionMenu,

@@ -72,7 +72,7 @@ class DayCard extends StatelessWidget {
                               color: Colors.grey[600],
                             ),
                             children: [
-                              TextSpan(text: formattedDate + " "),
+                              TextSpan(text: "$formattedDate "),
                               TextSpan(
                                 text: "($weekdayName) ",
                                 style: const TextStyle(fontWeight: FontWeight.bold),

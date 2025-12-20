@@ -4,7 +4,6 @@ import 'package:calio/pages/user_history/widgets/weekly_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/app_colors.dart';
-import '../../helper/progress_visuals_helper.dart';
 import '../calorie_counter/view_page.dart';
 
 class CalorieHistoryPage extends StatelessWidget {
