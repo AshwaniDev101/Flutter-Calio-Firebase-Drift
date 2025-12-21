@@ -40,7 +40,11 @@ class HeatmapGrid extends StatelessWidget {
   int _daysInMonth(DateTime date) => DateTime(date.year, date.month + 1, 0).day;
 
   Color _getColor(double calories) {
-    if (calories > 1500 && calories <= 1700) {
+
+
+    if (calories > 0 && calories <= 1500) {
+      return hexToColorWithOpacity("#7A7781", 50);
+    } else if (calories > 1500 && calories <= 1700) {
       return hexToColorWithOpacity("#6ede8a", 50);
     } else if (calories > 1700 && calories <= 2500) {
       return hexToColorWithOpacity("#ffe66d", 50);
