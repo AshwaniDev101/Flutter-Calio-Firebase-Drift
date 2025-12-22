@@ -1,29 +1,27 @@
 import 'package:calio/models/food_stats.dart';
-import 'package:calio/models/food_stats_entry.dart';
 import 'package:intl/intl.dart';
 
 class WeekStats {
-  late final int weekNumber;
+  final int weekNumber;
   final int year;
-  final FoodStatsEntry foodStatsEntry;
+  final FoodStats foodStats;
 
-  WeekStats({required this.year, required this.foodStatsEntry}) {
-    weekNumber = WeekStats.getWeekInTheYear(foodStatsEntry.getDateTime(year));
-  }
+  WeekStats({required this.weekNumber, required this.year, required this.foodStats});
 
   factory WeekStats.empty() {
-    return WeekStats(year: 0, foodStatsEntry: FoodStatsEntry('1-1', const FoodStats.empty()));
+    return WeekStats(weekNumber: 0, year: 0, foodStats: const FoodStats.empty());
   }
 
-  bool isEqual(WeekStats weekStats) {
-    if (weekStats.year == year && weekStats.foodStatsEntry.id == foodStatsEntry.id) {
-      return true;
-    }
-    return false;
+  bool isEqual(WeekStats other) {
+    return other.weekNumber == weekNumber && other.year == year && other.foodStats == foodStats;
   }
 
-  WeekStats copyWith({int? year, FoodStatsEntry? foodStatsEntry}) {
-    return WeekStats(year: year ?? this.year, foodStatsEntry: foodStatsEntry ?? this.foodStatsEntry);
+  WeekStats copyWith({int? weekNumber, int? year, FoodStats? foodStats}) {
+    return WeekStats(
+      weekNumber: weekNumber ?? this.weekNumber,
+      year: year ?? this.year,
+      foodStats: foodStats ?? this.foodStats,
+    );
   }
 
   static int getWeekInTheYear(DateTime dateTime) {

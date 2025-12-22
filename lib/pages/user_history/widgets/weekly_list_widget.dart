@@ -67,7 +67,7 @@ class WeeklyListWidget extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            "${weekStats.foodStatsEntry.foodStats.calories}",
+                            "${weekStats.foodStats.calories}",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

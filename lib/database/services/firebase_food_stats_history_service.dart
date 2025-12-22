@@ -54,8 +54,9 @@ class FirebaseFoodStatsHistoryService {
 
     return snapshot.docs.map((doc) {
       final data = doc.data();
-      final stats = FoodStats.fromMap(Map<String, dynamic>.from(data['foodStats']));
-      return FoodStatsEntry(doc.id, stats);
+      // final stats = FoodStats.fromMap(Map<String, dynamic>.from(data['foodStats']));
+      // return FoodStatsEntry(doc.id, stats);
+      return FoodStatsEntry.fromMap(doc.id, data);
     }).toList();
   }
 

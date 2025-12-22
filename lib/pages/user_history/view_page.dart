@@ -71,12 +71,12 @@ class _CalorieHistoryPageBody extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: vm.yearStatsMap.isEmpty
+        child: vm.yearStatsList.isEmpty
             ? const Center(child: Text('No data found'))
             : Column(
                 children: [
                   WeeklyListWidget(
-                    weekStatsList: vm.weekListMap,
+                    weekStatsList: vm.weeklyStatsList,
                   ),
                   Expanded(
                     child: RefreshIndicator(
@@ -84,7 +84,7 @@ class _CalorieHistoryPageBody extends StatelessWidget {
                       color: AppColors.getColorOnWeek(vm.pageDateTime),
                       child: CalorieHistoryListview(
                         pageDateTime: vm.pageDateTime,
-                        monthStats: vm.yearStatsMap,
+                        monthStats: vm.yearStatsList,
                         onEdit: (DateTime cardDateTime) {
                           Navigator.push(
                             context,
