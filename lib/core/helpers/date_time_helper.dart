@@ -22,15 +22,29 @@ class DateTimeHelper {
     return DateFormat.MMMM().format(date);
   }
 
-  /// Creates a DateTime from an ID like "5-10" (day-month) and a year
+  /// Creates a [DateTime] from a day–month ID (e.g. `"5-10"`) and a given year.
+  ///
+  /// The ID format must be `"day-month"`, where:
+  /// - `day` is in the range 1–31
+  /// - `month` is in the range 1–12
   static DateTime fromDayMonthId(
       String id,
       int year,
       ) {
     final parts = id.split('-');
+    assert(parts.length == 2, 'Invalid day-month ID format: $id');
+
     final day = int.parse(parts[0]);
     final month = int.parse(parts[1]);
 
     return DateTime(year, month, day);
   }
+
+  /// Creates a day–month ID string (e.g. `"5-10"`) from a [DateTime].
+  ///
+  /// The returned ID format is `"day-month"` (no zero-padding).
+  static String toDayMonthId(DateTime dateTime) {
+    return '${dateTime.day}-${dateTime.month}';
+  }
+
 }

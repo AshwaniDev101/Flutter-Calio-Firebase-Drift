@@ -32,7 +32,7 @@ class ImportExporterPage extends StatelessWidget {
                       },
 
 
-                      child: Text('Fix ID timestamp misaligment'),
+                      child: Text('Fix ID timestamp miss-alignment'),
                     ),
                     // ElevatedButton(
                     //   onPressed: () {
@@ -99,7 +99,16 @@ class ImportExporterPage extends StatelessWidget {
 
         textEditingController.text += 'id:${id} ${foodStatsEntry.timestamp}';
         // print('id:${id} ${foodStatsEntry.timestamp}, ${dateTime}');
-        print('id:${idDatetime}, ${timestampDateTime}');
+
+        final isSame = DateTimeHelper.isSameDate(idDatetime, timestampDateTime);
+
+        if(!isSame)
+          {
+
+            print('${isSame} id:${idDatetime}, ${timestampDateTime}');
+            // await ref.doc(id).set(map);
+          }
+
 
 
 

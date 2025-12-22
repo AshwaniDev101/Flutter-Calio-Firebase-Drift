@@ -46,11 +46,11 @@ class _DietFoodDialogWidget extends StatelessWidget {
     // Pre-fill values if editing
     String name = food?.name ?? '';
     String calories = food?.foodStats.calories.toString() ?? '';
-    String proteins = food?.foodStats.proteins.toString() ?? '';
-    String carbohydrates = food?.foodStats.carbohydrates.toString() ?? '';
-    String fats = food?.foodStats.fats.toString() ?? '';
-    String vitamins = food?.foodStats.vitamins.toString() ?? '';
-    String minerals = food?.foodStats.minerals.toString() ?? '';
+    // String proteins = food?.foodStats.proteins.toString() ?? '';
+    // String carbohydrates = food?.foodStats.carbohydrates.toString() ?? '';
+    // String fats = food?.foodStats.fats.toString() ?? '';
+    // String vitamins = food?.foodStats.vitamins.toString() ?? '';
+    // String minerals = food?.foodStats.minerals.toString() ?? '';
 
     InputDecoration buildInputDecoration(String label) {
       return InputDecoration(
@@ -135,28 +135,28 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 onSaved: (v) => calories = v!.trim(),
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  buildNumberField(
-                      label: 'Proteins', initialValue: proteins, onSaved: (v) => proteins = v),
-                  const SizedBox(width: 12),
-                  buildNumberField(
-                      label: 'Vitamins', initialValue: vitamins, onSaved: (v) => vitamins = v),
-                  const SizedBox(width: 12),
-                  buildNumberField(
-                      label: 'Fats', initialValue: fats, onSaved: (v) => fats = v),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     buildNumberField(
+              //         label: 'Proteins', initialValue: proteins, onSaved: (v) => proteins = v),
+              //     const SizedBox(width: 12),
+              //     buildNumberField(
+              //         label: 'Vitamins', initialValue: vitamins, onSaved: (v) => vitamins = v),
+              //     const SizedBox(width: 12),
+              //     buildNumberField(
+              //         label: 'Fats', initialValue: fats, onSaved: (v) => fats = v),
+              //   ],
+              // ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  buildNumberField(
-                      label: 'Carbohydrates', initialValue: carbohydrates, onSaved: (v) => carbohydrates = v),
-                  const SizedBox(width: 12),
-                  buildNumberField(
-                      label: 'Minerals', initialValue: minerals, onSaved: (v) => minerals = v),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     buildNumberField(
+              //         label: 'Carbohydrates', initialValue: carbohydrates, onSaved: (v) => carbohydrates = v),
+              //     const SizedBox(width: 12),
+              //     buildNumberField(
+              //         label: 'Minerals', initialValue: minerals, onSaved: (v) => minerals = v),
+              //   ],
+              // ),
             ],
           ),
         ),
@@ -180,11 +180,11 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 count: 0.0,
                 timestamp: Timestamp.fromDate(DateTime.now()),
                 foodStats: FoodStats(
-                  proteins: double.tryParse(proteins) ?? 0.0,
-                  carbohydrates: double.tryParse(carbohydrates) ?? 0.0,
-                  fats: double.tryParse(fats) ?? 0.0,
-                  vitamins: double.tryParse(vitamins) ?? 0.0,
-                  minerals: double.tryParse(minerals) ?? 0.0,
+                  // proteins: double.tryParse(proteins) ?? 0.0,
+                  // carbohydrates: double.tryParse(carbohydrates) ?? 0.0,
+                  // fats: double.tryParse(fats) ?? 0.0,
+                  // vitamins: double.tryParse(vitamins) ?? 0.0,
+                  // minerals: double.tryParse(minerals) ?? 0.0,
                   calories: double.tryParse(calories) ?? 0.0,
                 ),
               );

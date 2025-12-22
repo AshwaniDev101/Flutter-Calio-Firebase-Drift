@@ -1,4 +1,6 @@
+import 'package:calio/core/helpers/date_time_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../../models/consumed_diet_food.dart';
 import '../../models/food_stats.dart';
 
@@ -12,14 +14,15 @@ class FirebaseConsumedDietFoodService {
   final String _userId = 'user1';
 
   /// Watch consumed food list for a specific date
-  Stream<List<ConsumedDietFood>> watchConsumedFood(DateTime date) {
+  Stream<List<ConsumedDietFood>> watchConsumedFood(DateTime dateTime) {
     return _db
         .collection(_root)
         .doc(_userId)
         .collection('history')
-        .doc('${date.year}')
+        .doc('${dateTime.year}')
         .collection('data')
-        .doc('${date.day}-${date.month}')
+        // .doc('${date.day}-${date.month}')
+        .doc(DateTimeHelper.toDayMonthId(dateTime))
         .collection('food_consumed_list')
         .snapshots()
         .map((snapshot) {
@@ -30,8 +33,8 @@ class FirebaseConsumedDietFoodService {
           data['id'] = doc.id;
           final consumed = ConsumedDietFood.fromMap(data);
           list.add(consumed);
-        } catch (e) {
-          // Ignore documents that fail to parse.
+        } catch (e, s) {
+          debugPrint('ConsumedDietFood parse failed: $e');
         }
       }
       return list;
@@ -45,7 +48,8 @@ class FirebaseConsumedDietFoodService {
         .collection('history')
         .doc('${dateTime.year}')
         .collection('data')
-        .doc('${dateTime.day}-${dateTime.month}');
+        // .doc('${dateTime.day}-${dateTime.month}');
+        .doc(DateTimeHelper.toDayMonthId(dateTime));
 
 
     final consumedFoodDocRef = dayMonthDocRef
@@ -55,36 +59,6 @@ class FirebaseConsumedDietFoodService {
 
     // Run as a transaction to ensure atomicity
     return _db.runTransaction((transaction) async {
-
-      // update consumed food item
-
-      //remove this line and uncomment other block if u want safety
-      // await consumedFoodDocRef.update(newConsumedFoodItem.toMap());
-
-
-        // final doc = await consumedFoodDocRef.get();
-        //
-        // if (doc.exists) {
-        //   await consumedFoodDocRef.update(newConsumedFoodItem.toMap());
-        //   print("Updated existing consumed food: ${newConsumedFoodItem.id}");
-        // } else {
-        //   await consumedFoodDocRef.set(newConsumedFoodItem.toMap());
-        //   print("Created new consumed food entry: ${newConsumedFoodItem.id}");
-        // }
-        //
-
-      // update daily total stats
-
-      // final deltaFoodStats = FoodStats(
-      //   calories: newConsumedFoodItem.foodStats.calories - oldConsumedFoodItem.foodStats.calories,
-      //   proteins: newConsumedFoodItem.foodStats.proteins - oldConsumedFoodItem.foodStats.proteins,
-      //   carbohydrates: newConsumedFoodItem.foodStats.carbohydrates - oldConsumedFoodItem.foodStats.carbohydrates,
-      //   fats: newConsumedFoodItem.foodStats.fats - oldConsumedFoodItem.foodStats.fats,
-      //   minerals: newConsumedFoodItem.foodStats.minerals - oldConsumedFoodItem.foodStats.minerals,
-      //   vitamins: newConsumedFoodItem.foodStats.vitamins - oldConsumedFoodItem.foodStats.vitamins,
-      // );
-
-
 
 
 
@@ -110,15 +84,24 @@ class FirebaseConsumedDietFoodService {
       transaction.set(consumedFoodDocRef, newConsumedFoodItem.toMap());
       //
       // 5. Update the daily total stats document with the new aggregated value
-      transaction.set(
-          dayMonthDocRef,
-          {
-            // Only storing total calories in the daily summary for efficiency
-            'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
-            'timestamp': Timestamp.now(),
-          },
-          SetOptions(merge: true));
+      // transaction.set(
+      //     dayMonthDocRef,newTotalStats.toMap(),
+      //     // {
+      //     //   // Only storing total calories in the daily summary for efficiency
+      //     //   'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
+      //     //   // 'timestamp': Timestamp.now(),
+      //     //   // 'last_update_on': Timestamp.now(),
+      //     // },
+      //     SetOptions(merge: true));
 
+      transaction.set(
+        dayMonthDocRef,
+        {
+          'foodStats': newTotalStats.toMap(),
+          'lastUpdatedAt': Timestamp.now(),
+        },
+        SetOptions(merge: true),
+      );
 
 
     });
@@ -127,31 +110,6 @@ class FirebaseConsumedDietFoodService {
   }
 
 
-  // Future<void> updateConsumedFood(ConsumedDietFood newConsumedFoodItem, ConsumedDietFood oldConsumedFoodItem, DateTime dateTime) async {
-  //
-  //
-  //   final dayDocRef = _db
-  //       .collection(_root)
-  //       .doc(_userId)
-  //       .collection('history')
-  //       .doc('${dateTime.year}')
-  //       .collection('data')
-  //       .doc('${dateTime.day}-${dateTime.month}');
-  //
-  //   final consumedFoodDocRef = dayDocRef
-  //       .collection('food_consumed_list')
-  //       .doc(newConsumedFoodItem.id);
-  //
-  //   final doc = await consumedFoodDocRef.get();
-  //
-  //   if (doc.exists) {
-  //     await consumedFoodDocRef.update(newConsumedFoodItem.toMap());
-  //     print("Updated existing consumed food: ${newConsumedFoodItem.id}");
-  //   } else {
-  //     await consumedFoodDocRef.set(newConsumedFoodItem.toMap());
-  //     print("Created new consumed food entry: ${newConsumedFoodItem.id}");
-  //   }
-  // }
 
   /// Atomically changes the consumed count for a food item and updates the
   /// daily total statistics within a Firestore transaction.
@@ -166,7 +124,9 @@ class FirebaseConsumedDietFoodService {
         .collection('history')
         .doc('${dateTime.year}')
         .collection('data')
-        .doc('${dateTime.day}-${dateTime.month}');
+        .doc(DateTimeHelper.toDayMonthId(dateTime));
+        // .doc('${dateTime.day}-${dateTime.month}');
+
 
     final consumedFoodDocRef = dayDocRef.collection('food_consumed_list').doc(food.id);
 
@@ -184,11 +144,11 @@ class FirebaseConsumedDietFoodService {
       // 2. Calculate the change in stats based on the food's stats per serving and the count delta
       final statsDelta = FoodStats(
         calories: food.foodStats.calories * count,
-        proteins: food.foodStats.proteins * count,
-        carbohydrates: food.foodStats.carbohydrates * count,
-        fats: food.foodStats.fats * count,
-        minerals: food.foodStats.minerals * count,
-        vitamins: food.foodStats.vitamins * count,
+        // proteins: food.foodStats.proteins * count,
+        // carbohydrates: food.foodStats.carbohydrates * count,
+        // fats: food.foodStats.fats * count,
+        // minerals: food.foodStats.minerals * count,
+        // vitamins: food.foodStats.vitamins * count,
       );
       final FoodStats newTotalStats = currentStats.sum(statsDelta);
 
