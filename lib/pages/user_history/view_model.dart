@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../database/repository/food_stats_history_repository.dart';
 import '../../../models/food_stats_entry.dart';
+import '../../core/helpers/date_time_helper.dart';
 import '../../models/food_stats.dart';
 import '../../models/week_stats.dart';
 
@@ -37,7 +38,12 @@ class CalorieHistoryViewModel extends ChangeNotifier {
     if (allStatsList.isEmpty) return;
 
     // Defensive: ensure stats are ordered by date
-    allStatsList.sort((a, b) => a.getDateTime(pageDateTime.year).compareTo(b.getDateTime(pageDateTime.year)));
+    // allStatsList.sort((a, b) => a.getDateTime(pageDateTime.year).compareTo(b.getDateTime(pageDateTime.year)));
+    allStatsList.sort((a, b) {
+      final dateA = DateTimeHelper.fromDayMonthId(a.id, pageDateTime.year);
+      final dateB = DateTimeHelper.fromDayMonthId(b.id, pageDateTime.year);
+      return dateA.compareTo(dateB);
+    });
 
     int? currentWeekNumber;
     FoodStats weeklyTotal = FoodStats.empty();
@@ -46,7 +52,9 @@ class CalorieHistoryViewModel extends ChangeNotifier {
       // Heatmap population
       heatmap['${entry.id}-${pageDateTime.year}'] = entry.foodStats;
 
-      final entryWeek = WeekStats.getWeekInTheYear(entry.getDateTime(pageDateTime.year));
+      final dateTimeFromId = DateTimeHelper.fromDayMonthId(entry.id, pageDateTime.year);
+
+      final entryWeek = WeekStats.getWeekInTheYear(dateTimeFromId);
 
       if (currentWeekNumber == entryWeek) {
         weeklyTotal = weeklyTotal.sum(entry.foodStats);
@@ -75,9 +83,9 @@ class CalorieHistoryViewModel extends ChangeNotifier {
 
     yearStatsList.removeWhere(
       (entry) =>
-          entry.getDateTime(pageDateTime.year).year == cardDateTime.year &&
-          entry.getDateTime(pageDateTime.year).month == cardDateTime.month &&
-          entry.getDateTime(pageDateTime.year).day == cardDateTime.day,
+          DateTimeHelper.fromDayMonthId(entry.id, pageDateTime.year).year == cardDateTime.year &&
+          DateTimeHelper.fromDayMonthId(entry.id, pageDateTime.year).month == cardDateTime.month &&
+          DateTimeHelper.fromDayMonthId(entry.id, pageDateTime.year).day == cardDateTime.day,
     );
 
     _buildDerivedStats(yearStatsList);

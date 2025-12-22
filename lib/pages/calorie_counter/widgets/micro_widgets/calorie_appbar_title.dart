@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/helper.dart';
+
+import '../../../../core/helpers/date_time_helper.dart';
 import '../../../../theme/app_colors.dart';
 
 // AppBar title widget
@@ -12,7 +14,7 @@ class CalorieAppBarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isToday = isSameDate(date, DateTime.now());
+    final isToday = DateTimeHelper.isSameDate(date, DateTime.now());
     final formatted = '${date.day}/${date.month}/${date.year}';
     final weekday = DateFormat('EEEE').format(date);
 

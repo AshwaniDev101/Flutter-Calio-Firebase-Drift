@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
-import '../../../core/helper.dart';
+import '../../core/helpers/color_helper.dart';
+import '../../core/helpers/date_time_helper.dart';
 import '../../models/food_stats.dart';
 
 class MonthHeatmapWidget extends StatelessWidget {
@@ -43,15 +45,15 @@ class HeatmapGrid extends StatelessWidget {
 
 
     if (calories > 0 && calories <= 1500) {
-      return hexToColorWithOpacity("#7A7781", 50);
+      return ColorHelper.fromHexWithOpacity("#7A7781", 50);
     } else if (calories > 1500 && calories <= 1700) {
-      return hexToColorWithOpacity("#6ede8a", 50);
+      return ColorHelper.fromHexWithOpacity("#6ede8a", 50);
     } else if (calories > 1700 && calories <= 2500) {
-      return hexToColorWithOpacity("#ffe66d", 50);
+      return ColorHelper.fromHexWithOpacity("#ffe66d", 50);
     } else if (calories > 2500) {
-      return hexToColorWithOpacity("#ff6b6b", 50);
+      return ColorHelper.fromHexWithOpacity("#ff6b6b", 50);
     } else {
-      return hexToColorWithOpacity("#EBEDF0", 100);
+      return ColorHelper.fromHexWithOpacity("#EBEDF0", 100);
     }
   }
 
@@ -99,7 +101,7 @@ class HeatmapGrid extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 4.0, top: 2),
             child: Text(
-              '${getMonthName(now)} ${now.year}',
+              '${DateTimeHelper.getMonthName(now)} ${now.year}',
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ),

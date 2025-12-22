@@ -1,8 +1,9 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/helper.dart';
 import '../../../../models/diet_food.dart';
 import '../../../../models/food_stats.dart';
+import '../../../core/helpers/timestamp_helper.dart';
 
 
 class DietFoodDialog {
@@ -174,7 +175,7 @@ class _DietFoodDialogWidget extends StatelessWidget {
               formKey.currentState!.save();
 
               final updatedDietFood = DietFood(
-                id: food?.id ?? generateReadableTimestamp(),
+                id: food?.id ?? TimestampHelper.generateReadableTimestamp(),
                 name: name,
                 count: 0.0,
                 timestamp: Timestamp.fromDate(DateTime.now()),

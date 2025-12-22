@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../models/food_stats_entry.dart';
+import '../../../../core/helpers/date_time_helper.dart';
 import '../../../../widgets/edit_delete_option_menu/edit_delete_option_menu.widget.dart';
 import 'card.dart';
 
@@ -31,7 +32,9 @@ class CalorieHistoryListview extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 6),
       itemBuilder: (context, index) {
         FoodStatsEntry entry = monthStats[index];
-        DateTime cardDateTime = entry.getDateTime(pageDateTime.year);
+        // DateTime cardDateTime = entry.getDateTime(pageDateTime.year);
+        DateTime cardDateTime = DateTimeHelper.fromDayMonthId(entry.id, pageDateTime.year);
+        // DateTime cardDateTime = entry.getDateTime(pageDateTime.year);
 
         return DayCard(
           dateTime: cardDateTime,
