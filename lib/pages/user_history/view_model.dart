@@ -22,6 +22,22 @@ class CalorieHistoryViewModel extends ChangeNotifier {
   /// Heatmap data (day-level)
   Map<String, FoodStats> heatmap = {};
 
+
+
+  //
+  // bool _isDisposed = false;
+  // @override
+  // void dispose() {
+  //   _isDisposed = true;
+  //   super.dispose();
+  // }  @override
+  // void notifyListeners() {
+  //   if (!_isDisposed) {
+  //     super.notifyListeners();
+  //   }
+  // }
+
+
   Future<void> loadMonthStats() async {
     yearStatsList = await _repository.getYearStats(year: pageDateTime.year);
 

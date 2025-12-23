@@ -57,7 +57,7 @@ class FoodManager {
           if (gFood != null && consumed != null) {
             if (gFood.foodStats.calories != consumed.foodStats.calories) {
               Log.e("❗ Mismatch for ${gFood.name} (ID: $id)");
-              fixMissMatch(gFood, consumed, dateTime);
+              // fixMissMatch(gFood, consumed, dateTime);
             }
 
             return gFood.copyWith(
@@ -77,6 +77,19 @@ class FoodManager {
       },
     );
   }
+
+  // Future<void> syncConsumedFood(DateTime dateTime) async {
+  //   final global = await _dietFoodRepository.getOnce();
+  //   final consumed = await _consumedDietFoodRepository.getOnce(dateTime);
+  //
+  //   for (final c in consumed) {
+  //     final g = global.firstWhereOrNull((g) => g.id == c.id);
+  //     if (g != null && g.foodStats.calories != c.foodStats.calories) {
+  //       fixMissMatch(g, c, dateTime);
+  //     }
+  //   }
+  // }
+
 
   // Stream<List<DietFood>> watchMergedFoodList(DateTime dateTime) {
   //   return Rx.combineLatest2<List<DietFood>, List<ConsumedDietFood>, List<DietFood>>(

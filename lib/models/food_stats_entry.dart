@@ -4,27 +4,30 @@ import 'food_stats.dart';
 class FoodStatsEntry {
   final String id;
   final FoodStats foodStats;
-  final Timestamp timestamp;
+  final Timestamp createdAt;
+  final Timestamp lastUpdatedAt;
 
   FoodStatsEntry({
     required this.id,
     required this.foodStats,
-    required this.timestamp,
+    required this.createdAt,
+    required this.lastUpdatedAt,
   });
 
   factory FoodStatsEntry.empty() {
     return FoodStatsEntry(
       id: 'empty',
       foodStats: const FoodStats.empty(),
-      timestamp: Timestamp.now(),
+      createdAt: Timestamp.now(),
+      lastUpdatedAt: Timestamp.now(),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'foodStats': foodStats.toMap(),
-      'timestamp': timestamp,
+      'createdAt': createdAt,
+      'lastUpdatedAt': lastUpdatedAt,
     };
   }
 
@@ -32,15 +35,8 @@ class FoodStatsEntry {
     return FoodStatsEntry(
       id: id,
       foodStats: FoodStats.fromMap(map['foodStats'] ?? {}),
-      timestamp: map['timestamp'] ?? Timestamp.now(),
+      createdAt: map['createdAt'] ?? Timestamp.now(),
+      lastUpdatedAt: map['lastUpdatedAt'] ?? Timestamp.now(),
     );
   }
-
-  // DateTime getDateTime(int year) {
-  //   final parts = id.split('-');
-  //   final day = int.parse(parts[0]);
-  //   final month = int.parse(parts[1]);
-  //
-  //   return DateTime(year, month, day);
-  // }
 }
