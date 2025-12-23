@@ -12,7 +12,7 @@ class CalorieHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CalorieHistoryViewModel(pageDateTime: DateTime.now())..loadMonthStats(),
+      create: (_) => CalorieHistoryViewModel(pageDateTime: DateTime.now()),
       child: const _CalorieHistoryPageBody(),
     );
   }
@@ -79,26 +79,20 @@ class _CalorieHistoryPageBody extends StatelessWidget {
                     weekStatsList: vm.weeklyStatsList,
                   ),
                   Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: vm.loadMonthStats,
-                      color: AppColors.getColorOnWeek(vm.pageDateTime),
-                      child: CalorieHistoryListview(
-                        pageDateTime: vm.pageDateTime,
-                        monthStats: vm.yearStatsList,
-                        onEdit: (DateTime cardDateTime) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CalorieCounterPage(pageDateTime: cardDateTime, isOldPage: true),
-                            ),
-                          ).then((_) {
-                            vm.loadMonthStats();
-                          });
-                        },
-                        onDelete: (DateTime cardDateTime) {
-                          vm.onDelete(cardDateTime);
-                        },
-                      ),
+                    child: CalorieHistoryListview(
+                      pageDateTime: vm.pageDateTime,
+                      monthStats: vm.yearStatsList,
+                      onEdit: (DateTime cardDateTime) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CalorieCounterPage(pageDateTime: cardDateTime, isOldPage: true),
+                          ),
+                        );
+                      },
+                      onDelete: (DateTime cardDateTime) {
+                        vm.onDelete(cardDateTime);
+                      },
                     ),
                   ),
                 ],

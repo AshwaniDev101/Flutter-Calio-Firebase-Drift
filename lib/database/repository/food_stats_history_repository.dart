@@ -16,17 +16,19 @@ class FoodStatsHistoryRepository {
     return _service.watchCurrentDayDashboardFoodStats(date);
   }
 
-  /// Stream of all food stats for a specific year
+  /// Watches all [FoodStats] documents for a specific [year].
+  /// User in User History page
   Stream<List<FoodStatsEntry>> watchYearStats({required int year}) {
     return _service.watchYearStats(year: year);
   }
 
-  /// Get food stats for a specific year
-  Future<List<FoodStatsEntry>> getYearStats({
-    required int year,
-  }) {
-    return _service.getAllFoodStats(year: year);
-  }
+  /// One-time fetch all [FoodStats] documents for a specific [year].
+  /// User in User History page
+  // Future<List<FoodStatsEntry>> getYearStats({
+  //   required int year,
+  // }) {
+  //   return _service.getAllFoodStats(year: year);
+  // }
 
   /// Deletes food stats for the specified date
   Future<void> deleteFoodStats({required DateTime date}) {

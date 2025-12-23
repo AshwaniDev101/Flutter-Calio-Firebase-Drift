@@ -21,7 +21,8 @@ class FoodListSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    historyViewModel.loadMonthStats();
+    // Removed historyViewModel.loadMonthStats() from build to avoid side effects.
+    // The historyViewModel now manages its own stream.
 
     return StreamBuilder<List<DietFood>>(
       stream: viewModel.watchMergedFoodList,

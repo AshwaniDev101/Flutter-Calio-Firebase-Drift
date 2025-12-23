@@ -1,7 +1,6 @@
-
+import 'package:calio/core/helpers/color_helper.dart';
 import 'package:flutter/material.dart';
-import '../../core/helpers/color_helper.dart';
-import '../../core/helpers/date_time_helper.dart';
+import '../../../core/helpers/date_time_helper.dart';
 import '../../models/food_stats.dart';
 
 class MonthHeatmapWidget extends StatelessWidget {
@@ -41,40 +40,75 @@ class HeatmapGrid extends StatelessWidget {
 
   int _daysInMonth(DateTime date) => DateTime(date.year, date.month + 1, 0).day;
 
+
   Color _getColor(double calories) {
-
-
     if (calories > 0 && calories <= 1500) {
-      return ColorHelper.fromHexWithOpacity("#7A7781", 50);
+      // Under-consuming: blue (0 → 100%)
+      final double opacity =
+      ((calories / 1500) * 100).clamp(0, 100);
+      return ColorHelper.fromHexWithOpacity("#4D96FF", opacity);
+
     } else if (calories > 1500 && calories <= 1700) {
-      return ColorHelper.fromHexWithOpacity("#6ede8a", 50);
+      // Transition zone: teal (60 → 100%)
+      final double opacity =
+      (60 + ((calories - 1500) / 200) * 40).clamp(60, 100);
+      return ColorHelper.fromHexWithOpacity("#6BCF9D", opacity);
+
     } else if (calories > 1700 && calories <= 2500) {
-      return ColorHelper.fromHexWithOpacity("#ffe66d", 50);
+      // Optimal range: amber (40 → 100%)
+      final double opacity =
+      (40 + ((calories - 1700) / 800) * 60).clamp(40, 100);
+      return ColorHelper.fromHexWithOpacity("#FFD166", opacity);
+
     } else if (calories > 2500) {
-      return ColorHelper.fromHexWithOpacity("#ff6b6b", 50);
+      // Over-consuming: soft red (60 → 100%)
+      final double opacity =
+      (60 + ((calories - 2500) / 1000) * 40).clamp(60, 100);
+      return ColorHelper.fromHexWithOpacity("#EF476F", opacity);
+
     } else {
+      // No data / zero
       return ColorHelper.fromHexWithOpacity("#EBEDF0", 100);
     }
   }
+
+
+  // Color _getColor(double calories) {
+  //   if (calories > 0 && calories <= 1500) {
+  //     final double opacity = ((calories / 1500) * 100).clamp(0, 100);
+  //     return ColorHelper.fromHexWithOpacity("#6ede8a", opacity);
+  //   }else if (calories > 1500 && calories <= 1700) {
+  //     return ColorHelper.fromHexWithOpacity("#6ede8a", 50);
+  //   } else if (calories > 1700 && calories <= 2500) {
+  //     return ColorHelper.fromHexWithOpacity("#ffe66d", 50);
+  //   } else if (calories > 2500) {
+  //     return ColorHelper.fromHexWithOpacity("#ff6b6b", 50);
+  //   } else {
+  //     return ColorHelper.fromHexWithOpacity("#EBEDF0", 100);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final now = currentDateTime;
     final daysInMonth = _daysInMonth(now);
 
-    // Increased columnsPerRow from 11 to 15 to make cells even smaller.
     const int columnsPerRow = 16;
     
     final deviceWidth = MediaQuery.of(context).size.width;
-    final availableWidth = deviceWidth - horizontalPadding * 2 - 8; // -8 for internal padding
+    final availableWidth = deviceWidth - horizontalPadding * 2 - 8;
     final totalHSpacing = (columnsPerRow - 1) * hSpacing;
     
-    // Calculate square box size to fit exactly columnsPerRow in the width
     final boxSize = (availableWidth - totalHSpacing) / columnsPerRow;
 
     final cells = List.generate(daysInMonth, (index) {
       final dayNumber = index + 1;
+      
+      // Fixed: The key must exactly match how it's stored in the heatmap map.
+      // In ViewModel, it is "${entry.id}-${pageDateTime.year}"
+      // entry.id is "day-month"
       final key = "$dayNumber-${now.month}-${now.year}";
+      
       final stats = heatmapData[key];
       final calories = stats?.calories ?? 0.0;
       
@@ -109,7 +143,7 @@ class HeatmapGrid extends StatelessWidget {
             padding: const EdgeInsets.all(4.0),
             child: Wrap(
               spacing: hSpacing,
-              runSpacing: 0, // HeatmapCell handles its own bottom margin via vSpacing
+              runSpacing: 0,
               children: cells,
             ),
           ),

@@ -37,6 +37,7 @@ class FirebaseFoodStatsHistoryService {
   }
 
   /// Watches all [FoodStats] documents for a specific [year].
+  /// User in User History page
   Stream<List<FoodStatsEntry>> watchYearStats({required int year}) {
     final ref = _db
         .collection(_root)
@@ -53,7 +54,9 @@ class FirebaseFoodStatsHistoryService {
     });
   }
 
-  /// Retrieves all stored [FoodStats] documents for a specific [year].
+
+  /// One-time fetch all [FoodStats] documents for a specific [year].
+  /// User in User History page
   Future<List<FoodStatsEntry>> getAllFoodStats({
     required int year,
   }) async {
