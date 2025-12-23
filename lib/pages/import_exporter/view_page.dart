@@ -1,10 +1,8 @@
-
 import 'package:calio/models/food_stats_entry.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/helpers/date_time_helper.dart';
-
 
 class ImportExporterPage extends StatelessWidget {
   ImportExporterPage({super.key});
@@ -25,12 +23,10 @@ class ImportExporterPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-
                     ElevatedButton(
                       onPressed: () {
-                        fixMixAlignment();
+                        fixMixedAlignment();
                       },
-
 
                       child: Text('Fix ID timestamp miss-alignment'),
                     ),
@@ -79,45 +75,89 @@ class ImportExporterPage extends StatelessWidget {
     );
   }
 
-  void fixMixAlignment() async{
+  Future<void> fixMixedAlignment() async {
     final db = FirebaseFirestore.instance;
     final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
+
     final snapshot = await ref.get();
 
-    // print(snapshot);
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final id = doc.id;
 
-      for (var doc in snapshot.docs) {
-        final data = doc.data();
-
-        String id = doc.id.toString();
-        FoodStatsEntry foodStatsEntry = FoodStatsEntry.fromMap(id, data);
-
-
-        // DateTime idDatetime = foodStatsEntry.DateTimeHelper.getDateTime(2025);
-        DateTime idDatetime = DateTimeHelper.fromDayMonthId(id,2025);
-        DateTime timestampDateTime = foodStatsEntry.timestamp.toDate();
-
-        textEditingController.text += 'id:${id} ${foodStatsEntry.timestamp}';
-        // print('id:${id} ${foodStatsEntry.timestamp}, ${dateTime}');
-
-        final isSame = DateTimeHelper.isSameDate(idDatetime, timestampDateTime);
-
-        if(!isSame)
-          {
-
-            print('${isSame} id:${idDatetime}, ${timestampDateTime}');
-            // await ref.doc(id).set(map);
-          }
-
-
-
-
-        // data.
-
-
+      // Already migrated → skip
+      if (data.containsKey('createdAt') && data.containsKey('lastUpdatedAt')) {
+        continue;
       }
 
+      final Timestamp? oldTimestamp = data['timestamp'];
+      if (oldTimestamp == null) {
+        debugPrint('⚠️ Missing timestamp for doc $id');
+        continue;
+      }
+
+      // Date from ID (authoritative)
+      final DateTime idDateTime = DateTimeHelper.fromDayMonthId(id, 2025);
+
+      // Sanity check
+      // final bool isSame = DateTimeHelper.isSameDate(idDateTime, oldTimestamp.toDate());
+      //
+      // if (!isSame) {
+      //   debugPrint('❌ Date mismatch → id=$idDateTime, timestamp=${oldTimestamp.toDate()}');
+      //   continue;
+      // }
+
+      await ref.doc(id).update({
+        'createdAt': Timestamp.fromDate(idDateTime),
+        'lastUpdatedAt': oldTimestamp,
+        // 'timestamp': FieldValue.delete(),
+      });
+
+      debugPrint('✅ Migrated doc $id');
+    }
   }
+
+  // void fixMixAlignment() async{
+  //   final db = FirebaseFirestore.instance;
+  //   final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
+  //   final snapshot = await ref.get();
+  //
+  //   // print(snapshot);
+  //
+  //     for (var doc in snapshot.docs) {
+  //       final data = doc.data();
+  //
+  //       String id = doc.id.toString();
+  //       FoodStatsEntry foodStatsEntry = FoodStatsEntry.fromMap(id, data);
+  //
+  //
+  //       // DateTime idDatetime = foodStatsEntry.DateTimeHelper.getDateTime(2025);
+  //       DateTime idDatetime = DateTimeHelper.fromDayMonthId(id,2025);
+  //       DateTime timestampDateTime = foodStatsEntry.timestamp.toDate();
+  //
+  //       textEditingController.text += 'id:${id} ${foodStatsEntry.timestamp}';
+  //       // print('id:${id} ${foodStatsEntry.timestamp}, ${dateTime}');
+  //
+  //       final isSame = DateTimeHelper.isSameDate(idDatetime, timestampDateTime);
+  //
+  //       // print('id:${id}, ${foodStatsEntry.timestamp}');
+  //       print('${isSame} id:${idDatetime}, ${timestampDateTime}');
+  //       if(!isSame)
+  //         {
+  //
+  //
+  //           // await ref.doc(id).set(map);
+  //         }
+  //
+  //
+  //
+  //
+  //       // data.
+  //
+  //
+  //     }
+  //
+  // }
 
   // void fixTimestamp() async{
   //   final db = FirebaseFirestore.instance;

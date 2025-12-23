@@ -39,11 +39,11 @@ class CalorieHistoryViewModel extends ChangeNotifier {
 
     // Defensive: ensure stats are ordered by date
     // allStatsList.sort((a, b) => a.getDateTime(pageDateTime.year).compareTo(b.getDateTime(pageDateTime.year)));
-    allStatsList.sort((a, b) {
-      final dateA = DateTimeHelper.fromDayMonthId(a.id, pageDateTime.year);
-      final dateB = DateTimeHelper.fromDayMonthId(b.id, pageDateTime.year);
-      return dateA.compareTo(dateB);
-    });
+    // allStatsList.sort((a, b) {
+    //   final dateA = DateTimeHelper.fromDayMonthId(a.id, pageDateTime.year);
+    //   final dateB = DateTimeHelper.fromDayMonthId(b.id, pageDateTime.year);
+    //   return dateA.compareTo(dateB);
+    // });
 
     int? currentWeekNumber;
     FoodStats weeklyTotal = FoodStats.empty();

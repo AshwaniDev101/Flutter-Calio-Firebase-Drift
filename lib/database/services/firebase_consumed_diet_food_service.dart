@@ -94,9 +94,12 @@ class FirebaseConsumedDietFoodService {
       //     // },
       //     SetOptions(merge: true));
 
+      final isFirstCreate = !dailyStatsSnapshot.exists;
+
       transaction.set(
         dayMonthDocRef,
         {
+          if (isFirstCreate) 'createdAt': Timestamp.now(),
           'foodStats': newTotalStats.toMap(),
           'lastUpdatedAt': Timestamp.now(),
         },
@@ -172,13 +175,27 @@ class FirebaseConsumedDietFoodService {
       }
 
       // 4. Update the daily total stats document with the new aggregate
+      // transaction.set(
+      //     dayDocRef,
+      //     {
+      //       'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
+      //       'timestamp': Timestamp.now(),
+      //     },
+      //     SetOptions(merge: true));
+
+
+
+      final isFirstCreate = !dailyStatsSnapshot.exists;
+
       transaction.set(
-          dayDocRef,
-          {
-            'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
-            'timestamp': Timestamp.now(),
-          },
-          SetOptions(merge: true));
+        dayDocRef,
+        {
+          if (isFirstCreate) 'createdAt': Timestamp.now(),
+          'foodStats': newTotalStats.toMap(),
+          'lastUpdatedAt': Timestamp.now(),
+        },
+        SetOptions(merge: true),
+      );
     });
   }
 }

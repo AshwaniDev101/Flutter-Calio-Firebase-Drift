@@ -22,9 +22,9 @@ class MyApp extends StatelessWidget {
       title: 'Calio Counter',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
-      // home: CalorieCounterPage(pageDateTime: DateTime.now()),
+      home: CalorieCounterPage(pageDateTime: DateTime.now()),
 
-      home: ImportExporterPage()
+      // home: ImportExporterPage()
     );
   }
 }

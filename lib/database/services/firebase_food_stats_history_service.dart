@@ -1,3 +1,4 @@
+import 'package:calio/core/helpers/date_time_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/food_stats.dart';
 import '../../models/food_stats_entry.dart';
@@ -18,14 +19,15 @@ class FirebaseFoodStatsHistoryService {
   /// This method is pure and has no side-effects. It returns a stream
   /// that provides the latest [FoodStats] from Firestore or null if none exists.
 
-  Stream<FoodStats?> watchFoodStatus(DateTime date) {
+  Stream<FoodStats?> watchFoodStatus(DateTime dateTime) {
     final ref = _db
         .collection(_root)
         .doc(_userId)
         .collection('history')
-        .doc('${date.year}')
+        .doc('${dateTime.year}')
         .collection('data')
-        .doc('${date.day}-${date.month}');
+        .doc(DateTimeHelper.toDayMonthId(dateTime));
+        // .doc('${date.day}-${date.month}');
 
     return ref.snapshots().map((snapshot) {
       if (snapshot.exists) {
@@ -48,7 +50,7 @@ class FirebaseFoodStatsHistoryService {
         .collection('history')
         .doc('$year')
         .collection('data')
-        .orderBy('timestamp', descending: true);
+        .orderBy('createdAt', descending: true);
 
     final snapshot = await ref.get();
 
@@ -95,7 +97,8 @@ class FirebaseFoodStatsHistoryService {
         .collection('history')
         .doc(cardDateTime.year.toString())
         .collection('data')
-        .doc('${cardDateTime.day}-${cardDateTime.month}');
+        .doc(DateTimeHelper.toDayMonthId(cardDateTime));
+        // .doc('${cardDateTime.day}-${cardDateTime.month}');
     // .collection(cardDateTime.month.toString())
     // .doc(cardDateTime.day.toString());
 
