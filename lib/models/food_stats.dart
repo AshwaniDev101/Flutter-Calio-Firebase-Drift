@@ -36,7 +36,7 @@ class FoodStats {
   /// Omits calories if the value is zero.
   Map<String, dynamic> toMap() => {
     'version': version,
-    if (calories != 0) 'calories': calories,
+    'calories': calories,
   };
 
   /// Creates a [FoodStats] object from a Firestore map.
