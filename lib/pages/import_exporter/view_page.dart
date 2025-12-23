@@ -23,12 +23,20 @@ class ImportExporterPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     fixMixedAlignment();
+                    //   },
+                    //
+                    //   child: Text('Fix ID timestamp miss-alignment'),
+                    // ),
+
                     ElevatedButton(
                       onPressed: () {
-                        fixMixedAlignment();
+                        removeLegacyTimestampField();
                       },
 
-                      child: Text('Fix ID timestamp miss-alignment'),
+                      child: Text('removeLegacyTimestampField'),
                     ),
                     // ElevatedButton(
                     //   onPressed: () {
@@ -117,7 +125,36 @@ class ImportExporterPage extends StatelessWidget {
     }
   }
 
-  // void fixMixAlignment() async{
+
+  Future<void> removeLegacyTimestampField() async {
+    final db = FirebaseFirestore.instance;
+
+    final ref = db
+        .collection('users')
+        .doc('user1')
+        .collection('history')
+        .doc('2025')
+        .collection('data');
+
+    final snapshot = await ref.get();
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+
+      if (data.containsKey('timestamp')) {
+        await ref.doc(doc.id).update({
+          'timestamp': FieldValue.delete(),
+        });
+
+        debugPrint('🧹 Removed timestamp from ${doc.id}');
+      }
+    }
+
+    debugPrint('✅ Legacy timestamp cleanup complete');
+  }
+
+
+// void fixMixAlignment() async{
   //   final db = FirebaseFirestore.instance;
   //   final ref = db.collection('users').doc('user1').collection('history').doc('2025').collection('data');
   //   final snapshot = await ref.get();
