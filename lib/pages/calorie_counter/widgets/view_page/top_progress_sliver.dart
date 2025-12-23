@@ -58,7 +58,7 @@ class _TopProgressHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   Widget _buildLinearProgress(BuildContext context) {
     return StreamBuilder<FoodStats?>(
-      stream: viewModel.watchConsumedFoodStats,
+      stream: viewModel.watchCurrentDayDashboardFoodStats,
       builder: (context, snapshot) {
         final foodStats = snapshot.data ?? FoodStats.empty();
         return Padding(
@@ -72,7 +72,7 @@ class _TopProgressHeaderDelegate extends SliverPersistentHeaderDelegate {
 
     Widget _buildExpandedProgress(BuildContext context) {
     return StreamBuilder<FoodStats?>(
-      stream: viewModel.watchConsumedFoodStats,
+      stream: viewModel.watchCurrentDayDashboardFoodStats,
       builder: (context, snapshot) {
         final foodStats = snapshot.data ?? FoodStats.empty();
         return Padding(

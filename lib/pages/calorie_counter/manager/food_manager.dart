@@ -145,8 +145,10 @@ class FoodManager {
     return _consumedDietFoodRepository.watchConsumedFood(dateTime);
   }
 
-  Stream<FoodStats?> watchConsumedFoodStats(DateTime dateTime) {
-    return _foodStatsHistoryRepository.watchFoodStats(dateTime);
+  /// Gives Dashboard data for current day
+  /// Stream of [FoodStats] for a specific date.
+  Stream<FoodStats?> watchCurrentDayDashboardFoodStats(DateTime dateTime) {
+    return _foodStatsHistoryRepository.watchCurrentDayDashboardFoodStats(dateTime);
   }
 
   // Add to available food list

@@ -14,12 +14,9 @@ class FirebaseFoodStatsHistoryService {
   final String _root = 'users';
   final String _userId = 'user1';
 
-  /// Watches for real-time changes to the [FoodStats] for a specific [date].
-  ///
-  /// This method is pure and has no side-effects. It returns a stream
-  /// that provides the latest [FoodStats] from Firestore or null if none exists.
-
-  Stream<FoodStats?> watchFoodStatus(DateTime dateTime) {
+  /// Gives Dashboard data for current day
+  /// Stream of [FoodStats] for a specific date.
+  Stream<FoodStats?> watchCurrentDayDashboardFoodStats(DateTime dateTime) {
     final ref = _db
         .collection(_root)
         .doc(_userId)
@@ -27,7 +24,6 @@ class FirebaseFoodStatsHistoryService {
         .doc('${dateTime.year}')
         .collection('data')
         .doc(DateTimeHelper.toDayMonthId(dateTime));
-        // .doc('${date.day}-${date.month}');
 
     return ref.snapshots().map((snapshot) {
       if (snapshot.exists) {
@@ -40,7 +36,24 @@ class FirebaseFoodStatsHistoryService {
     });
   }
 
-  /// Retrieves all stored [FoodStats] documents for a specific [year] and [month].
+  /// Watches all [FoodStats] documents for a specific [year].
+  Stream<List<FoodStatsEntry>> watchYearStats({required int year}) {
+    final ref = _db
+        .collection(_root)
+        .doc(_userId)
+        .collection('history')
+        .doc('$year')
+        .collection('data')
+        .orderBy('createdAt', descending: true);
+
+    return ref.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return FoodStatsEntry.fromMap(doc.id, doc.data());
+      }).toList();
+    });
+  }
+
+  /// Retrieves all stored [FoodStats] documents for a specific [year].
   Future<List<FoodStatsEntry>> getAllFoodStats({
     required int year,
   }) async {
@@ -55,39 +68,9 @@ class FirebaseFoodStatsHistoryService {
     final snapshot = await ref.get();
 
     return snapshot.docs.map((doc) {
-      final data = doc.data();
-      // final stats = FoodStats.fromMap(Map<String, dynamic>.from(data['foodStats']));
-      // return FoodStatsEntry(doc.id, stats);
-      return FoodStatsEntry.fromMap(doc.id, data);
+      return FoodStatsEntry.fromMap(doc.id, doc.data());
     }).toList();
   }
-
-  // Future<Map<String, FoodStats>> getFoodStatsForMonth({required int year, required int month}) async {
-  //   final monthRef = _db.collection(_root)
-  //       .doc(_userId)
-  //       .collection('history')
-  //       .doc(year.toString())
-  //       .collection('data')
-  //       .orderBy('timestamp', descending: true);
-  //   // .doc('${cardDateTime.day}-${cardDateTime.month}');
-  //   // .collection(month.toString());
-  //
-  //   final snapshot = await monthRef.get();
-  //
-  //   final Map<String, FoodStats> statsMap = {};
-  //
-  //   for (final doc in snapshot.docs) {
-  //     final data = doc.data();
-  //
-  //     statsMap[doc.id] = FoodStats.fromMap(data['foodStats']);
-  //   }
-  //
-  //   // final reversedMap = Map.fromEntries(
-  //   //     statsMap.entries.toList()..sort((a, b) => b.key.compareTo(a.key)),
-  //   //   );
-  //
-  //   return statsMap;
-  // }
 
   /// Permanently deletes the [FoodStats] document and its subcollections for a given date.
   Future<void> deleteFoodStats({required DateTime cardDateTime}) async {
@@ -98,9 +81,6 @@ class FirebaseFoodStatsHistoryService {
         .doc(cardDateTime.year.toString())
         .collection('data')
         .doc(DateTimeHelper.toDayMonthId(cardDateTime));
-        // .doc('${cardDateTime.day}-${cardDateTime.month}');
-    // .collection(cardDateTime.month.toString())
-    // .doc(cardDateTime.day.toString());
 
     final subColRef = docRef.collection('food_consumed_list');
     const int batchSize = 20;

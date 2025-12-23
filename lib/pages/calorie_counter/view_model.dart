@@ -13,7 +13,8 @@ class CalorieCounterViewModel extends ChangeNotifier {
 
   CalorieCounterViewModel({required this.pageDateTime, required this.isOldPage});
 
-  Stream<FoodStats?> get watchConsumedFoodStats => FoodManager.instance.watchConsumedFoodStats(pageDateTime);
+  // Gives Dashboard data for current day (FoodStats of the day)
+  Stream<FoodStats?> get watchCurrentDayDashboardFoodStats => FoodManager.instance.watchCurrentDayDashboardFoodStats(pageDateTime);
 
   Stream<List<DietFood>> get watchMergedFoodList => FoodManager.instance.watchMergedFoodList(pageDateTime);
 

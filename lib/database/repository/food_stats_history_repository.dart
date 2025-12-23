@@ -1,5 +1,3 @@
-
-
 import '../../models/food_stats.dart';
 import '../../models/food_stats_entry.dart';
 import '../services/firebase_food_stats_history_service.dart';
@@ -12,23 +10,23 @@ class FoodStatsHistoryRepository {
   FoodStatsHistoryRepository._internal();
   static final instance = FoodStatsHistoryRepository._internal();
 
-  // final FirebaseFirestore _db = FirebaseFirestore.instance;
-  // final String _root = 'users';
-  // final String _userId = 'user1';
-
-
-  /// Stream of consumed food stats for a specific date
-  Stream<FoodStats?> watchFoodStats(DateTime date) {
-    return _service.watchFoodStatus(date);
+  /// Gives Dashboard data for current day
+  /// Stream of [FoodStats] for a specific date.
+  Stream<FoodStats?> watchCurrentDayDashboardFoodStats(DateTime date) {
+    return _service.watchCurrentDayDashboardFoodStats(date);
   }
 
-  /// Get food stats for a specific month
+  /// Stream of all food stats for a specific year
+  Stream<List<FoodStatsEntry>> watchYearStats({required int year}) {
+    return _service.watchYearStats(year: year);
+  }
+
+  /// Get food stats for a specific year
   Future<List<FoodStatsEntry>> getYearStats({
     required int year,
   }) {
     return _service.getAllFoodStats(year: year);
   }
-
 
   /// Deletes food stats for the specified date
   Future<void> deleteFoodStats({required DateTime date}) {
