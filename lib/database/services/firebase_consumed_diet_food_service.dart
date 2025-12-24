@@ -4,16 +4,24 @@ import 'package:flutter/foundation.dart';
 import '../../models/consumed_diet_food.dart';
 import '../../models/food_stats.dart';
 
+/// A dedicated service for managing consumed food records in Firebase Firestore.
+///
+/// This service handles real-time tracking of consumed items and maintains
+/// aggregated daily statistics (e.g., total calories) using atomic operations
+/// to ensure data consistency.
 class FirebaseConsumedDietFoodService {
   FirebaseConsumedDietFoodService._();
 
+  /// Singleton instance of the service.
   static final instance = FirebaseConsumedDietFoodService._();
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String _root = 'users';
-  final String _userId = 'user1';
+  final String _userId = 'user1'; // TODO: Replace with dynamic user ID
 
-  /// Watch consumed food list for a specific date
+  /// Returns a real-time [Stream] of [ConsumedDietFood] items for a specific [dateTime].
+  ///
+  /// Listens to the 'food_consumed_list' subcollection for the given day.
   Stream<List<ConsumedDietFood>> watchConsumedFood(DateTime dateTime) {
     return _db
         .collection(_root)
@@ -21,7 +29,6 @@ class FirebaseConsumedDietFoodService {
         .collection('history')
         .doc('${dateTime.year}')
         .collection('data')
-        // .doc('${date.day}-${date.month}')
         .doc(DateTimeHelper.toDayMonthId(dateTime))
         .collection('food_consumed_list')
         .snapshots()
@@ -41,86 +48,15 @@ class FirebaseConsumedDietFoodService {
     });
   }
 
-  Future<void> updateConsumedFood(ConsumedDietFood newConsumedFoodItem, ConsumedDietFood oldConsumedFoodItem, DateTime dateTime) async {
-    final dayMonthDocRef = _db
-        .collection(_root)
-        .doc(_userId)
-        .collection('history')
-        .doc('${dateTime.year}')
-        .collection('data')
-        // .doc('${dateTime.day}-${dateTime.month}');
-        .doc(DateTimeHelper.toDayMonthId(dateTime));
-
-
-    final consumedFoodDocRef = dayMonthDocRef
-        .collection('food_consumed_list')
-        .doc(newConsumedFoodItem.id);
-
-
-    // Run as a transaction to ensure atomicity
-    return _db.runTransaction((transaction) async {
-
-
-
-      // 1. Get the current daily total stats
-      final dailyStatsSnapshot = await transaction.get(dayMonthDocRef);
-      FoodStats currentStats;
-      if (dailyStatsSnapshot.exists && dailyStatsSnapshot.data()?['foodStats'] != null) {
-        currentStats = FoodStats.fromMap(dailyStatsSnapshot.data()!['foodStats']);
-      } else {
-        currentStats = FoodStats.empty();
-      }
-
-
-      //
-      // 2. Calculate the change in stats by finding the difference between the new and old items
-      final statsDelta = newConsumedFoodItem.foodStats.subtract(oldConsumedFoodItem.foodStats);
-      //
-      // 3. Apply the delta to the current total stats to get the new total
-      final FoodStats newTotalStats = currentStats.sum(statsDelta);
-      //
-      // 4. Update the individual consumed food item itself
-      // Using .set() handles both creation and update scenarios.
-      transaction.set(consumedFoodDocRef, newConsumedFoodItem.toMap());
-      //
-      // 5. Update the daily total stats document with the new aggregated value
-      // transaction.set(
-      //     dayMonthDocRef,newTotalStats.toMap(),
-      //     // {
-      //     //   // Only storing total calories in the daily summary for efficiency
-      //     //   'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
-      //     //   // 'timestamp': Timestamp.now(),
-      //     //   // 'last_update_on': Timestamp.now(),
-      //     // },
-      //     SetOptions(merge: true));
-
-      final isFirstCreate = !dailyStatsSnapshot.exists;
-
-      transaction.set(
-        dayMonthDocRef,
-        {
-          if (isFirstCreate) 'createdAt': Timestamp.now(),
-          'foodStats': newTotalStats.toMap(),
-          'lastUpdatedAt': Timestamp.now(),
-        },
-        SetOptions(merge: true),
-      );
-
-
-    });
-
-
-  }
-
-
-
-  /// Atomically changes the consumed count for a food item and updates the
-  /// daily total statistics within a Firestore transaction.
+  /// Updates an existing consumed food item and recalculates the daily total stats.
   ///
-  /// [count] represents the delta (e.g., +1 for adding, -1 for removing).
-  /// This ensures that the daily summary is always consistent with the individual
-  /// food counts.
-  Future<void> changeConsumedFoodCount(double count, ConsumedDietFood food, DateTime dateTime) async {
+  /// Uses a Firestore transaction to ensure that the individual item update
+  /// and the aggregate daily total update happen atomically.
+  ///
+  /// [newItem] contains the updated food data.
+  /// [oldItem] is used to calculate the difference (delta) in calories.
+  /// [dateTime] specifies the day the food was consumed.
+  Future<void> updateConsumedFood(ConsumedDietFood newItem, ConsumedDietFood oldItem, DateTime dateTime) async {
     final dayDocRef = _db
         .collection(_root)
         .doc(_userId)
@@ -128,70 +64,91 @@ class FirebaseConsumedDietFoodService {
         .doc('${dateTime.year}')
         .collection('data')
         .doc(DateTimeHelper.toDayMonthId(dateTime));
-        // .doc('${dateTime.day}-${dateTime.month}');
 
+    final foodDocRef = dayDocRef.collection('food_consumed_list').doc(newItem.id);
 
-    final consumedFoodDocRef = dayDocRef.collection('food_consumed_list').doc(food.id);
-
-    // Run as a transaction to ensure atomicity
     return _db.runTransaction((transaction) async {
-      // 1. Get the current daily total stats
-      final dailyStatsSnapshot = await transaction.get(dayDocRef);
-      FoodStats currentStats;
-      if (dailyStatsSnapshot.exists && dailyStatsSnapshot.data()?['foodStats'] != null) {
-        currentStats = FoodStats.fromMap(dailyStatsSnapshot.data()!['foodStats']);
-      } else {
-        currentStats = FoodStats.empty();
-      }
+      final dailySnapshot = await transaction.get(dayDocRef);
+      FoodStats currentStats = dailySnapshot.exists && dailySnapshot.data()?['foodStats'] != null
+          ? FoodStats.fromMap(dailySnapshot.data()!['foodStats'])
+          : FoodStats.empty();
 
-      // 2. Calculate the change in stats based on the food's stats per serving and the count delta
-      final statsDelta = FoodStats(
-        calories: food.foodStats.calories * count,
-        // proteins: food.foodStats.proteins * count,
-        // carbohydrates: food.foodStats.carbohydrates * count,
-        // fats: food.foodStats.fats * count,
-        // minerals: food.foodStats.minerals * count,
-        // vitamins: food.foodStats.vitamins * count,
-      );
-      final FoodStats newTotalStats = currentStats.sum(statsDelta);
+      // Calculate the net change in calories based on the change in food stats or count.
+      final deltaCalories = (newItem.foodStats.calories * newItem.count) - (oldItem.foodStats.calories * oldItem.count);
+      final newTotalStats = FoodStats(calories: currentStats.calories + deltaCalories);
 
-      // 3. Update the individual consumed food item's count
-      final consumedFoodSnapshot = await transaction.get(consumedFoodDocRef);
-      final foodMap = food.toMap()..remove('id');
-
-      if (consumedFoodSnapshot.exists) {
-        final double existingCount = consumedFoodSnapshot.data()?['count'] ?? 0;
-        final newCount = existingCount + count;
-
-        if (newCount > 0) {
-          transaction.update(consumedFoodDocRef, {...foodMap, 'count': newCount});
-        } else {
-          // If count drops to 0 or below, remove the item from the consumed list
-          transaction.delete(consumedFoodDocRef);
-        }
-      } else if (count > 0) {
-        // If the item wasn't in the list and we're adding it, create it
-        transaction.set(consumedFoodDocRef, {...foodMap, 'count': count});
-      }
-
-      // 4. Update the daily total stats document with the new aggregate
-      // transaction.set(
-      //     dayDocRef,
-      //     {
-      //       'foodStats': {'version': newTotalStats.version, 'calories': newTotalStats.calories},
-      //       'timestamp': Timestamp.now(),
-      //     },
-      //     SetOptions(merge: true));
-
-
-
-      final isFirstCreate = !dailyStatsSnapshot.exists;
-
+      transaction.set(foodDocRef, newItem.toMap());
       transaction.set(
         dayDocRef,
         {
-          if (isFirstCreate) 'createdAt': Timestamp.now(),
+          if (!dailySnapshot.exists) 'createdAt': Timestamp.now(),
           'foodStats': newTotalStats.toMap(),
+          'lastUpdatedAt': Timestamp.now(),
+        },
+        SetOptions(merge: true),
+      );
+    });
+  }
+
+  /// Adjusts the quantity of a consumed food item and updates daily totals atomically.
+  ///
+  /// Employs [FieldValue.increment] within a transaction to prevent data drift
+  /// during rapid UI interactions (concurrency safe). If the resulting count
+  /// is zero or less, the item is removed from the list.
+  ///
+  /// [deltaCount] is the change in quantity (e.g., 1.0 or -1.0).
+  /// [food] is the target food item.
+  /// [dateTime] is the date for the consumption record.
+  Future<void> changeConsumedFoodCount(double deltaCount, ConsumedDietFood food, DateTime dateTime) async {
+    final dayDocRef = _db
+        .collection(_root)
+        .doc(_userId)
+        .collection('history')
+        .doc('${dateTime.year}')
+        .collection('data')
+        .doc(DateTimeHelper.toDayMonthId(dateTime));
+
+    final foodDocRef = dayDocRef.collection('food_consumed_list').doc(food.id);
+    final deltaCalories = food.foodStats.calories * deltaCount;
+
+    return _db.runTransaction((transaction) async {
+      final dailySnapshot = await transaction.get(dayDocRef);
+      final foodSnapshot = await transaction.get(foodDocRef);
+
+      // 1. Manage the individual food entry (Update, Create, or Delete).
+      if (foodSnapshot.exists) {
+        final double currentCount = (foodSnapshot.data()?['count'] ?? 0).toDouble();
+        final double nextCount = currentCount + deltaCount;
+
+        if (nextCount <= 0) {
+          // Remove item if quantity drops to zero.
+          transaction.delete(foodDocRef);
+        } else {
+          // Increment count atomically on the server.
+          transaction.update(foodDocRef, {
+            'count': FieldValue.increment(deltaCount),
+            'lastUpdatedAt': Timestamp.now(),
+          });
+        }
+      } else if (deltaCount > 0) {
+        // Create new record if it doesn't exist yet.
+        transaction.set(foodDocRef, {
+          ...food.toMap()..remove('id'),
+          'count': deltaCount,
+          'createdAt': Timestamp.now(),
+          'lastUpdatedAt': Timestamp.now(),
+        });
+      }
+
+      // 2. Update the daily summary statistics atomically.
+      transaction.set(
+        dayDocRef,
+        {
+          if (!dailySnapshot.exists) 'createdAt': Timestamp.now(),
+          'foodStats': {
+            'calories': FieldValue.increment(deltaCalories),
+            'version': 1,
+          },
           'lastUpdatedAt': Timestamp.now(),
         },
         SetOptions(merge: true),
