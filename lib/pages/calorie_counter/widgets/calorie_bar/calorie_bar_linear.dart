@@ -1,66 +1,29 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-
+import '../../../../theme/app_colors.dart';
 import 'calorie_config.dart';
-
 
 String _trim(double v) => trimTrailingZero(v);
 
 class CalorieLinearProgressBarWidget extends StatelessWidget {
   final double current;
-
-  final double maxCalories;
-  final double tick1;
-  final double tick2;
-  final double tick3;
-
-  final Color color0;
-  final Color color1;
-  final Color color2;
-  final Color color3;
-
+  final CalorieConfig? config;
   final double height;
-  final Duration animationDuration;
 
   const CalorieLinearProgressBarWidget({
     super.key,
     required this.current,
-    this.maxCalories = 3500,
-    this.tick1 = 1500,
-    this.tick2 = 1700,
-    this.tick3 = 2500,
-    this.color0 = const Color(0xFF504D4D),
-    this.color1 = const Color(0xFF10DA48),
-    this.color2 = Colors.amber,
-    this.color3 = const Color(0xFFFF6B6B),
+    this.config,
     this.height = 22,
-    this.animationDuration = const Duration(milliseconds: 420),
-  })  : assert(maxCalories > 0),
-        assert(0 <= tick1 && tick1 < tick2 && tick2 < tick3 && tick3 <= maxCalories);
-
-  double _frac(double v) => (v / maxCalories).clamp(0, 1);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final config = CalorieConfig(
-      maxCalories: maxCalories,
-      tick1: tick1,
-      tick2: tick2,
-      tick3: tick3,
-      color0: color0,
-      color1: color1,
-      color2: color2,
-      color3: color3,
-      animationDuration: animationDuration,
-    );
-
-    final seg = config.segments();
-    final targetFrac = config.numToFrac(current);
-
-    final deviceWidth = MediaQuery.of(context).size.width;
-    const double deviceHorizontalInset = 16.0;
-    final innerWidth = (deviceWidth - deviceHorizontalInset * 2).clamp(0.0, deviceWidth);
+    // Use the provided config or fallback to a default instance.
+    final effectiveConfig = config ?? const CalorieConfig();
+    
+    final seg = effectiveConfig.segments();
+    final targetFrac = effectiveConfig.numToFrac(current);
 
     return Card(
       child: Container(
@@ -73,11 +36,11 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
           top: 16,
           left: 16,
           right: 16,
-          bottom: 0, // tighter!
+          bottom: 0,
         ),
         child: TweenAnimationBuilder<double>(
           tween: Tween(begin: 0.0, end: targetFrac),
-          duration: config.animationDuration,
+          duration: effectiveConfig.animationDuration,
           curve: Curves.easeOutCubic,
           builder: (context, animFrac, _) {
             return Column(
@@ -95,10 +58,11 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                       seg1: seg.segFrac1,
                       seg2: seg.segFrac2,
                       seg3: seg.segFrac3,
-                      c0: config.color0,
-                      c1: config.color1,
-                      c2: config.color2,
-                      c3: config.color3,
+                      c0: effectiveConfig.color0,
+                      c1: effectiveConfig.color1,
+                      c2: effectiveConfig.color2,
+                      c3: effectiveConfig.color3,
+                      bgColor: effectiveConfig.bgColor,
                       tick1: seg.tick1Frac,
                       tick2: seg.tick2Frac,
                       tick3: seg.tick3Frac,
@@ -106,18 +70,15 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                   ),
                 ),
 
-                // tiny gap
                 const SizedBox(height: 2),
 
-                // Tick labels block:
+                // Tick labels block
                 SizedBox(
                   height: 20,
                   width: double.infinity,
                   child: LayoutBuilder(builder: (context, cons) {
-                    final width = cons.maxWidth;
                     return Stack(
                       children: [
-                        // left 0 kcal
                         Align(
                           alignment: const FractionalOffset(0, 0),
                           child: Transform.translate(
@@ -125,35 +86,27 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                             child: const Text('0 kcal', style: TextStyle(fontSize: 11)),
                           ),
                         ),
-
-                        // tick1 (slightly below)
                         Align(
                           alignment: FractionalOffset(seg.tick1Frac.clamp(0.0, 1.0), 0),
                           child: Transform.translate(
                             offset: const Offset(0, -6),
-                            child: Text(_trim(tick1), style: const TextStyle(fontSize: 11)),
+                            child: Text(_trim(effectiveConfig.tick1), style: const TextStyle(fontSize: 11)),
                           ),
                         ),
-
-                        // tick2 (place above the bar to avoid overlap)
                         Align(
                           alignment: FractionalOffset(seg.tick2Frac.clamp(0.0, 1.0), 0),
                           child: Transform.translate(
                             offset: const Offset(0, -50),
-                            child: Text(_trim(tick2), style: const TextStyle(fontSize: 11)),
+                            child: Text(_trim(effectiveConfig.tick2), style: const TextStyle(fontSize: 11)),
                           ),
                         ),
-
-                        // tick3 (slightly below)
                         Align(
                           alignment: FractionalOffset(seg.tick3Frac.clamp(0.0, 1.0), 0),
                           child: Transform.translate(
                             offset: const Offset(0, -6),
-                            child: Text(_trim(tick3), style: const TextStyle(fontSize: 11)),
+                            child: Text(_trim(effectiveConfig.tick3), style: const TextStyle(fontSize: 11)),
                           ),
                         ),
-
-                        // right infinity label
                         Align(
                           alignment: const FractionalOffset(1, 0),
                           child: Transform.translate(
@@ -166,9 +119,9 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
                   }),
                 ),
 
-                // kcal number centered at bottom middle
+                // kcal number
                 Transform.translate(
-                  offset: const Offset(0, -2), // pull a touch upwards to tighten gap
+                  offset: const Offset(0, -2),
                   child: Text(
                     '${_trim(current)} kcal',
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.0),
@@ -183,14 +136,12 @@ class CalorieLinearProgressBarWidget extends StatelessWidget {
   }
 }
 
-/// Painter for the linear bar with square edges, colored dividers and colored ticks.
 class _LinearPainter extends CustomPainter {
   final double anim;
   final double height;
-
   final double seg0, seg1, seg2, seg3;
   final Color c0, c1, c2, c3;
-
+  final Color bgColor;
   final double tick1, tick2, tick3;
 
   _LinearPainter({
@@ -204,6 +155,7 @@ class _LinearPainter extends CustomPainter {
     required this.c1,
     required this.c2,
     required this.c3,
+    required this.bgColor,
     required this.tick1,
     required this.tick2,
     required this.tick3,
@@ -215,16 +167,14 @@ class _LinearPainter extends CustomPainter {
     final double barW = s.width;
     final double barH = height;
 
-    // background (square)
-    c.drawRect(Rect.fromLTWH(0, top, barW, barH), Paint()..color = const Color(0xFFECEFF1));
+    // background
+    c.drawRect(Rect.fromLTWH(0, top, barW, barH), Paint()..color = bgColor);
 
-    // compute absolute segment widths
     final s0 = seg0 * barW;
     final s1 = seg1 * barW;
     final s2 = seg2 * barW;
     final s3 = seg3 * barW;
 
-    // fill segments progressively up to anim * total width
     double remain = anim * barW;
     double x = 0.0;
 
@@ -246,9 +196,7 @@ class _LinearPainter extends CustomPainter {
     drawSeg(s2, c2);
     drawSeg(s3, c3);
 
-
     final dividerPaint = Paint()..strokeWidth = 1.3..strokeCap = StrokeCap.butt;
-
     double d1 = s0;
     double d2 = s0 + s1;
     double d3 = s0 + s1 + s2;
@@ -260,7 +208,6 @@ class _LinearPainter extends CustomPainter {
     dividerPaint.color = c3;
     c.drawLine(Offset(d3, top - 3), Offset(d3, top + barH + 3), dividerPaint);
 
-    // ticks: colored according to their segment color; square caps
     void drawTick(double frac, Color color) {
       final xPos = frac * barW;
       c.drawLine(

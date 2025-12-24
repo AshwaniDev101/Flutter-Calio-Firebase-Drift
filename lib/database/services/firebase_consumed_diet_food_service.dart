@@ -33,7 +33,7 @@ class FirebaseConsumedDietFoodService {
           data['id'] = doc.id;
           final consumed = ConsumedDietFood.fromMap(data);
           list.add(consumed);
-        } catch (e, s) {
+        } catch (e) {
           debugPrint('ConsumedDietFood parse failed: $e');
         }
       }

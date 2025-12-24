@@ -1,28 +1,26 @@
-
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-
+import '../../../../theme/app_colors.dart';
 import 'calorie_config.dart';
-
 
 class CalorieSemicircleProgressBarWidget extends StatelessWidget {
   // required
   final double current;
 
-  // keep original public API but delegate defaults to CalorieConfig
-  final double maxCalories; // what maps to the full semicircle (1.0)
+  // Configuration object that can override individual parameters
+  final CalorieConfig? config;
+
+  // Individual parameters with defaults from AppColors
+  final double maxCalories;
   final double tick1;
   final double tick2;
   final double tick3;
 
-  // zone colors (0..tick1, tick1..tick2, tick2..tick3, tick3..max)
   final Color color0;
   final Color color1;
   final Color color2;
   final Color color3;
 
-  // visuals
   final double strokeWidth;
   final double size;
   final bool showCenterPercent;
@@ -32,47 +30,49 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
   const CalorieSemicircleProgressBarWidget({
     super.key,
     required this.current,
+    this.config,
     this.maxCalories = 3500.0,
     this.tick1 = 1500.0,
     this.tick2 = 1700.0,
     this.tick3 = 2500.0,
-    this.color0 = const Color(0xFF504D4D),
-    this.color1 = const Color(0xFF10DA48),
-    this.color2 = Colors.amber,
-    this.color3 = const Color(0xFFFF6B6B),
+    this.color0 = AppColors.calorieBarUnder,
+    this.color1 = AppColors.calorieBarSuccess,
+    this.color2 = AppColors.calorieBarWarning,
+    this.color3 = AppColors.calorieBarDanger,
     this.strokeWidth = 18.0,
     this.size = 220.0,
     this.showCenterPercent = true,
-    this.bgColor = const Color(0xFFECEFF1),
+    this.bgColor = AppColors.calorieBarBackground,
     this.animationDuration = const Duration(milliseconds: 420),
-  })  : assert(maxCalories > 0),
-        assert(0 <= tick1 && tick1 < tick2 && tick2 < tick3 && tick3 <= maxCalories);
+  })  : assert(maxCalories > 0);
 
   @override
   Widget build(BuildContext context) {
-    final config = CalorieConfig(
-      maxCalories: maxCalories,
-      tick1: tick1,
-      tick2: tick2,
-      tick3: tick3,
-      color0: color0,
-      color1: color1,
-      color2: color2,
-      color3: color3,
-      bgColor: bgColor,
-      strokeWidth: strokeWidth,
-      animationDuration: animationDuration,
-    );
+    // If config is provided, it takes precedence over individual constructor parameters
+    final effectiveConfig = config ??
+        CalorieConfig(
+          maxCalories: maxCalories,
+          tick1: tick1,
+          tick2: tick2,
+          tick3: tick3,
+          color0: color0,
+          color1: color1,
+          color2: color2,
+          color3: color3,
+          bgColor: bgColor,
+          strokeWidth: strokeWidth,
+          animationDuration: animationDuration,
+        );
 
-    final targetFrac = config.numToFrac(current);
-    final seg = config.segments();
+    final targetFrac = effectiveConfig.numToFrac(current);
+    final seg = effectiveConfig.segments();
 
     return SizedBox(
       width: size,
       height: size / 2 + 84, // extra space for bottom labels & tick labels
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: targetFrac),
-        duration: config.animationDuration,
+        duration: effectiveConfig.animationDuration,
         curve: Curves.easeOutCubic,
         builder: (_, animFrac, __) {
           final pct = (animFrac * 100).clamp(0, 999).toStringAsFixed(0);
@@ -85,27 +85,27 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: size / 2 + strokeWidth / 2,
+                height: size / 2 + effectiveConfig.strokeWidth / 2,
                 child: CustomPaint(
                   painter: _RefactoredPainter(
                     animFrac: animFrac,
-                    strokeWidth: config.strokeWidth,
-                    bgColor: config.bgColor,
+                    strokeWidth: effectiveConfig.strokeWidth,
+                    bgColor: effectiveConfig.bgColor,
                     segFrac0: seg.segFrac0,
                     segFrac1: seg.segFrac1,
                     segFrac2: seg.segFrac2,
                     segFrac3: seg.segFrac3,
-                    segColor0: config.color0,
-                    segColor1: config.color1,
-                    segColor2: config.color2,
-                    segColor3: config.color3,
+                    segColor0: effectiveConfig.color0,
+                    segColor1: effectiveConfig.color1,
+                    segColor2: effectiveConfig.color2,
+                    segColor3: effectiveConfig.color3,
                     tick1Frac: seg.tick1Frac,
                     tick2Frac: seg.tick2Frac,
                     tick3Frac: seg.tick3Frac,
-                    tick1Value: tick1,
-                    tick2Value: tick2,
-                    tick3Value: tick3,
-                    maxCalories: maxCalories,
+                    tick1Value: effectiveConfig.tick1,
+                    tick2Value: effectiveConfig.tick2,
+                    tick3Value: effectiveConfig.tick3,
+                    maxCalories: effectiveConfig.maxCalories,
                   ),
                 ),
               ),

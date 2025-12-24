@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../theme/app_colors.dart';
 
 String trimTrailingZero(double v) {
   if (v == v.roundToDouble()) return v.toStringAsFixed(0);
@@ -30,11 +31,11 @@ class CalorieConfig {
     this.tick1 = 1500.0,
     this.tick2 = 1700.0,
     this.tick3 = 2500.0,
-    this.color0 = const Color(0xFF504D4D),
-    this.color1 = const Color(0xFF10DA48),
-    this.color2 = Colors.amber,
-    this.color3 = const Color(0xFFFF6B6B),
-    this.bgColor = const Color(0xFFECEFF1),
+    this.color0 = AppColors.calorieBarUnder,
+    this.color1 = AppColors.calorieBarSuccess,
+    this.color2 = AppColors.calorieBarWarning,
+    this.color3 = AppColors.calorieBarDanger,
+    this.bgColor = AppColors.calorieBarBackground,
     this.strokeWidth = 18.0,
     this.animationDuration = const Duration(milliseconds: 420),
   })  : assert(maxCalories > 0),
@@ -79,4 +80,3 @@ class CalorieSegments {
     required this.segFrac3,
   });
 }
-

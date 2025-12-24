@@ -1,63 +1,88 @@
 import 'package:flutter/material.dart';
-
 import 'app_colors.dart';
 
 class AppTheme {
-  // LIGHT THEME
+  // Common Text Styles that follow Material 3 naming
+  static TextTheme _textTheme(Color textColor) => TextTheme(
+        headlineMedium: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: textColor.withValues(alpha: 0.8),
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          color: textColor,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          color: textColor.withValues(alpha: 0.6),
+        ),
+        labelSmall: TextStyle(
+          fontSize: 8,
+          color: textColor.withValues(alpha: 0.8),
+        ),
+      );
+
   static ThemeData lightTheme = ThemeData(
+    useMaterial3: true,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: Colors.grey[100],
-    primaryColor: Colors.pink,
+    scaffoldBackgroundColor: AppColors.backgroundColor,
+    primaryColor: AppColors.primary,
     colorScheme: ColorScheme.light(
-      primary: Colors.pink,
-      secondary: Colors.pinkAccent,
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
       surface: Colors.white,
+      onSurface: AppColors.appbarContent,
     ),
-    appBarTheme:  AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppColors.appbar,
       elevation: 0,
-      foregroundColor: Colors.black87,
+      centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppColors.appbarContent,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.appbarContent),
     ),
-    popupMenuTheme: PopupMenuThemeData(
-      color: Colors.grey[50],
-      textStyle: TextStyle(color: Colors.blueGrey[800]),
+    popupMenuTheme: const PopupMenuThemeData(
+      color: AppColors.optionMenuBackground,
+      surfaceTintColor: Colors.transparent,
     ),
-    textTheme: const TextTheme(
-      bodyMedium: TextStyle(fontSize: 14, color: Colors.black87),
+    textTheme: _textTheme(Colors.black87),
+    iconTheme: IconThemeData(color: Colors.blueGrey[700]),
+    cardTheme: CardTheme(
+      color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
-    iconTheme: const IconThemeData(color: Colors.grey),
-    useMaterial3: true,
   );
 
-
-
-
-
-
-  // DARK THEME
   static ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: const Color(0xFF121212),
-    primaryColor: Colors.tealAccent[200],
-    colorScheme: ColorScheme.dark(
-      primary: Colors.tealAccent,
-      secondary: Colors.tealAccent,
-      surface: const Color(0xFF1E1E1E),
+    primaryColor: AppColors.secondary,
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.secondary,
+      secondary: AppColors.primary,
+      surface: Color(0xFF1E1E1E),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF1E1E1E),
       elevation: 0,
-      foregroundColor: Colors.white,
-      // scrolledUnderElevation: 0,
+      centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
     ),
-    popupMenuTheme: PopupMenuThemeData(
-      color: Color(0xFF2A2A2A),
-      textStyle: TextStyle(color: Colors.white),
-    ),
-    textTheme: const TextTheme(
-      bodyMedium: TextStyle(fontSize: 14, color: Colors.white70),
-    ),
-    iconTheme: const IconThemeData(color: Colors.white60),
-    useMaterial3: true,
+    textTheme: _textTheme(Colors.white),
   );
 }

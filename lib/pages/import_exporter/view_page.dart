@@ -1,4 +1,3 @@
-import 'package:calio/models/food_stats_entry.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

@@ -6,7 +6,6 @@ import 'package:calio/pages/calorie_counter/widgets/view_page/top_progress_slive
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/food_stats.dart';
-import '../../theme/app_colors.dart';
 import '../../widgets/month_heatmap/month_heatmap_widget.dart';
 import '../user_history/view_model.dart';
 
@@ -31,37 +30,31 @@ class _CalorieCounterPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final vmCalorieCounter = context.watch<CalorieCounterViewModel>();
     
-    // Select only the heatmap data to minimize rebuilds
     final heatmap = context.select<CalorieHistoryViewModel, Map<String, FoodStats>>(
       (vm) => vm.heatmap
     );
     
-    // Get a reference to history without subscribing to everything
     final vmHistory = context.read<CalorieHistoryViewModel>();
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         top: false,
         child: CustomScrollView(
           slivers: [
-            // SliverAppBar
             CalorieCounterSliverAppBar(viewModel: vmCalorieCounter),
-            // Top semicircle progress
             TopProgressSliver(viewModel: vmCalorieCounter),
-            // Heatmap
             SliverToBoxAdapter(
               child: MonthHeatmapWidget(
                 currentDateTime: vmCalorieCounter.pageDateTime,
                 heatmapData: heatmap,
               ),
             ),
-            // Search bar
             MySearchBarSliver(viewModel: vmCalorieCounter),
-            // Food list sliver
             FoodListSliver(viewModel: vmCalorieCounter, historyViewModel: vmHistory),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:calio/pages/calorie_counter/view_page.dart';
 import 'package:calio/pages/user_history/view_model.dart';
+import 'package:calio/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Calio Counter',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.light,
       home: CalorieCounterPage(pageDateTime: DateTime.now()),
     );
   }
