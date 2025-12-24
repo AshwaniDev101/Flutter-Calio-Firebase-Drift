@@ -1,14 +1,15 @@
 import 'package:calio/models/consumed_diet_food.dart';
 
 import '../../models/diet_food.dart';
-import '../services/firebase_consumed_diet_food_service.dart';
+import '../services/firebase/firestore_consumed_diet_food_service.dart';
+
 
 class ConsumedDietFoodRepository {
   ConsumedDietFoodRepository._internal();
 
   static final instance = ConsumedDietFoodRepository._internal();
 
-  final _service = FirebaseConsumedDietFoodService.instance;
+  final _service = FirestoreConsumedDietFoodService.instance;
 
   /// Watches for changes in the list of consumed food items for a specific date.
   /// Returns a stream of [DietFood] lists.

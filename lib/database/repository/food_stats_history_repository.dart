@@ -1,11 +1,12 @@
 import '../../models/food_stats.dart';
 import '../../models/food_stats_entry.dart';
-import '../services/firebase_food_stats_history_service.dart';
+import '../services/firebase/firestore_food_stats_history_service.dart';
+
 
 /// Repository for calorie data
 /// Abstracts Firebase access and provides a single source for food user_history.
 class FoodStatsHistoryRepository {
-  final _service = FirebaseFoodStatsHistoryService.instance;
+  final _service = FirestoreFoodStatsHistoryService.instance;
 
   FoodStatsHistoryRepository._internal();
   static final instance = FoodStatsHistoryRepository._internal();

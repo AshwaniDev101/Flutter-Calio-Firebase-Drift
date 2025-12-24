@@ -1,11 +1,11 @@
 
 import '../../models/diet_food.dart';
-import '../services/firebase_global_diet_food_service.dart';
+import '../services/firebase/firestore_global_diet_food_service.dart';
 
 /// A repository for managing global diet food data.
 /// This class provides a singleton instance to interact with the Firebase global diet food service.
 class GlobalDietFoodRepository {
-  final _service = FirebaseGlobalDietFoodService.instance;
+  final _service = FirestoreGlobalDietFoodService.instance;
 
   GlobalDietFoodRepository._internal();
 
