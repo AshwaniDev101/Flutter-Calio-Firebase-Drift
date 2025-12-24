@@ -57,9 +57,10 @@ class CalorieHistoryViewModel extends ChangeNotifier {
 
       for (final entry in sortedList) {
         // Heatmap population
-        newHeatmap['${entry.id}-${pageDateTime.year}'] = entry.foodStats;
-
         final dateTimeFromId = DateTimeHelper.fromDayMonthId(entry.id, pageDateTime.year);
+
+        newHeatmap[DateTimeHelper.toHeatmapKey(dateTimeFromId)] = entry.foodStats;
+
         final entryWeek = WeekStats.getWeekInTheYear(dateTimeFromId);
 
         if (currentWeekNumber == entryWeek) {

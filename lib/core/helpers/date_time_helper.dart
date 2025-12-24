@@ -47,4 +47,9 @@ class DateTimeHelper {
     return '${dateTime.day}-${dateTime.month}';
   }
 
+
+  /// Generates a unique key for the heatmap: "day-month-year"
+  static String toHeatmapKey(DateTime dateTime) {
+    return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
+  }
 }
