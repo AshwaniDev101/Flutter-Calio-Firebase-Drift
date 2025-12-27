@@ -2,31 +2,49 @@ import 'package:calio/database/services/firebase/constants.dart';
 import 'package:calio/core/helpers/date_time_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../../models/consumed_diet_food.dart';
 import '../../../models/food_stats.dart';
 
 /// A dedicated service for managing consumed food records in Firebase Firestore.
+///
+/// Data structure:
+/// users/{userId}/history/{year}/data/{YYYY-MM-DD}/consumedList/{itemId}
+///
+/// Handles real-time streaming and atomic updates to consumed items
+/// and the parent day's total stats.
 class FirestoreConsumedDietFoodService {
   FirestoreConsumedDietFoodService._();
 
   static final instance = FirestoreConsumedDietFoodService._();
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final String _userId = 'user1'; // TODO: Replace with dynamic user ID
 
-  /// Returns a real-time [Stream] of [ConsumedDietFood] items for a specific [dateTime].
-  Stream<List<ConsumedDietFood>> watchConsumedFood(DateTime dateTime) {
+  // TODO: Replace with dynamic user ID from FirebaseAuth
+  final String _userId = 'user1';
+
+  DocumentReference<Map<String, dynamic>> _dayDocument(DateTime date) {
+    final dayId = DateTimeHelper.toDayMonthId(date);
     return _db
         .collection(FirestoreConstants.colUsers)
         .doc(_userId)
         .collection(FirestoreConstants.colHistory)
-        .doc('${dateTime.year}')
+        .doc('${date.year}')
         .collection(FirestoreConstants.colData)
-        .doc(DateTimeHelper.toDayMonthId(dateTime))
-        .collection(FirestoreConstants.colConsumedList)
-        .snapshots()
-        .map((snapshot) {
+        .doc(dayId);
+  }
+
+  CollectionReference<Map<String, dynamic>> _consumedCollection(DateTime date) {
+    return _dayDocument(date).collection(FirestoreConstants.colConsumedList);
+  }
+
+  /// Returns a real-time [Stream] of [ConsumedDietFood] items for a specific [dateTime].
+  ///
+  /// Returns an empty list if no items exist.
+  Stream<List<ConsumedDietFood>> watchConsumedFood(DateTime dateTime) {
+    return _consumedCollection(dateTime).snapshots().map((snapshot) {
       final List<ConsumedDietFood> list = [];
+
       for (final doc in snapshot.docs) {
         try {
           final data = Map<String, dynamic>.from(doc.data());
@@ -34,41 +52,52 @@ class FirestoreConsumedDietFoodService {
           final consumed = ConsumedDietFood.fromMap(data);
           list.add(consumed);
         } catch (e) {
-          debugPrint('ConsumedDietFood parse failed: $e');
+          if (kDebugMode) {
+            debugPrint('ConsumedDietFood parse failed (id: ${doc.id}): $e');
+          }
         }
       }
+
       return list;
     });
   }
 
   /// Updates an existing consumed food item and recalculates the daily total stats.
-  Future<void> updateConsumedFood(ConsumedDietFood newItem, ConsumedDietFood oldItem, DateTime dateTime) async {
-    final dayDocRef = _db
-        .collection(FirestoreConstants.colUsers)
-        .doc(_userId)
-        .collection(FirestoreConstants.colHistory)
-        .doc('${dateTime.year}')
-        .collection(FirestoreConstants.colData)
-        .doc(DateTimeHelper.toDayMonthId(dateTime));
+  ///
+  /// Replaces the entire item and adjusts the daily calorie total based on the difference.
+  Future<void> updateConsumedFood(
+      ConsumedDietFood newItem,
+      ConsumedDietFood oldItem,
+      DateTime dateTime,
+      ) async {
+    final dayDocRef = _dayDocument(dateTime);
+    final foodDocRef = _consumedCollection(dateTime).doc(newItem.id);
 
-    final foodDocRef = dayDocRef.collection(FirestoreConstants.colConsumedList).doc(newItem.id);
-
-    return _db.runTransaction((transaction) async {
+    await _db.runTransaction((transaction) async {
       final dailySnapshot = await transaction.get(dayDocRef);
-      FoodStats currentStats = dailySnapshot.exists && dailySnapshot.data()?[FirestoreConstants.fieldFoodStats] != null
-          ? FoodStats.fromMap(dailySnapshot.data()![FirestoreConstants.fieldFoodStats])
+
+      final currentStats = dailySnapshot.exists &&
+          dailySnapshot.data()?['foodStats'] != null
+          ? FoodStats.fromMap(dailySnapshot.data()!['foodStats'])
           : FoodStats.empty();
 
-      final deltaCalories = (newItem.foodStats.calories * newItem.count) - (oldItem.foodStats.calories * oldItem.count);
-      final newTotalStats = FoodStats(calories: currentStats.calories + deltaCalories);
+      final deltaCalories = (newItem.foodStats.calories * newItem.count) -
+          (oldItem.foodStats.calories * oldItem.count);
 
-      transaction.set(foodDocRef, newItem.toMap());
+      final newTotalStats =
+      FoodStats(calories: currentStats.calories + deltaCalories);
+
+      // Update consumed item (full replace)
+      transaction.set(foodDocRef, newItem.toMap()..remove('id'));
+
+      // Update daily stats
       transaction.set(
         dayDocRef,
         {
-          if (!dailySnapshot.exists) FirestoreConstants.fieldCreatedAt: Timestamp.now(),
+          if (!dailySnapshot.exists)
+            FirestoreConstants.fieldCreatedAt: FieldValue.serverTimestamp(),
           FirestoreConstants.fieldFoodStats: newTotalStats.toMap(),
-          FirestoreConstants.fieldLastUpdatedAt: Timestamp.now(),
+          FirestoreConstants.fieldLastUpdatedAt: FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
@@ -76,52 +105,56 @@ class FirestoreConsumedDietFoodService {
   }
 
   /// Adjusts the quantity of a consumed food item and updates daily totals atomically.
-  Future<void> changeConsumedFoodCount(double deltaCount, ConsumedDietFood food, DateTime dateTime) async {
-    final dayDocRef = _db
-        .collection(FirestoreConstants.colUsers)
-        .doc(_userId)
-        .collection(FirestoreConstants.colHistory)
-        .doc('${dateTime.year}')
-        .collection(FirestoreConstants.colData)
-        .doc(DateTimeHelper.toDayMonthId(dateTime));
+  ///
+  /// Handles creation, increment, decrement, and auto-deletion when count ≤ 0.
+  Future<void> changeConsumedFoodCount(
+      double deltaCount,
+      ConsumedDietFood food,
+      DateTime dateTime,
+      ) async {
+    if (deltaCount == 0) return;
 
-    final foodDocRef = dayDocRef.collection(FirestoreConstants.colConsumedList).doc(food.id);
+    final dayDocRef = _dayDocument(dateTime);
+    final foodDocRef = _consumedCollection(dateTime).doc(food.id);
     final deltaCalories = food.foodStats.calories * deltaCount;
 
-    return _db.runTransaction((transaction) async {
+    await _db.runTransaction((transaction) async {
       final dailySnapshot = await transaction.get(dayDocRef);
       final foodSnapshot = await transaction.get(foodDocRef);
 
+      // Handle the consumed item
       if (foodSnapshot.exists) {
-        final double currentCount = (foodSnapshot.data()?[FirestoreConstants.fieldCount] ?? 0).toDouble();
-        final double nextCount = currentCount + deltaCount;
+        final currentCount =
+        (foodSnapshot.data()?['count'] ?? 0.0).toDouble();
+        final nextCount = currentCount + deltaCount;
 
         if (nextCount <= 0) {
           transaction.delete(foodDocRef);
         } else {
           transaction.update(foodDocRef, {
-            FirestoreConstants.fieldCount: FieldValue.increment(deltaCount),
-            FirestoreConstants.fieldLastUpdatedAt: Timestamp.now(),
+            'count': FieldValue.increment(deltaCount),
+            FirestoreConstants.fieldLastUpdatedAt: FieldValue.serverTimestamp(),
           });
         }
       } else if (deltaCount > 0) {
-        transaction.set(foodDocRef, {
-          ...food.toMap()..remove('id'),
-          FirestoreConstants.fieldCount: deltaCount,
-          FirestoreConstants.fieldCreatedAt: Timestamp.now(),
-          FirestoreConstants.fieldLastUpdatedAt: Timestamp.now(),
-        });
+        // Create new item
+        final map = food.toMap()..remove('id');
+        map['count'] = deltaCount;
+        map[FirestoreConstants.fieldCreatedAt] = FieldValue.serverTimestamp();
+        map[FirestoreConstants.fieldLastUpdatedAt] = FieldValue.serverTimestamp();
+
+        transaction.set(foodDocRef, map);
       }
 
+      // Update daily calorie total (only if there's a change)
       transaction.set(
         dayDocRef,
         {
-          if (!dailySnapshot.exists) FirestoreConstants.fieldCreatedAt: Timestamp.now(),
-          FirestoreConstants.fieldFoodStats: {
-            FirestoreConstants.fieldCalories: FieldValue.increment(deltaCalories),
-            FirestoreConstants.fieldVersion: 1,
-          },
-          FirestoreConstants.fieldLastUpdatedAt: Timestamp.now(),
+          if (!dailySnapshot.exists)
+            FirestoreConstants.fieldCreatedAt: FieldValue.serverTimestamp(),
+          '${FirestoreConstants.fieldFoodStats}.${FirestoreConstants.fieldCalories}':
+          FieldValue.increment(deltaCalories),
+          FirestoreConstants.fieldLastUpdatedAt: FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
