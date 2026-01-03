@@ -152,8 +152,10 @@ class FirestoreConsumedDietFoodService {
         {
           if (!dailySnapshot.exists)
             FirestoreConstants.fieldCreatedAt: FieldValue.serverTimestamp(),
-          '${FirestoreConstants.fieldFoodStats}.${FirestoreConstants.fieldCalories}':
-          FieldValue.increment(deltaCalories),
+          FirestoreConstants.fieldFoodStats: {
+            FirestoreConstants.fieldCalories: FieldValue.increment(deltaCalories),
+            FirestoreConstants.fieldVersion: 1,
+          },
           FirestoreConstants.fieldLastUpdatedAt: FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
