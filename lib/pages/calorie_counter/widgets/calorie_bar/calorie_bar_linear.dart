@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../../../../theme/app_colors.dart';
 import 'calorie_config.dart';
 
 String _trim(double v) => trimTrailingZero(v);

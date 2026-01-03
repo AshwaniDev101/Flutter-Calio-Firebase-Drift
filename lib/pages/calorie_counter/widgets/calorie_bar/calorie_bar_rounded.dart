@@ -67,9 +67,10 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
     final targetFrac = effectiveConfig.numToFrac(current);
     final seg = effectiveConfig.segments();
 
+    // Adjusted height to ensure no clipping at the top
     return SizedBox(
       width: size,
-      height: size / 2 + 84, // extra space for bottom labels & tick labels
+      height: size / 2 + 120, // Increased from 84 to 120 to provide room for top labels
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: targetFrac),
         duration: effectiveConfig.animationDuration,
@@ -78,11 +79,12 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
           final pct = (animFrac * 100).clamp(0, 999).toStringAsFixed(0);
 
           return Stack(
+            clipBehavior: Clip.none, // Allow drawing outside if necessary, though we increased height
             alignment: Alignment.topCenter,
             children: [
               // The semicircle painter
               Positioned(
-                top: 0,
+                top: 40, // Push the arc down slightly to make room for top ticks/labels
                 left: 0,
                 right: 0,
                 height: size / 2 + effectiveConfig.strokeWidth / 2,
@@ -112,7 +114,7 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
 
               // Center text: current value (+ percent if enabled)
               Positioned(
-                top: size / 8 + 40,
+                top: size / 8 + 80, // Adjusted top position to match the shifted arc
                 left: 0,
                 right: 0,
                 child: Column(
@@ -134,7 +136,7 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
 
               // Bottom row: 0 kcal (left), 'kcal' (center), ∞ kcal (right)
               Positioned(
-                top: size / 2 + 44,
+                top: size / 2 + 84, // Adjusted top position to match the shifted arc
                 left: 16,
                 right: 16,
                 child: Row(
@@ -189,7 +191,7 @@ class _RefactoredPainter extends CustomPainter {
   @override
   void paint(Canvas c, Size s) {
     // center moved slightly down so semicircle fits with labels above/below
-    final center = Offset(s.width / 2, s.height + 50);
+    final center = Offset(s.width / 2, s.height + 10);
     final r = s.width / 2;
     final rect = Rect.fromCircle(center: center, radius: r);
 

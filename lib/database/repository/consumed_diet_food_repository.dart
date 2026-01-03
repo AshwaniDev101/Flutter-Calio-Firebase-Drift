@@ -1,6 +1,6 @@
 import 'package:calio/models/consumed_diet_food.dart';
 
-import '../../models/diet_food.dart'; // Kept if needed elsewhere
+// Kept if needed elsewhere
 import '../services/firebase/firestore_consumed_diet_food_service.dart';
 
 /// Repository for managing daily consumed food items.

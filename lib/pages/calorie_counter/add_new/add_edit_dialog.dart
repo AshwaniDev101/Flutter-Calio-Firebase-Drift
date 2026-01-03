@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../models/diet_food.dart';
@@ -8,22 +7,23 @@ import '../../../core/helpers/timestamp_helper.dart';
 
 class DietFoodDialog {
   static void add(BuildContext context, Function(DietFood) onNewSave) {
-    showDialog(context: context, builder: (_) => _DietFoodDialogWidget.save(context: context, onNew: (food){
-      onNewSave(food);
-      Navigator.of(context).pop();
-    }));
+    showDialog(context: context, builder: (_) =>
+        _DietFoodDialogWidget.save(context: context, onNew: (food) {
+          onNewSave(food);
+          Navigator.of(context).pop();
+        }));
   }
 
   static void edit(BuildContext context, DietFood food, Function(DietFood) onEditSave) {
     showDialog(
         context: context,
-        builder: (_) => _DietFoodDialogWidget.edit(context: context, food: food, onEdit: (food){
-          onEditSave(food);
-          Navigator.of(context).pop();
-        }));
+        builder: (_) =>
+            _DietFoodDialogWidget.edit(context: context, food: food, onEdit: (food) {
+              onEditSave(food);
+              Navigator.of(context).pop();
+            }));
   }
 }
-
 
 class _DietFoodDialogWidget extends StatelessWidget {
   final DietFood? food;
@@ -32,12 +32,14 @@ class _DietFoodDialogWidget extends StatelessWidget {
 
   const _DietFoodDialogWidget.save({required BuildContext context,
     required this.onNew,
-  }): food=null ,onEdit=null;
+  })
+      : food=null,
+        onEdit=null;
 
   const _DietFoodDialogWidget.edit({required BuildContext context,
     required this.food,
     required this.onEdit,
-  }): onNew=null;
+  }) : onNew=null;
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +48,7 @@ class _DietFoodDialogWidget extends StatelessWidget {
     // Pre-fill values if editing
     String name = food?.name ?? '';
     String calories = food?.foodStats.calories.toString() ?? '';
-    // String proteins = food?.foodStats.proteins.toString() ?? '';
-    // String carbohydrates = food?.foodStats.carbohydrates.toString() ?? '';
-    // String fats = food?.foodStats.fats.toString() ?? '';
-    // String vitamins = food?.foodStats.vitamins.toString() ?? '';
-    // String minerals = food?.foodStats.minerals.toString() ?? '';
+
 
     InputDecoration buildInputDecoration(String label) {
       return InputDecoration(
@@ -74,21 +72,6 @@ class _DietFoodDialogWidget extends StatelessWidget {
       );
     }
 
-    Widget buildNumberField({
-      required String label,
-      required String initialValue,
-      required Function(String) onSaved,
-    }) {
-      return Expanded(
-        child: TextFormField(
-          initialValue: initialValue,
-          decoration: buildInputDecoration(label),
-          keyboardType: TextInputType.number,
-          style: const TextStyle(fontSize: 14),
-          onSaved: (v) => onSaved(v ?? '0'),
-        ),
-      );
-    }
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -97,7 +80,7 @@ class _DietFoodDialogWidget extends StatelessWidget {
       title: Center(
         child: Row(
           children: [
-            Icon(Icons.fastfood_rounded,color: Colors.grey[700],),
+            Icon(Icons.fastfood_rounded, color: Colors.grey[700],),
             const SizedBox(width: 12),
             Text(
               food == null ? 'Add New Diet Food' : 'Edit Diet Food',
@@ -121,7 +104,9 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 decoration: buildInputDecoration('Food Name'),
                 style: const TextStyle(fontSize: 14),
                 validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Required' : null,
+                (v == null || v
+                    .trim()
+                    .isEmpty) ? 'Required' : null,
                 onSaved: (v) => name = v!.trim(),
               ),
               const SizedBox(height: 12),
@@ -131,32 +116,15 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 style: const TextStyle(fontSize: 14),
                 validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Required' : null,
+                (v == null || v
+                    .trim()
+                    .isEmpty) ? 'Required' : null,
                 onSaved: (v) => calories = v!.trim(),
               ),
               const SizedBox(height: 12),
-              // Row(
-              //   children: [
-              //     buildNumberField(
-              //         label: 'Proteins', initialValue: proteins, onSaved: (v) => proteins = v),
-              //     const SizedBox(width: 12),
-              //     buildNumberField(
-              //         label: 'Vitamins', initialValue: vitamins, onSaved: (v) => vitamins = v),
-              //     const SizedBox(width: 12),
-              //     buildNumberField(
-              //         label: 'Fats', initialValue: fats, onSaved: (v) => fats = v),
-              //   ],
-              // ),
+
               const SizedBox(height: 12),
-              // Row(
-              //   children: [
-              //     buildNumberField(
-              //         label: 'Carbohydrates', initialValue: carbohydrates, onSaved: (v) => carbohydrates = v),
-              //     const SizedBox(width: 12),
-              //     buildNumberField(
-              //         label: 'Minerals', initialValue: minerals, onSaved: (v) => minerals = v),
-              //   ],
-              // ),
+
             ],
           ),
         ),
@@ -180,23 +148,17 @@ class _DietFoodDialogWidget extends StatelessWidget {
                 count: 0.0,
                 timestamp: Timestamp.fromDate(DateTime.now()),
                 foodStats: FoodStats(
-                  // proteins: double.tryParse(proteins) ?? 0.0,
-                  // carbohydrates: double.tryParse(carbohydrates) ?? 0.0,
-                  // fats: double.tryParse(fats) ?? 0.0,
-                  // vitamins: double.tryParse(vitamins) ?? 0.0,
-                  // minerals: double.tryParse(minerals) ?? 0.0,
+
                   calories: double.tryParse(calories) ?? 0.0,
                 ),
               );
 
 
-              if(food == null) {
+              if (food == null) {
                 onNew!(updatedDietFood);
               } else {
                 onEdit!(updatedDietFood);
               }
-
-
             }
           },
           style: ElevatedButton.styleFrom(

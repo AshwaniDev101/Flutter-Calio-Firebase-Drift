@@ -42,27 +42,18 @@ class HeatmapGrid extends StatelessWidget {
 
   Color _getColor(double calories) {
     if (calories > 0 && calories <= 1500) {
-      // Under-consuming
       final double alpha = ((calories / 1500)).clamp(0.0, 1.0);
       return AppColors.heatmapNeutral.withValues(alpha: alpha);
-
     } else if (calories > 1500 && calories <= 1700) {
-      // Transition zone
       final double alpha = (0.6 + ((calories - 1500) / 200) * 0.4).clamp(0.6, 1.0);
       return AppColors.heatmapTransition.withValues(alpha: alpha);
-
     } else if (calories > 1700 && calories <= 2500) {
-      // Optimal range
       final double alpha = (0.4 + ((calories - 1700) / 800) * 0.6).clamp(0.4, 1.0);
       return AppColors.heatmapOptimal.withValues(alpha: alpha);
-
     } else if (calories > 2500) {
-      // Over-consuming
       final double alpha = (0.6 + ((calories - 2500) / 1000) * 0.4).clamp(0.6, 1.0);
       return AppColors.heatmapOver.withValues(alpha: alpha);
-
     } else {
-      // No data / zero
       return AppColors.heatmapEmpty;
     }
   }
@@ -74,59 +65,62 @@ class HeatmapGrid extends StatelessWidget {
     final daysInMonth = _daysInMonth(now);
 
     const int columnsPerRow = 16;
-    
-    final deviceWidth = MediaQuery.of(context).size.width;
-    final availableWidth = deviceWidth - horizontalPadding * 2 - 8;
-    final totalHSpacing = (columnsPerRow - 1) * hSpacing;
-    
-    final boxSize = (availableWidth - totalHSpacing) / columnsPerRow;
 
-    final cells = List.generate(daysInMonth, (index) {
-      final dayNumber = index + 1;
-      final date = DateTime(now.year, now.month, dayNumber);
-      final key = DateTimeHelper.toHeatmapKey(date);
+    return LayoutBuilder(builder: (context, constraints) {
+      // Use the local constraints width instead of MediaQuery to support nested columns
+      final availableWidth = (constraints.maxWidth - horizontalPadding * 2).clamp(0.0, double.infinity);
+      final totalHSpacing = (columnsPerRow - 1) * hSpacing;
       
-      final stats = heatmapData[key];
-      final calories = stats?.calories ?? 0.0;
-      
-      final isToday = (now.day == dayNumber &&
-          DateTime.now().month == now.month &&
-          DateTime.now().year == now.year);
+      // Calculate square box size to fit exactly columnsPerRow in the current container
+      final boxSize = (availableWidth - totalHSpacing) / columnsPerRow;
 
-      return HeatmapCell(
-        day: dayNumber,
-        color: _getColor(calories),
-        isToday: isToday,
-        size: boxSize,
-        vSpacing: vSpacing,
+      final cells = List.generate(daysInMonth, (index) {
+        final dayNumber = index + 1;
+        final date = DateTime(now.year, now.month, dayNumber);
+        final key = DateTimeHelper.toHeatmapKey(date);
+        
+        final stats = heatmapData[key];
+        final calories = stats?.calories ?? 0.0;
+        
+        final isToday = (now.day == dayNumber &&
+            DateTime.now().month == now.month &&
+            DateTime.now().year == now.year);
+
+        return HeatmapCell(
+          day: dayNumber,
+          color: _getColor(calories),
+          isToday: isToday,
+          size: boxSize,
+          vSpacing: vSpacing,
+        );
+      });
+
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0, top: 2),
+              child: Text(
+                '${DateTimeHelper.getMonthName(now)} ${now.year}',
+                style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Wrap(
+                spacing: hSpacing,
+                runSpacing: 0,
+                children: cells,
+              ),
+            ),
+          ],
+        ),
       );
     });
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4.0, top: 2),
-            child: Text(
-              '${DateTimeHelper.getMonthName(now)} ${now.year}',
-              style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Wrap(
-              spacing: hSpacing,
-              runSpacing: 0,
-              children: cells,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 
