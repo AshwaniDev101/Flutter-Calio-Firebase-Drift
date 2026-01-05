@@ -12,7 +12,7 @@ class ProgressVisuals {
 
 /// Returns a value between 0 and infinity representing progress
 double getProgressRatio(FoodStats foodStats) {
-  return (foodStats.calories / AppSettings.atMaxCalories)
+  return (foodStats.calories / AppSettings.atLeastCalories)
       .clamp(0.0, double.infinity);
 }
 
