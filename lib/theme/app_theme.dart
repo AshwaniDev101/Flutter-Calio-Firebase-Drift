@@ -42,7 +42,7 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.appbar,
       elevation: 0,
-      centerTitle: true,
+      centerTitle: false,
       titleTextStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,

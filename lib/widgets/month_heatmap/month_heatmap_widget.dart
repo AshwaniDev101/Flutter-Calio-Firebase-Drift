@@ -64,7 +64,7 @@ class HeatmapGrid extends StatelessWidget {
     final now = currentDateTime;
     final daysInMonth = _daysInMonth(now);
 
-    const int columnsPerRow = 16;
+    const int columnsPerRow = 17;
 
     return LayoutBuilder(builder: (context, constraints) {
       // Use the local constraints width instead of MediaQuery to support nested columns

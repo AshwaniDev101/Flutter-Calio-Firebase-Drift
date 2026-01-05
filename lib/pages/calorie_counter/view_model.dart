@@ -7,6 +7,15 @@ import '../../../models/diet_food.dart';
 import '../../../models/food_stats.dart';
 import 'manager/food_manager.dart';
 
+
+enum SortType {
+  aToB,
+  bToA,
+  calHighToLow,
+  calLowToLHigh,
+  consumed,
+}
+
 class CalorieCounterViewModel extends ChangeNotifier {
   DateTime pageDateTime;
   final bool isOldPage;
@@ -22,8 +31,19 @@ class CalorieCounterViewModel extends ChangeNotifier {
     FoodManager.instance.changeConsumedCount(newValue - oldValue, food, pageDateTime);
   }
 
-  String _searchQuery = '';
 
+  SortType _sortType = SortType.aToB;
+
+  SortType get sortType => _sortType;
+
+  set updateSortType(SortType sortType) {
+    _sortType = sortType;
+    Log.i('Sort type updated to: $_sortType');
+    notifyListeners(); // Triggers rebuilds in listening widgets
+  }
+
+
+  String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
   set updateSearchQuery(String query) {
@@ -56,4 +76,6 @@ class CalorieCounterViewModel extends ChangeNotifier {
     pageDateTime = newDate;
     notifyListeners();
   }
+
+
 }

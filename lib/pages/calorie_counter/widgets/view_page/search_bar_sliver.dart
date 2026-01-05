@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../models/diet_food.dart';
 import '../../../../theme/app_colors.dart';
+import '../../../../widgets/sort_option_menu/sort_option_menu.dart';
 import '../../add_new/add_edit_dialog.dart';
 import '../../view_model.dart';
 
@@ -121,6 +122,12 @@ class _SearchBarState extends State<MySearchBarSliver> with WidgetsBindingObserv
                 ),
 
                 SizedBox(width: 10),
+
+
+                SortOptionMenu(viewModel: widget.viewModel,),
+                // IconButton(onPressed: () {
+                //
+                // }, icon: Icon(Icons.sort)),
               ],
             ),
           ],

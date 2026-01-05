@@ -38,6 +38,23 @@ class FoodListSliver extends StatelessWidget {
         final query = viewModel.searchQuery.toLowerCase();
         final filteredFoods = foods.where((f) => f.name.toLowerCase().contains(query)).toList();
 
+
+        // Apply sorting based on current sort type
+        filteredFoods.sort((a,b){
+
+          return switch(viewModel.sortType)
+          {
+            SortType.aToB => a.name.compareTo(b.name),
+            SortType.bToA => b.name.compareTo(a.name),
+            SortType.calHighToLow => b.foodStats.calories.compareTo(a.foodStats.calories),
+            SortType.calLowToLHigh => a.foodStats.calories.compareTo(b.foodStats.calories),
+            SortType.consumed => b.count.compareTo(a.count),
+          };
+          return a.foodStats.calories.compareTo(b.foodStats.calories);
+
+
+        });
+
         if (filteredFoods.isEmpty) {
           return const SliverToBoxAdapter(
             child: Center(child: Padding(padding: EdgeInsets.all(24), child: Text('No foods found.'))),
