@@ -56,7 +56,7 @@ class AppTheme {
     ),
     textTheme: _textTheme(Colors.black87),
     iconTheme: IconThemeData(color: Colors.blueGrey[700]),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

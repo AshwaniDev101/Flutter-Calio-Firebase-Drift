@@ -40,7 +40,7 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
     this.color2 = AppColors.calorieBarWarning,
     this.color3 = AppColors.calorieBarDanger,
     this.strokeWidth = 18.0,
-    this.size = 220.0,
+    this.size = 250.0,
     this.showCenterPercent = true,
     this.bgColor = AppColors.calorieBarBackground,
     this.animationDuration = const Duration(milliseconds: 420),
@@ -136,9 +136,9 @@ class CalorieSemicircleProgressBarWidget extends StatelessWidget {
 
               // Bottom row: 0 kcal (left), 'kcal' (center), ∞ kcal (right)
               Positioned(
-                top: size / 2 + 84, // Adjusted top position to match the shifted arc
-                left: 16,
-                right: 16,
+                top: size / 2 + 40, // Adjusted top position to match the shifted arc
+                left: 20,
+                right: 20,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

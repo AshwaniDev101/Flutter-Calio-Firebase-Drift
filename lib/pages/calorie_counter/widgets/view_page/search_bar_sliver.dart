@@ -43,7 +43,7 @@ class _SearchBarState extends State<MySearchBarSliver> with WidgetsBindingObserv
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.all(0),
       sliver: SliverToBoxAdapter(
         child: Row(
           children: [

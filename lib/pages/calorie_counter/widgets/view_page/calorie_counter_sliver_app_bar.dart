@@ -19,7 +19,7 @@ class CalorieCounterSliverAppBar extends StatelessWidget {
 
       // pinned: false,
       snap: true,
-      pinned: true,
+      pinned: false,
       backgroundColor: AppColors.appbar,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
