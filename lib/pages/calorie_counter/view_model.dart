@@ -17,18 +17,25 @@ enum SortType {
 }
 
 class CalorieCounterViewModel extends ChangeNotifier {
-  DateTime pageDateTime;
+  DateTime _pageDateTime;
   final bool isOldPage;
 
-  CalorieCounterViewModel({required this.pageDateTime, required this.isOldPage});
+  DateTime get pageDateTime => _pageDateTime;
 
-  // Gives Dashboard data for current day (FoodStats of the day)
-  Stream<FoodStats?> get watchCurrentDayDashboardFoodStats => FoodManager.instance.watchCurrentDayDashboardFoodStats(pageDateTime);
+  CalorieCounterViewModel({required DateTime pageDateTime, required this.isOldPage}) : _pageDateTime = pageDateTime {
+    _initStreams();
+  }
 
-  Stream<List<DietFood>> get watchMergedFoodList => FoodManager.instance.watchMergedFoodList(pageDateTime);
+  late Stream<FoodStats?> watchCurrentDayDashboardFoodStats;
+  late Stream<List<DietFood>> watchMergedFoodList;
+
+  void _initStreams() {
+    watchCurrentDayDashboardFoodStats = FoodManager.instance.watchCurrentDayDashboardFoodStats(_pageDateTime);
+    watchMergedFoodList = FoodManager.instance.watchMergedFoodList(_pageDateTime);
+  }
 
   void onQuantityChange(double oldValue, double newValue, ConsumedDietFood food) {
-    FoodManager.instance.changeConsumedCount(newValue - oldValue, food, pageDateTime);
+    FoodManager.instance.changeConsumedCount(newValue - oldValue, food, _pageDateTime);
   }
 
 
@@ -73,7 +80,8 @@ class CalorieCounterViewModel extends ChangeNotifier {
   }
 
   void updatePageDateTime(DateTime newDate) {
-    pageDateTime = newDate;
+    _pageDateTime = newDate;
+    _initStreams(); // Re-initialize streams for the new date
     notifyListeners();
   }
 
