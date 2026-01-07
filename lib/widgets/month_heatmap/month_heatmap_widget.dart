@@ -103,14 +103,14 @@ class HeatmapGrid extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 4.0, top: 2),
+              padding: const EdgeInsets.only(left: 0, top: 4),
               child: Text(
                 '${DateTimeHelper.getMonthName(now)} ${now.year}',
-                style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodySmall,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(1.0),
               child: Wrap(
                 spacing: hSpacing,
                 runSpacing: 0,

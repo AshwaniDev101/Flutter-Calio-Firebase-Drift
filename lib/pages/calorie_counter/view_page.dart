@@ -55,15 +55,18 @@ class _CalorieCounterPageBody extends StatelessWidget {
       // Removed extendBodyBehindAppBar: true to prevent content from going under the status/app bar
       body: SafeArea(
         // top: true by default, handles notches and status bars correctly
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isWide = constraints.maxWidth > 900;
-            if (isWide) {
-              return _buildWideLayout(context, vm, heatmapData);
-            } else {
-              return _buildMobileLayout(context, vm, heatmapData);
-            }
-          },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 900;
+              if (isWide) {
+                return _buildWideLayout(context, vm, heatmapData);
+              } else {
+                return _buildMobileLayout(context, vm, heatmapData);
+              }
+            },
+          ),
         ),
       ),
     );

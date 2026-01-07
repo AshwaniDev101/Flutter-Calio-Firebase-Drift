@@ -62,7 +62,7 @@ class _TopProgressHeaderDelegate extends SliverPersistentHeaderDelegate {
       builder: (context, snapshot) {
         final foodStats = snapshot.data ?? FoodStats.empty();
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(top: 8),
           child: CalorieLinearProgressBarWidget(current: foodStats.calories),
         );
       },
@@ -76,7 +76,7 @@ class _TopProgressHeaderDelegate extends SliverPersistentHeaderDelegate {
       builder: (context, snapshot) {
         final foodStats = snapshot.data ?? FoodStats.empty();
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 0),
           child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(

@@ -67,7 +67,7 @@ class FoodListSliver extends StatelessWidget {
             final barColor = AppColors.colorPalette[index % AppColors.colorPalette.length];
 
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               child: _FoodCard(
                 key: ValueKey(food.id),
                 food: food,
@@ -106,11 +106,11 @@ class _FoodCard extends StatelessWidget {
     final isDeleted = food.name == 'Deleted';
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(offset: Offset(0, 1), blurRadius: 3, color: barColor.withOpacity(0.2))],
+        boxShadow: [BoxShadow(offset: Offset(0, 1), blurRadius: 3, color: barColor.withValues(alpha: 0.2))],
       ),
       child: Row(
         children: [
@@ -124,7 +124,7 @@ class _FoodCard extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

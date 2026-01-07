@@ -19,7 +19,7 @@ class AppTheme {
           color: textColor,
         ),
         bodySmall: TextStyle(
-          fontSize: 12,
+          fontSize: 10,
           color: textColor.withValues(alpha: 0.6),
         ),
         labelSmall: TextStyle(
